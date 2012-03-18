@@ -16,58 +16,122 @@
 </head>
 
 <body>
-	<div data-start="0" data-end="100" data-0="left:100px;" data-100="left:200px;">fpp</div>
+	<div data-0="left:100px;" data-100="left:200px;">fpp</div>
 	<!--<div data-start="0" data-end="50">bar</div>-->
 
 	<script type="text/javascript">
 	(function() {
-		window.skroll = {
+		window.skrollr = {
+			//Main entry point
 			init: function(el) {
-				return new skroll(el || window);
+				return new skrollr(el || document.getElementsByTagName('body')[0]);
 			}
 		};
 
-		function skroll(container) {
+		var rxKeyframeAttribute = /^data-(\d+)$/;
+
+		function skrollr(container) {
 			var self = this;
 
 			//The container element. The parent of all skrollables.
-			this.containercontainer;
+			this.container = container;
 
-			//A list of all elements which should be animated.
-			this.skrollables = document.querySelectorAll('[data-end]');
+			//All event listeners
+			this.listeners = {};
+
+			//A list of all elements which should be animated associated with their the data.
+			this.skrollables = [];
 
 			//Will contain the max data-end value available.
-			this.lastKeyFrame = 0;
+			this.maxKeyFrame = 0;
 
-			//Now parse all css values which should be animated
-			for(var i = 0; i < this.skrollables.length; i++) {
+
+
+			var allElements = this.container.getElementsByTagName('*');
+
+			//Iterate over all elements inside the container.
+			for(var i = 0; i < allElements.length; i++) {
 				var
-					el = this.skrollables[i];
-					fx = {};
+					el = allElements[i];
+					fx = {},
+					keyFrames = [];
 
-				fx.start = self.data(el, 'start') | 0;
-				fx.end = self.data(el, 'end') | 0;
-				fx.steps = {};
 
-				for (var i = 0; i < elem.attributes.length; i++) {
-					var attrib = elem.attributes[i];
-					alert(attrib.name + " = " + attrib.value);
+				//Iterate over all attributes and search for keyframe attributes.
+				for (var i = 0; i < el.attributes.length; i++) {
+					var
+						attr = el.attributes[i],
+						match = attr.name.match(rxKeyframeAttribute);
+
+					if(match !== null) {
+						var frame = match[1] | 0;
+
+						keyFrames.push({
+							frame: frame,
+							props: attr.value
+						});
+
+						if(frame > this.maxKeyFrame) {
+							this.maxKeyFrame = frame;
+						}
+					}
 				}
 
-				if(fx.end > this.lastKeyFrame) {
-					this.lastKeyFrame = fx.end;
+
+				//Does this element have keyframes?
+				if(keyFrames.length) {
+					keyFrames.sort(function(a, b) {
+						return a.frame - b.frame;
+					});
+
+					this.skrollables.push({
+						element: el,
+						keyFrames: keyFrames
+					});
 				}
 			}
 
+			console.log(this.skrollables);
+
 			//Let's go
-			window.onscroll = function() {
-				var top = self._getScrollTop();
+			skrollr.addEventListener(this.container, 'scroll', function() {
+				var top = skrollr.getScrollTop(self.container);
+
+				self.trigger('scroll', top);
+
+				self.trigger('beforerender', top);
+
 				self.render(top);
-			};
+
+				self.trigger('afterrender', top);
+			});
+
+			return this;
 		}
 
-		skroll.prototype.render = function(top) {
+		skrollr.prototype.render = function(top) {
+			return this;
+		};
 
+		/**
+			Triggers and event and calls each listener function
+		*/
+		skrollr.prototype.trigger = function(type) {
+			var fns = this.listeners[type];
+
+			if(fns !== undefined) {
+				var args = Array.prototype.slice.call(arguments, 1);
+
+				for(var i = 0; i < fns.length; i++) {
+					fns[i].apply(this, args);
+				}
+			}
+		};
+
+		skrollr.prototype.on = function(type, fn) {
+			(this.listeners[type] = this.listeners[type] || []).push(fn);
+
+			return this;
 		};
 
 		/**
@@ -75,7 +139,7 @@
 			Setting "val" null: remove
 			Passing non-null: setter
 		*/
-		skroll.prototype.data = function(el, key, val) {
+		skrollr.prototype.data = function(el, key, val) {
 			if(val === undefined) {
 				return el.getAttribute('data-' + key);
 			} else if(val === null) {
@@ -85,9 +149,18 @@
 			}
 		};
 
-		skroll.prototype._getScrollTop = function(el) {
+
+		/*
+			Public static helpers
+		*/
+
+		/**
+			Get an elements top scrollbar offset.
+		*/
+		skrollr.getScrollTop = function(el) {
 			//TODO get the scrollTop of (el || this.element)
 			return pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+
 			/*
 			if(typeof pageYOffset!= 'undefined'){
 				//most browsers
@@ -101,7 +174,30 @@
 			}
 			*/
 		};
+
+		/**
+			Attach an event handler to a DOM element
+		*/
+		skrollr.addEventListener = function(el, type, fn) {
+			if (el.addEventListener) {
+				el.addEventListener(type, fn, false);
+			} else if (elem.attachEvent) {
+				el.attachEvent('on' + type, fn);
+			}
+		}
 	}());
+
+	skrollr
+		.init()
+		.on('scroll', function(top) {
+			console.log('scroll');
+		})
+		.on('beforerender', function() {
+			console.log('beforerender');
+		})
+		.on('afterrender', function() {
+			console.log('afterrender');
+		});
 	</script>
 </body>
 
