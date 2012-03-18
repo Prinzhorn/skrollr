@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<title>Page title</title>
+
+	<style type="text/css">
+	div {
+		width:100px;
+		height:1000px;
+		margin:1em;
+		background:red;
+	}
+	</style>
+</head>
+
+<body>
+	<div data-start="0" data-end="100" data-0="left:100px;" data-100="left:200px;">fpp</div>
+	<!--<div data-start="0" data-end="50">bar</div>-->
+
+	<script type="text/javascript">
+	(function() {
+		window.skroll = {
+			init: function(el) {
+				return new skroll(el || window);
+			}
+		};
+
+		function skroll(container) {
+			var self = this;
+
+			//The container element. The parent of all skrollables.
+			this.containercontainer;
+
+			//A list of all elements which should be animated.
+			this.skrollables = document.querySelectorAll('[data-end]');
+
+			//Will contain the max data-end value available.
+			this.lastKeyFrame = 0;
+
+			//Now parse all css values which should be animated
+			for(var i = 0; i < this.skrollables.length; i++) {
+				var
+					el = this.skrollables[i];
+					fx = {};
+
+				fx.start = self.data(el, 'start') | 0;
+				fx.end = self.data(el, 'end') | 0;
+				fx.steps = {};
+
+				for (var i = 0; i < elem.attributes.length; i++) {
+					var attrib = elem.attributes[i];
+					alert(attrib.name + " = " + attrib.value);
+				}
+
+				if(fx.end > this.lastKeyFrame) {
+					this.lastKeyFrame = fx.end;
+				}
+			}
+
+			//Let's go
+			window.onscroll = function() {
+				var top = self._getScrollTop();
+				self.render(top);
+			};
+		}
+
+		skroll.prototype.render = function(top) {
+
+		};
+
+		/**
+			Ommiting "val": getter
+			Setting "val" null: remove
+			Passing non-null: setter
+		*/
+		skroll.prototype.data = function(el, key, val) {
+			if(val === undefined) {
+				return el.getAttribute('data-' + key);
+			} else if(val === null) {
+				el.removeAttribute('data-' + key);
+			} else {
+				el.setAttribute('data-' + key, val);
+			}
+		};
+
+		skroll.prototype._getScrollTop = function(el) {
+			//TODO get the scrollTop of (el || this.element)
+			return pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+			/*
+			if(typeof pageYOffset!= 'undefined'){
+				//most browsers
+				return pageYOffset;
+			}
+			else{
+				var B= document.body; //IE 'quirks'
+				var D= document.documentElement; //IE with doctype
+				D= (D.clientHeight)? D: B;
+				return D.scrollTop;
+			}
+			*/
+		};
+	}());
+	</script>
+</body>
+
+</html>
