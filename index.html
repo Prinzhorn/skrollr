@@ -6,10 +6,15 @@
 	<title>Page title</title>
 
 	<style type="text/css">
+	html, body {
+		width:100%;
+		height:100%;
+		padding:0;
+		margin:0;
+		overflow:hidden;
+	}
+
 	div {
-		width:100px;
-		height:1000px;
-		margin:1em;
 		background:red;
 	}
 
@@ -20,8 +25,9 @@
 </head>
 
 <body>
-	<div data-100="left:200px;" data-300="left:500px;">foo</div>
-	<div data-0="left:300px;" data-100="left:700px;">bar</div>
+	<!--<div data-50="left:200px;opacity:0;" data-300="left:500px;opacity:1;">foo</div>-->
+	<!--<div data-0="left:300px;" data-100="left:700px;">bar</div>-->
+	<div data-10="left:0px;font-size:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1920px;opacity:0;">WOOOOT</div>
 	<!--<div data-start="0" data-end="50">bar</div>-->
 
 	<script type="text/javascript" src="skrollr.js"></script>
