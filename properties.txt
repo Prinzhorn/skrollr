@@ -1,0 +1,22 @@
+Numbers:
+	top
+	right
+	bottom
+	left
+	margin-top/right/bottom/left
+	padding-top/right/bottom/left
+	rotation
+	font-size
+
+Compound:
+	skew
+	background-position
+
+Color:
+	color
+	background-color
+	border-color
+	border-bottom-color
+	border-left-color
+	border-right-color
+	border-top-color
