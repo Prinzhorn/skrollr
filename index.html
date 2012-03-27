@@ -11,38 +11,59 @@
 		height:100%;
 		padding:0;
 		margin:0;
-		overflow:hidden;
 	}
 
-	div {
+	.skrollable {
 		background:red;
+		position:fixed;
+
+		        transition: all .3s;
+		   /*-o-transition: all .3s;*/
+		    -ms-transition: all .3s;
+		   -moz-transition: all .3s;
+		-webkit-transition: all .3s;
 	}
 
-	* {
-		-moz-transition: all .3s;
+	.skrollable .skrollable {
+		position:absolute;
+	}
+
+	#blue {
+		background:blue;
+		border:0px solid #000;
 	}
 	</style>
 </head>
 
 <body>
-	<!--<div data-50="left:200px;opacity:0;" data-300="left:500px;opacity:1;">foo</div>-->
-	<!--<div data-0="left:300px;" data-100="left:700px;">bar</div>-->
-	<div data-10="left:0px;font-size:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1920px;opacity:0;">WOOOOT</div>
-	<!--<div data-start="0" data-end="50">bar</div>-->
+	<div id="container">
+		<!--<div data-50="left:200px;opacity:0;" data-300="left:500px;opacity:1;">foo</div>-->
+		<!--<div data-0="left:300px;" data-100="left:700px;">bar</div>-->
+		<div data-10="left:0px;font-size:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1920px;opacity:0;">WOOOOT</div>
+		<!--<div data-start="0" data-end="50">bar</div>-->
+		<div data-0="width:100px;height:100px;left:0%;top:50%;" data-200="left:50%;opacity:1;width:100px;height:100px;top:50%;" data-500="top:100%;width:500px;height:300px;opacity:0;">
+			TEST
+			<div id="blue" data-100="width:50px;height:50px;left:0%;top:50%;margin-left:-25px;margin-top:-25px;border-width:0px;" data-200="left:100%;border-width:100px;"></div>
+		</div>
+	</div>
 
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
-	skrollr
-		.init()
-		.on('scroll', function(top) {
-			//console.log('scroll');
-		})
-		.on('beforerender', function() {
-			//console.log('beforerender');
-		})
-		.on('afterrender', function() {
-			//console.log('afterrender');
-		});
+	window.onload = function() {
+		skrollr
+			.init({
+				scale: 2
+			})
+			.on('scroll', function(top) {
+				//console.log(top);
+			})
+			.on('beforerender', function() {
+				//console.log('beforerender');
+			})
+			.on('afterrender', function() {
+				//console.log('afterrender');
+			});
+	}
 	</script>
 </body>
 
