@@ -7,13 +7,17 @@
 	var
 		rxKeyframeAttribute = /^data-(\d+)$/,
 		rxNumericValue = /^((-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?$/,
-		rxTransform
-		rxCamelCase = /-([a-z])/g;
+		rxTransform,
+		rxPropSplit = /:|;/g,
+		rxPropEasing = /(\w+)\[(\w+)\]/,
+		rxCamelCase = /-([a-z])/g,
 		parsers = {},
-		steps = {};
+		steps = {},
+		easings = {};
 
 
 	var parsersAndSteps = {
+		//Simple constant values which won't be interpolated.
 		constant: {
 			/**
 			 * Doesn't actually parse something. Will just return the value.
@@ -29,6 +33,7 @@
 				return val;
 			}
 		},
+		//Simple numeric values with unit which can easily be interpolated.
 		numeric: {
 			/**
 			 * Parses a single numeric value with optional unit.
@@ -54,16 +59,40 @@
 
 				//Check if the units are the same
 				if(val1[1] !== val2[1]) {
-					throw "Can't interpolate between '" + val1[1] + "' and '" + val2[1] + "'";
+					throw "Can't interpolate between '" + val[0] + val1[1] + "' and '" + val1[0] + val2[1] + "'";
 				}
-
-				easing = easing || 'linear';
 
 				return (val1[0] + ((val2[0] - val1[0]) * progress)) + val1[1];
 			}
 		},
+		//Values which are composed of multipe numeric values like "0% 0%"
+		composedNumeric: {
+			/**
+			 * Parses a value which is composed of multiple numeric values.
+			 * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
+			 */
+			parser: function(val) {
+				var
+					values = [],
+					all = val.split(' ');
+
+				for(var i = 0; i < all.length; i++) {
+					//Use the simple numeric parser for the indiviual values
+					values.push(parsersAndSteps.numeric.parser(all[i]));
+				}
+
+				return values;
+			},
+			step: function(val1, val2, progress, easing) {
+				var ret = '';
+
+				if(val2 === undefined) {
+
+				}
+			}
+		},
 		transform: {
-			parsers: function(val) {
+			parser: function(val) {
 
 			},
 			step: function(val1, val2, progress, easing) {
@@ -79,7 +108,7 @@
 	}
 
 	//All supported properties which have single numeric values
-	for(var i = 0, p = ['opacity', 'top', 'right', 'bottom', 'left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'rotation', 'font-size', 'width', 'height', 'border-width']; i < p.length; i++) {
+	for(var i = 0, p = ['opacity', 'top', 'right', 'bottom', 'left', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left', 'font-size','width', 'height', 'border-width']; i < p.length; i++) {
 		parsers[p[i]] = parsersAndSteps.numeric.parser;
 		steps[p[i]] = parsersAndSteps.numeric.step;
 	}
@@ -92,6 +121,14 @@
 		var self = this;
 
 		options = options || {};
+
+		if(options.easing) {
+			for(var e in options.easing) {
+				if(Object.prototype.hasOwnProperty.call(options.easing, e)) {
+					easings[e] = options.easing[e];
+				}
+			}
+		}
 
 		//The container element. The parent of all skrollables.
 		this.container = document.getElementsByTagName('body')[0];
@@ -170,7 +207,7 @@
 		var dummyStyle = this.dummy.style;
 
 		dummyStyle.width = '1px';
-		dummyStyle.height = this.maxKeyFrame + 'px';
+		dummyStyle.height = (this.maxKeyFrame + Skrollr.getViewportHeight()) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.left = '0px';
 		dummyStyle.top = '0px';
@@ -236,22 +273,28 @@
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
 	Skrollr.prototype._step = function(skrollable, frame) {
-		var frames = skrollable.keyFrames, last;
+		var frames = skrollable.keyFrames;
 
 		//We are before the first frame, the element is not visible
 		if(frame < frames[0].frame) {
 			this._setStyle(skrollable.element, 'display', 'none');
+		}
 		//We are after the last frame, the element gets all props from last keyFrame
-		} else if(frame > (last = frames[frames.length - 1]).frame) {
+		else if(frame > frames[frames.length - 1].frame) {
+			this._setStyle(skrollable.element, 'display', 'block');
+
+			var last = frames[frames.length - 1];
+
 			for(var key in last.props) {
 				if(Object.prototype.hasOwnProperty.call(last.props, key)) {
-					this._setStyle(skrollable.element, key, steps[key](last.props[key]));
+					this._setStyle(skrollable.element, key, steps[key](last.props[key].value));
 				}
 			}
-
-			this._setStyle(skrollable.element, 'display', 'block');
+		}
 		//We are between two frames
-		} else {
+		else {
+			this._setStyle(skrollable.element, 'display', 'block');
+
 			//Find out between which two keyFrames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
 				if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
@@ -264,11 +307,15 @@
 						if(Object.prototype.hasOwnProperty.call(left.props, key)) {
 							//If the left keyframe has a property which the right doesn't, we just set it without interprolating
 							if(!Object.prototype.hasOwnProperty.call(right.props, key)) {
-								this._setStyle(skrollable.element, key, steps[key](left.props[key]));
+								this._setStyle(skrollable.element, key, steps[key](left.props[key].value));
 							} else {
 								var progress = (frame - left.frame) / (right.frame - left.frame);
 
-								this._setStyle(skrollable.element, key, steps[key](left.props[key], right.props[key], progress, left.props['easing']));
+								if(left.props[key].easing) {
+									progress = easings[left.props[key].easing](progress);
+								}
+
+								this._setStyle(skrollable.element, key, steps[key](left.props[key].value, right.props[key].value, progress));
 							}
 						}
 					}
@@ -276,8 +323,6 @@
 					break;
 				}
 			}
-
-			this._setStyle(skrollable.element, 'display', 'block');
 		}
 	};
 
@@ -305,15 +350,33 @@
 
 
 	Skrollr.prototype._parseProps = function(skrollable) {
+		//Iterate over all keyframes
 		for(var i = 0; i < skrollable.keyFrames.length; i++) {
 			var
 				frame = skrollable.keyFrames[i],
-				allProps = frame.props.split(/:|;/g);
+				//Get all properties and values in an array
+				allProps = frame.props.split(rxPropSplit);
 
 			frame.props = {};
 
+			//Iterate over all props and values (+2 because [prop,value,prop,value,...])
 			for(var k = 0; k < allProps.length - 1; k += 2) {
-				frame.props[allProps[k]] = parsers[allProps[k]](allProps[k + 1]);
+				var
+					prop = allProps[k],
+					value = allProps[k + 1],
+					easing = prop.match(rxPropEasing);
+
+				//Is there an easing specified for this prop?
+				if(easing !== null) {
+					prop = easing[1];
+					easing = easing[2];
+				}
+
+				//Save the prop for this keyframe with his value and easing function
+				frame.props[prop] = {
+					value: parsers[prop](value),
+					easing: easing
+				};
 			}
 		}
 	};
@@ -335,6 +398,10 @@
 		} else {
 			el.setAttribute('data-' + key, val);
 		}
+	};
+
+	Skrollr.getViewportHeight = function() {
+		return document.documentElement.clientHeight;
 	};
 
 	/**
@@ -375,6 +442,7 @@
 	};
 
 
+	//Global api
 	window.skrollr = {
 		//Main entry point
 		init: function(options) {
