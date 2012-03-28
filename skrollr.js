@@ -1,33 +1,17 @@
-/*
- * TODO
- * -add a scale factor to scale the timeline
- */
-
 (function(document, undefined) {
-	var
-		rxKeyframeAttribute = /^data-(\d+)$/,
-		rxNumericValue = /^((-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?$/,
-		rxTransform,
-		rxPropSplit = /:|;/g,
-		rxPropEasing = /(\w+)\[(\w+)\]/,
-		rxCamelCase = /-([a-z])/g,
-		parsers = {},
-		steps = {},
-		easings = {};
-
+	var rxKeyframeAttribute = /^data-(\d+)$/;
+	var rxPropSplit = /:|;/g;
+	var rxPropEasing = /(\w+)\[(\w+)\]/;
+	var rxCamelCase = /-([a-z])/g;
+	var rxNumericValue = /((-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
+	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
 
 	var parsersAndSteps = {
 		//Simple constant values which won't be interpolated.
 		constant: {
 			/**
-			 * Doesn't actually parse something. Will just return the value.
-			 */
-			parser: function(val) {
-				return val;
-			},
-			/**
-			 * Doesn't interpolate at all.
-			 */
+			* Doesn't interpolate at all.
+			*/
 			step: function(val) {
 				return val;
 			}
@@ -39,8 +23,10 @@
 			 * Parses a single numeric value with optional unit.
 			 * @return An array with the numeric value at first position and the unit at second position.
 			 */
-			parser: function(val) {
-				var match = val.match(rxNumericValue);
+			parser: function(val, match) {
+				rxNumericValue.lastIndex = 0;
+
+				match = rxNumericValue.exec(val);
 
 				if(match === null) {
 					throw 'Can\'t parse "' + val + '" as numeric value.'
@@ -71,10 +57,8 @@
 			 * Parses a value which is composed of multiple numeric values separated by a single space.
 			 * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
 			 */
-			parser: function(val) {
-				var
-					values = [],
-					all = val.split(' ');
+			parser: function(all, values) {
+				values = [];
 
 				for(var i = 0; i < all.length; i++) {
 					//Use the simple numeric parser for the indiviual values
@@ -83,8 +67,8 @@
 
 				return values;
 			},
-			step: function(val1, val2, progress) {
-				var stepped = [];
+			step: function(val1, val2, progress, stepped) {
+				stepped = [];
 
 				if(val2 === undefined) {
 					for(var i = 0; i < val1.length; i++) {
@@ -104,64 +88,48 @@
 			}
 		},
 		transform: {
-			parser: function(val) {
+			parser: function(all, values, match) {
+				values = [];
 
+				for(var i = 0; i < all.length; i++) {
+					rxTransformValue.lastIndex = 0;
+
+					match = rxTransformValue.exec(all[i]);
+
+					//The transform function
+					values.push(match[1]);
+
+					//Use the simple numeric parser for the indiviual values
+					values.push(parsersAndSteps.numeric.parser(match[2]));
+				}
+
+				return values;
 			},
-			step: function(val1, val2, progress, easing) {
+			step: function(val1, val2, progress, ret) {
+				ret = [];
 
+				if(val2 === undefined) {
+					for(var i = 0; i < val1.length - 1; i += 2) {
+						ret.push(val1[i] + '(' + val1[i + 1].join('') + ')');
+					}
+				} else {
+					for(var i = 0; i < val1.length - 1; i += 2) {
+						ret.push(val1[i] + '(' + parsersAndSteps.numeric.step(val1[i + 1], val2[i + 1], progress) + ')');
+					}
+				}
+
+				return ret.join(' ');
 			}
 		},
 		color: {
 			parser: function(val) {
-
+				return val;
 			},
 			step: function(val1, val2, progress, easing) {
-
+				return val1;
 			}
 		}
 	};
-
-	//All supported properties which have constant values
-	var p = [
-		'display', 'visibility',
-		'background', 'background-attachment', 'background-clip', 'background-color', 'background-image', 'background-origin', 'background-repeat'
-	];
-
-	for(var i = 0; i < p.length; i++) {
-		parsers[p[i]] = parsersAndSteps.constant.parser;
-		steps[p[i]] = parsersAndSteps.constant.step;
-	}
-
-	//All supported properties which have single numeric values or which are composed of numeric values (single value is a composition of one value).
-	p = [
-		'opacity',
-		'top', 'right', 'bottom', 'left',
-		'padding', 'padding-top', 'padding-right', 'padding-bottom', 'padding-left',
-		'margin', 'margin-top', 'margin-right', 'margin-bottom', 'margin-left',
-		'font-size',
-		'width', 'height',
-		'border-width', 'border-radius',
-		'background-position', 'background-size'
-	];
-
-	for(var i = 0; i < p.length; i++) {
-		parsers[p[i]] = parsersAndSteps.composedNumeric.parser;
-		steps[p[i]] = parsersAndSteps.composedNumeric.step;
-	}
-
-	//All values which can have color values
-	p = [
-		'color',
-		'background-color',
-		'border-color', 'border-top-color', 'border-right-color', 'border-bottom-color', 'border-left-color'
-	];
-
-	for(var i = 0; i < p.length; i++) {
-		parsers[p[i]] = parsersAndSteps.color.parser;
-		steps[p[i]] = parsersAndSteps.color.step;
-	}
-
-	p = null;
 
 	/**
 	 * Constructor.
@@ -171,10 +139,12 @@
 
 		options = options || {};
 
+		this.easings = {};
+
 		if(options.easing) {
 			for(var e in options.easing) {
 				if(Object.prototype.hasOwnProperty.call(options.easing, e)) {
-					easings[e] = options.easing[e];
+					this.easings[e] = options.easing[e];
 				}
 			}
 		}
@@ -321,7 +291,7 @@
 	/**
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
-	Skrollr.prototype._calcStep = function(skrollable, frame) {
+	Skrollr.prototype._calcSteps = function(skrollable, frame) {
 		var frames = skrollable.keyFrames;
 
 		//We are before the first frame, the element is not visible
@@ -332,11 +302,13 @@
 		else if(frame > frames[frames.length - 1].frame) {
 			Skrollr.setStyle(skrollable.element, 'display', 'block');
 
-			var last = frames[frames.length - 1];
+			var last = frames[frames.length - 1], value;
 
 			for(var key in last.props) {
 				if(Object.prototype.hasOwnProperty.call(last.props, key)) {
-					Skrollr.setStyle(skrollable.element, key, steps[key](last.props[key].value));
+					value = last.props[key].step(last.props[key].value);
+
+					Skrollr.setStyle(skrollable.element, key, value);
 				}
 			}
 		}
@@ -357,15 +329,19 @@
 
 							//If the left keyframe has a property which the right doesn't, we just set it without interprolating
 							if(!Object.prototype.hasOwnProperty.call(right.props, key)) {
-								Skrollr.setStyle(skrollable.element, key, steps[key](left.props[key].value));
+								var value = left.props[key].step(left.props[key].value);
+
+								Skrollr.setStyle(skrollable.element, key, value);
 							} else {
 								var progress = (frame - left.frame) / (right.frame - left.frame);
 
 								if(left.props[key].easing) {
-									progress = easings[left.props[key].easing](progress);
+									progress = this.easings[left.props[key].easing](progress);
 								}
 
-								Skrollr.setStyle(skrollable.element, key, steps[key](left.props[key].value, right.props[key].value, progress));
+								var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
+
+								Skrollr.setStyle(skrollable.element, key, value);
 							}
 						}
 					}
@@ -381,7 +357,7 @@
 	 */
 	Skrollr.prototype._render = function(top) {
 		for(var i = 0; i < this.skrollables.length; i++) {
-			this._calcStep(this.skrollables[i], top);
+			this._calcSteps(this.skrollables[i], top);
 		}
 
 		return this;
@@ -413,15 +389,51 @@
 					easing = easing[2];
 				}
 
+				value = this._parseProp(value);
+
 				//Save the prop for this keyframe with his value and easing function
 				frame.props[prop] = {
-					value: parsers[prop](value),
+					value: value.value,
+					step: value.step,
 					easing: easing
 				};
 			}
 		}
 	};
 
+	/**
+	 * Parses a value using a parser. Tries to guess which parser to use.
+	 */
+	Skrollr.prototype._parseProp = function(val) {
+		//Guess what type of value it is
+		switch (false) {
+			//Could be a transform value
+			case !(m = val.match(rxTransformValue)):
+				val = parsersAndSteps.transform.parser(m);
+
+				return {
+					value: val,
+					step: parsersAndSteps.transform.step
+				};
+			//Could be a color
+			case !(m = val.match(/bbbbbbbbbbbbbbbbbbbbbb/)):
+				break;
+			//Could be a numeric value
+			case !(m = val.match(rxNumericValue)):
+				val = parsersAndSteps.composedNumeric.parser(m);
+
+				return {
+					value: val,
+					step: parsersAndSteps.composedNumeric.step
+				};
+			//Must be a constant value
+			default:
+				return {
+					value: val,
+					step: parsersAndSteps.constant.step
+				}
+		}
+	}
 
 	/*
 		Public static helpers
@@ -465,8 +477,15 @@
 	 * Set the style property on the given element. Adds prefixes where needed.
 	 */
 	Skrollr.setStyle = function(el, prop, val) {
+		prop = Skrollr.camelCase(prop);
+
+		if(prop === 'transform') {
+			prop = 'MozTransform';
+			//webkitTransform
+		}
+
 		//TODO add prefix support
-		el.style[Skrollr.camelCase(prop)] = val;
+		el.style[prop] = val;
 	};
 
 	Skrollr.camelCase = function(text) {
