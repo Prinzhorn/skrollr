@@ -1,10 +1,35 @@
+/*
+ * TODO
+ *	-foreach skrollabls
+ *		-iterate over all keyFrames in order (small to large)
+ *		-set properties from small keyFrames to large keyFrames if missing to allow starting from !== 0
+ * 			Otherwise when starting from e.g. 500, and there are keyFrames for 100 and 300 we miss the values from 100
+ */
+
 (function(document, undefined) {
+	var noop = function() {};
+
 	var rxKeyframeAttribute = /^data-(\d+)$/;
 	var rxPropSplit = /:|;/g;
-	var rxPropEasing = /(\w+)\[(\w+)\]/;
+	var rxPropEasing = /([a-z-]+)\[(\w+)\]/;
 	var rxCamelCase = /-([a-z])/g;
-	var rxNumericValue = /((-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
+	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
+
+	var easings = {
+		'linear': function(p) {
+			return p;
+		},
+		'quadratic': function(p) {
+			return p * p;
+		},
+		'cubic': function(p) {
+			return p * p * p * p;
+		},
+		'swing': function(p) {
+			return (-Math.cos(p * Math.PI) / 2) + 0.5;
+		}
+	};
 
 	var parsersAndSteps = {
 		//Simple constant values which won't be interpolated.
@@ -32,7 +57,7 @@
 					throw 'Can\'t parse "' + val + '" as numeric value.'
 				}
 
-				return [parseFloat(match[1], 10), match[3] || ''];
+				return [parseFloat(match[1], 10), match[2] || ''];
 			},
 			/**
 			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
@@ -139,34 +164,37 @@
 
 		options = options || {};
 
-		this.easings = {};
+		self.easings = easings;
 
+		//We allow defining custom easings or overwrite existing
 		if(options.easing) {
 			for(var e in options.easing) {
 				if(Object.prototype.hasOwnProperty.call(options.easing, e)) {
-					this.easings[e] = options.easing[e];
+					self.easings[e] = options.easing[e];
 				}
 			}
 		}
 
 		//The container element. The parent of all skrollables.
-		this.container = document.getElementsByTagName('body')[0];
+		self.container = document.getElementsByTagName('body')[0];
 
 		//Scale factor to scale keyFrames.
-		this.scale = options.scale || 1;
+		self.scale = options.scale || 1;
 
-		//All event listeners
-		this.listeners = {};
+		self.listeners = {
+			//Function to be called when scolling
+			scroll: options.scroll || noop
+		};
 
 		//A list of all elements which should be animated associated with their the data.
-		this.skrollables = [];
+		self.skrollables = [];
 
 		//Will contain the max data-end value available.
-		this.maxKeyFrame = 0;
+		self.maxKeyFrame = 0;
 
 
 
-		var allElements = this.container.getElementsByTagName('*');
+		var allElements = self.container.getElementsByTagName('*');
 
 		//Iterate over all elements inside the container.
 		for(var i = 0; i < allElements.length; i++) {
@@ -183,7 +211,7 @@
 					match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
-					var frame = (match[1] | 0) * this.scale;
+					var frame = (match[1] | 0) * self.scale;
 
 					keyFrames.push({
 						frame: frame,
@@ -191,7 +219,7 @@
 					});
 
 					if(frame > this.maxKeyFrame) {
-						this.maxKeyFrame = frame;
+						self.maxKeyFrame = frame;
 					}
 				}
 			}
@@ -210,76 +238,47 @@
 
 				self._parseProps(sk);
 
-				this.skrollables.push(sk);
+				self.skrollables.push(sk);
 
 				el.className += ' skrollable';
 			}
 		}
 
-		this.container.style.overflow = 'auto';
-		this.container.style.overflowX = 'hidden';
-		this.container.style.position = 'relative';
+		var s = self.container.style;
+
+		s.overflow = 'auto';
+		s.overflowX = 'hidden';
+		s.position = 'relative';
 
 		//Add a dummy element in order to get a large enough scrollbar
-		this.dummy = document.createElement('div');
+		self.dummy = document.createElement('div');
 
-		var dummyStyle = this.dummy.style;
+		s = self.dummy.style;
 
-		dummyStyle.width = '1px';
-		dummyStyle.height = (this.maxKeyFrame + Skrollr.getViewportHeight()) + 'px';
-		dummyStyle.position = 'absolute';
-		dummyStyle.left = '0px';
-		dummyStyle.top = '0px';
-		dummyStyle.zIndex = '0';
-		dummyStyle.background = 'transparent';
+		s.width = '1px';
+		s.height = (self.maxKeyFrame + Skrollr.getViewportHeight()) + 'px';
+		s.position = 'absolute';
+		s.left = '0px';
+		s.top = '0px';
+		s.zIndex = '0';
+		s.background = 'transparent';
 
-		this.container.appendChild(this.dummy);
+		self.container.appendChild(self.dummy);
 
 		//TODO add some throttle to scroll event
-		this.onScroll = function() {
+		self.onScroll = function() {
 			var top = Skrollr.getScrollTop(self.container);
 
-			self.trigger('scroll', top);
-
-			self.trigger('beforerender', top);
+			self.listeners.scroll(top);
 
 			self._render(top);
-
-			self.trigger('afterrender', top);
 		};
 
-		this.setScrollTop(0);
-
 		//Let's go
-		Skrollr.addEventListener(document, 'scroll', this.onScroll);
+		Skrollr.addEventListener(document, 'scroll', self.onScroll);
 
-		return this;
+		return self;
 	}
-
-	/**
-		Triggers an event, calls each listener function
-	*/
-	Skrollr.prototype.trigger = function(type) {
-		var fns = this.listeners[type];
-
-		if(fns !== undefined) {
-			var args = Array.prototype.slice.call(arguments, 1);
-
-			for(var i = 0; i < fns.length; i++) {
-				fns[i].apply(this, args);
-			}
-		}
-	};
-
-	/**
-	 * Add a new event listener
-	 */
-	Skrollr.prototype.on = function(type, fn) {
-		(this.listeners[type] = this.listeners[type] || []).push(fn);
-
-		return this;
-	};
-
 
 	Skrollr.prototype.setScrollTop = function(top) {
 		pageYOffset = top;
@@ -335,9 +334,7 @@
 							} else {
 								var progress = (frame - left.frame) / (right.frame - left.frame);
 
-								if(left.props[key].easing) {
-									progress = this.easings[left.props[key].easing](progress);
-								}
+								progress = left.props[key].easing(progress);
 
 								var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
 
@@ -367,6 +364,8 @@
 	 * Parses the properties for each keyFrame of the given skrollable.
 	 */
 	Skrollr.prototype._parseProps = function(skrollable) {
+		var self = this;
+
 		//Iterate over all keyframes
 		for(var i = 0; i < skrollable.keyFrames.length; i++) {
 			var
@@ -387,15 +386,17 @@
 				if(easing !== null) {
 					prop = easing[1];
 					easing = easing[2];
+				} else {
+					easing = 'linear';
 				}
 
-				value = this._parseProp(value);
+				value = self._parseProp(value);
 
 				//Save the prop for this keyframe with his value and easing function
 				frame.props[prop] = {
 					value: value.value,
 					step: value.step,
-					easing: easing
+					easing: self.easings[easing]
 				};
 			}
 		}
@@ -434,6 +435,7 @@
 				}
 		}
 	}
+
 
 	/*
 		Public static helpers
@@ -479,19 +481,23 @@
 	Skrollr.setStyle = function(el, prop, val) {
 		prop = Skrollr.camelCase(prop);
 
-		if(prop === 'transform') {
-			prop = 'MozTransform';
-			//webkitTransform
-		}
-
-		//TODO add prefix support
 		el.style[prop] = val;
+
+		//TODO find some intelligent way to not hardcode those
+		if(prop === 'transform' || prop === 'transformOrigin') {
+			prop = prop.substr(1);
+
+			for(var i = 0, arr = ['OT', 'MozT', 'webkitT', 'msT', 't']; i < arr.length; i++) {
+				el.style[arr[i] + prop] = val;
+			}
+		}
 	};
+
 
 	Skrollr.camelCase = function(text) {
 		return text.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
-		});
+		}).replace('-', '');
 	};
 
 

@@ -17,11 +17,11 @@
 		background:red;
 		position:fixed;
 
-		        transition: all .3s;
-		   /*-o-transition: all .3s;*/
-		    -ms-transition: all .3s;
-		   -moz-transition: all .3s;
-		-webkit-transition: all .3s;
+		        transition: all .5s;
+		   /*-o-transition: all .5s;*/
+		    -ms-transition: all .5s;
+		   -moz-transition: all .5s;
+		-webkit-transition: all .5s;
 	}
 
 	.skrollable .skrollable {
@@ -44,41 +44,26 @@
 </head>
 
 <body>
-	<div data-10="left:0px;font-size:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1700px;opacity:0;">WOOOOT</div>
+	<div data-10="left:0px;font-size[nyan]:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1700px;opacity:0;">WOOOOT</div>
 	<div data-0="width:100px;height:100px;left:0%;top:50%;" data-200="left:50%;opacity:1;width:100px;height:100px;top:50%;" data-500="top:100%;width:500px;height:300px;opacity:0;">
 		TEST
 		<div id="blue" data-100="left:0%;" data-200="left:100%;"></div>
 	</div>
-	<div id="green" data-0="padding:0px 0px;border-radius:0em 10em;transform:rotate(90deg) scale(2);" data-400="padding:100px 10px;border-radius:5em 1em;transform:rotate(3600deg) scale(0);">PIZZA!!!</div>
+	<div id="green" data-0="padding:0px 0px;border-radius:0em 10em;transform:rotate(90deg) scale(2);transform-origin:0% 0%;" data-400="padding:100px 10px;border-radius:5em 1em;transform:rotate(3600deg) scale(0);transform-origin:100% 100%;">PIZZA!!!</div>
 
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
-	window.onload = function() {
-		skrollr
-			.init({
-				scale: 2,
-				easing: {
-					'quadratic': function(p) {
-						return p * p;
-					},
-					'cubic': function(p) {
-						return p * p * p * p;
-					},
-					'swing': function(p) {
-						return (-Math.cos(p * Math.PI) / 2) + 0.5;
-					}
-				}
-			})
-			.on('scroll', function(top) {
-				//console.log(top);
-			})
-			.on('beforerender', function() {
-				//console.log('beforerender');
-			})
-			.on('afterrender', function() {
-				//console.log('afterrender');
-			});
-	}
+	skrollr.init({
+		scale: 2,
+		easing: {
+			'nyan': function(p) {
+				return Math.random();
+			}
+		},
+		scroll: function(top) {
+			//console.log(top);
+		}
+	});
 	</script>
 </body>
 
