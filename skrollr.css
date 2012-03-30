@@ -11,11 +11,20 @@ html, body {
 	 */
 	position:fixed;
 
+	/*
+	 * Skrollables by default have a z-index of 100 in order to make it easy to position elements in front/back without changing each skrollable
+	 */
+	z-index:100;
+
+	display:none;
+
+	/*
 			transition: all .5s;
-	   /*-o-transition: all .5s;*/
+		 -o-transition: all .5s;
 		-ms-transition: all .5s;
 	   -moz-transition: all .5s;
 	-webkit-transition: all .5s;
+	*/
 }
 
 .skrollable .skrollable {

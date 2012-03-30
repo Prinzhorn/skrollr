@@ -4,6 +4,9 @@
  *		-iterate over all keyFrames in order (small to large)
  *		-set properties from small keyFrames to large keyFrames if missing to allow starting from !== 0
  * 			Otherwise when starting from e.g. 500, and there are keyFrames for 100 and 300 we miss the values from 100
+ *
+ *	-Did this. Now I think it would make more sense to interpolate the frames in between.
+ *	-And what about other direction (right hand)?
  */
 
 (function(document, undefined) {
@@ -17,20 +20,55 @@
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
 
 	var easings = {
-		'linear': function(p) {
+		begin: function() {
+			return 0;
+		},
+		end: function() {
+			return 1;
+		},
+		linear: function(p) {
 			return p;
 		},
-		'quadratic': function(p) {
+		quadratic: function(p) {
 			return p * p;
 		},
-		'cubic': function(p) {
+		cubic: function(p) {
 			return p * p * p * p;
 		},
-		'swing': function(p) {
+		swing: function(p) {
 			return (-Math.cos(p * Math.PI) / 2) + 0.5;
 		}
 	};
 
+	//Bounce easing
+	(function() {
+		function f(x, a) {
+			return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
+		};
+
+		easings['bounce'] = function(p, a) {
+			switch(true) {
+				case (p <= .5083):
+					a = 3; break;
+				case (p <= .8489):
+					a = 9; break;
+				case (p <= .96208):
+					a = 27; break;
+				case (p <= .99981):
+					a = 91; break;
+				default:
+					return 1;
+			}
+
+			return f(p, a);
+		}
+	})();
+
+	/**
+	 * List of parser and steps for different kind of value types.
+	 * Parser: Parses a value to a specific format which a Step can handle.
+	 * Step: A function which gets the output of two Parsers and interpolates the value for a given progress.
+	 */
 	var parsersAndSteps = {
 		//Simple constant values which won't be interpolated.
 		constant: {
@@ -169,7 +207,7 @@
 		//We allow defining custom easings or overwrite existing
 		if(options.easing) {
 			for(var e in options.easing) {
-				if(Object.prototype.hasOwnProperty.call(options.easing, e)) {
+				if(Skrollr.hasProp(options.easing, e)) {
 					self.easings[e] = options.easing[e];
 				}
 			}
@@ -236,7 +274,11 @@
 					keyFrames: keyFrames
 				};
 
+				//Parse the property string into objects
 				self._parseProps(sk);
+
+				//Fill keyFrames with missing left hand properties
+				self._fillProps(sk);
 
 				self.skrollables.push(sk);
 
@@ -267,12 +309,15 @@
 
 		//TODO add some throttle to scroll event
 		self.onScroll = function() {
-			var top = Skrollr.getScrollTop(self.container);
+			var top = Skrollr.getScrollTop();
 
 			self.listeners.scroll(top);
 
 			self._render(top);
 		};
+
+		//Make sure everything loads correctly
+		self.onScroll(Skrollr.getScrollTop());
 
 		//Let's go
 		Skrollr.addEventListener(document, 'scroll', self.onScroll);
@@ -284,6 +329,7 @@
 		pageYOffset = top;
 		document.body.scrollTop = top;
 		document.documentElement.scrollTop = top;
+
 		this.onScroll();
 	};
 
@@ -293,9 +339,9 @@
 	Skrollr.prototype._calcSteps = function(skrollable, frame) {
 		var frames = skrollable.keyFrames;
 
-		//We are before the first frame, the element is not visible
+		//We are before the first frame, don't do anything
 		if(frame < frames[0].frame) {
-			Skrollr.setStyle(skrollable.element, 'display', 'none');
+			//Skrollr.setStyle(skrollable.element, 'display', 'none');
 		}
 		//We are after the last frame, the element gets all props from last keyFrame
 		else if(frame > frames[frames.length - 1].frame) {
@@ -304,7 +350,7 @@
 			var last = frames[frames.length - 1], value;
 
 			for(var key in last.props) {
-				if(Object.prototype.hasOwnProperty.call(last.props, key)) {
+				if(Skrollr.hasProp(last.props, key)) {
 					value = last.props[key].step(last.props[key].value);
 
 					Skrollr.setStyle(skrollable.element, key, value);
@@ -324,10 +370,10 @@
 					right = frames[i + 1];
 
 					for(var key in left.props) {
-						if(Object.prototype.hasOwnProperty.call(left.props, key)) {
+						if(Skrollr.hasProp(left.props, key)) {
 
 							//If the left keyframe has a property which the right doesn't, we just set it without interprolating
-							if(!Object.prototype.hasOwnProperty.call(right.props, key)) {
+							if(!Skrollr.hasProp(right.props, key)) {
 								var value = left.props[key].step(left.props[key].value);
 
 								Skrollr.setStyle(skrollable.element, key, value);
@@ -436,6 +482,37 @@
 		}
 	}
 
+	/**
+	 * Fills the keyFrames with missing left hand properties.
+	 * If keyFrame 1 has property X and keyFrame 2 is missing X,
+	 * but keyFrame 3 has X again, then we need to assign X to keyFrame 2 too.
+	 *
+	 * @param sk A skrollable.
+	 */
+	Skrollr.prototype._fillProps = function(sk) {
+		//Will collect the properties keyFrame by keyFrame from left to right
+		var leftProps = {}, frame;
+
+		//Iterate over all keyFrames
+		for(var i = 0; i < sk.keyFrames.length; i++) {
+			frame = sk.keyFrames[i];
+
+			//For each keyframe iterate over all left hand properties and assign them,
+			//but only if the current keyFrame doesn't have the property by itself
+			for(var key in leftProps) {
+				//The current frame misses this property, so assign it.
+				if(!Skrollr.hasProp(frame.props, key)) {
+					frame.props[key] = leftProps[key];
+				}
+			}
+
+			//Iterate over all props of the current frame and collect them
+			for(var key in frame.props) {
+				leftProps[key] = frame.props[key];
+			}
+		}
+	};
+
 
 	/*
 		Public static helpers
@@ -498,6 +575,13 @@
 		return text.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
 		}).replace('-', '');
+	};
+
+	/**
+	 * Returns true if the object has an own property with this name.
+	 */
+	Skrollr.hasProp = function(obj, prop) {
+		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 
 
