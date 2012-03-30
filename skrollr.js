@@ -12,12 +12,18 @@
 (function(document, undefined) {
 	var noop = function() {};
 
+	var M = Math;
+
 	var rxKeyframeAttribute = /^data-(\d+)$/;
 	var rxPropSplit = /:|;/g;
 	var rxPropEasing = /([a-z-]+)\[(\w+)\]/;
 	var rxCamelCase = /-([a-z])/g;
 	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
+
+	var bounceHelper = function f(x, a) {
+		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
+	};
 
 	var easings = {
 		begin: function() {
@@ -36,17 +42,10 @@
 			return p * p * p * p;
 		},
 		swing: function(p) {
-			return (-Math.cos(p * Math.PI) / 2) + 0.5;
-		}
-	};
-
-	//Bounce easing
-	(function() {
-		function f(x, a) {
-			return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
-		};
-
-		easings['bounce'] = function(p, a) {
+			return (-M.cos(p * M.PI) / 2) + .5;
+		},
+		//https://www.desmos.com/calculator/tbr20s8vd2
+		bounce: function(p, a) {
 			switch(true) {
 				case (p <= .5083):
 					a = 3; break;
@@ -60,9 +59,9 @@
 					return 1;
 			}
 
-			return f(p, a);
+			return bounceHelper(p, a);
 		}
-	})();
+	};
 
 	/**
 	 * List of parser and steps for different kind of value types.
@@ -184,6 +183,7 @@
 				return ret.join(' ');
 			}
 		},
+		//TODO
 		color: {
 			parser: function(val) {
 				return val;
@@ -207,9 +207,7 @@
 		//We allow defining custom easings or overwrite existing
 		if(options.easing) {
 			for(var e in options.easing) {
-				if(Skrollr.hasProp(options.easing, e)) {
-					self.easings[e] = options.easing[e];
-				}
+				self.easings[e] = options.easing[e];
 			}
 		}
 
@@ -224,10 +222,39 @@
 			scroll: options.scroll || noop
 		};
 
-		//A list of all elements which should be animated associated with their the data.
+		/*
+			A list of all elements which should be animated associated with their the metadata.
+			Exmaple skrollable with two keyFrames animating from 100px width to 20px:
+
+			skrollable = {
+				element: <the DOM element>,
+				keyFrames: [
+					{
+						frame: 100,
+						props: {
+							width: {
+								value: [100, 'px'],
+								step: <reference to step function calculating the interpolation>,
+								easing: <reference to easing function>
+							}
+						}
+					},
+					{
+						frame: 200,
+						props: {
+							width: {
+								value: [20, 'px'],
+								step: <reference to step function calculating the interpolation>,
+								easing: <reference to easing function>
+							}
+						}
+					}
+				]
+			};
+		*/
 		self.skrollables = [];
 
-		//Will contain the max data-end value available.
+		//Will contain the max keyFrame value available.
 		self.maxKeyFrame = 0;
 
 
@@ -265,6 +292,7 @@
 
 			//Does this element have keyframes?
 			if(keyFrames.length) {
+				//Make sure they are in order
 				keyFrames.sort(function(a, b) {
 					return a.frame - b.frame;
 				});
@@ -274,10 +302,10 @@
 					keyFrames: keyFrames
 				};
 
-				//Parse the property string into objects
+				//Parse the property string to objects
 				self._parseProps(sk);
 
-				//Fill keyFrames with missing left hand properties
+				//Fill keyFrames with missing properties from left and right
 				self._fillProps(sk);
 
 				self.skrollables.push(sk);
@@ -286,30 +314,23 @@
 			}
 		}
 
-		var s = self.container.style;
-
-		s.overflow = 'auto';
-		s.overflowX = 'hidden';
-		s.position = 'relative';
 
 		//Add a dummy element in order to get a large enough scrollbar
 		self.dummy = document.createElement('div');
 
-		s = self.dummy.style;
+		var s = self.dummy.style;
 
 		s.width = '1px';
-		s.height = (self.maxKeyFrame + Skrollr.getViewportHeight()) + 'px';
+		s.height = (self.maxKeyFrame + getViewportHeight()) + 'px';
 		s.position = 'absolute';
-		s.left = '0px';
-		s.top = '0px';
+		s.left = s.top = '0px';
 		s.zIndex = '0';
-		s.background = 'transparent';
 
 		self.container.appendChild(self.dummy);
 
 		//TODO add some throttle to scroll event
 		self.onScroll = function() {
-			var top = Skrollr.getScrollTop();
+			var top = getScrollTop();
 
 			self.listeners.scroll(top);
 
@@ -317,10 +338,10 @@
 		};
 
 		//Make sure everything loads correctly
-		self.onScroll(Skrollr.getScrollTop());
+		self.onScroll(getScrollTop());
 
 		//Let's go
-		Skrollr.addEventListener(document, 'scroll', self.onScroll);
+		addEvent(document, 'scroll', self.onScroll);
 
 		return self;
 	}
@@ -341,25 +362,25 @@
 
 		//We are before the first frame, don't do anything
 		if(frame < frames[0].frame) {
-			//Skrollr.setStyle(skrollable.element, 'display', 'none');
+			setStyle(skrollable.element, 'display', 'none');
 		}
 		//We are after the last frame, the element gets all props from last keyFrame
 		else if(frame > frames[frames.length - 1].frame) {
-			Skrollr.setStyle(skrollable.element, 'display', 'block');
+			setStyle(skrollable.element, 'display', 'block');
 
 			var last = frames[frames.length - 1], value;
 
 			for(var key in last.props) {
-				if(Skrollr.hasProp(last.props, key)) {
+				if(hasProp(last.props, key)) {
 					value = last.props[key].step(last.props[key].value);
 
-					Skrollr.setStyle(skrollable.element, key, value);
+					setStyle(skrollable.element, key, value);
 				}
 			}
 		}
 		//We are between two frames
 		else {
-			Skrollr.setStyle(skrollable.element, 'display', 'block');
+			setStyle(skrollable.element, 'display', 'block');
 
 			//Find out between which two keyFrames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
@@ -370,13 +391,13 @@
 					right = frames[i + 1];
 
 					for(var key in left.props) {
-						if(Skrollr.hasProp(left.props, key)) {
+						if(hasProp(left.props, key)) {
 
 							//If the left keyframe has a property which the right doesn't, we just set it without interprolating
-							if(!Skrollr.hasProp(right.props, key)) {
+							if(!hasProp(right.props, key)) {
 								var value = left.props[key].step(left.props[key].value);
 
-								Skrollr.setStyle(skrollable.element, key, value);
+								setStyle(skrollable.element, key, value);
 							} else {
 								var progress = (frame - left.frame) / (right.frame - left.frame);
 
@@ -384,7 +405,7 @@
 
 								var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
 
-								Skrollr.setStyle(skrollable.element, key, value);
+								setStyle(skrollable.element, key, value);
 							}
 						}
 					}
@@ -490,61 +511,63 @@
 	 * @param sk A skrollable.
 	 */
 	Skrollr.prototype._fillProps = function(sk) {
-		//Will collect the properties keyFrame by keyFrame from left to right
-		var leftProps = {}, frame;
+		//Will collect the properties keyFrame by keyFrame
+		var propList = {};
 
-		//Iterate over all keyFrames
+		//Iterate over all keyFrames from left to right
 		for(var i = 0; i < sk.keyFrames.length; i++) {
-			frame = sk.keyFrames[i];
+			this._fillPropForFrame(sk.keyFrames[i], propList);
+		}
 
-			//For each keyframe iterate over all left hand properties and assign them,
-			//but only if the current keyFrame doesn't have the property by itself
-			for(var key in leftProps) {
-				//The current frame misses this property, so assign it.
-				if(!Skrollr.hasProp(frame.props, key)) {
-					frame.props[key] = leftProps[key];
-				}
-			}
+		//Now do the same from right to fill the last gaps
 
-			//Iterate over all props of the current frame and collect them
-			for(var key in frame.props) {
-				leftProps[key] = frame.props[key];
+		propList = {};
+
+		//Iterate over all keyFrames from right to left
+		for(var i = sk.keyFrames.length - 1; i >= 0; i--) {
+			this._fillPropForFrame(sk.keyFrames[i], propList);
+		}
+	};
+
+
+	Skrollr.prototype._fillPropForFrame = function(frame, propList) {
+		//For each keyframe iterate over all right hand properties and assign them,
+		//but only if the current keyFrame doesn't have the property by itself
+		for(var key in propList) {
+			//The current frame misses this property, so assign it.
+			if(!hasProp(frame.props, key)) {
+				frame.props[key] = propList[key];
 			}
+		}
+
+		//Iterate over all props of the current frame and collect them
+		for(var key in frame.props) {
+			propList[key] = frame.props[key];
 		}
 	};
 
 
 	/*
-		Public static helpers
+		Helpers
 	*/
-	Skrollr.getViewportHeight = function() {
+	/**
+	 * Gets the height of the viewport
+	 */
+	var getViewportHeight = function() {
 		return document.documentElement.clientHeight;
 	};
 
 	/**
-		Get an elements top scrollbar offset.
+	 * Gets the window scroll top offset
 	*/
-	Skrollr.getScrollTop = function() {
+	var getScrollTop = function() {
 		return pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-
-		/*
-		if(typeof pageYOffset!= 'undefined'){
-			//most browsers
-			return pageYOffset;
-		}
-		else{
-			var B= document.body; //IE 'quirks'
-			var D= document.documentElement; //IE with doctype
-			D= (D.clientHeight)? D: B;
-			return D.scrollTop;
-		}
-		*/
 	};
 
 	/**
 		Attach an event handler to a DOM element
 	*/
-	Skrollr.addEventListener = function(el, type, fn) {
+	var addEvent = function(el, type, fn) {
 		if (el.addEventListener) {
 			el.addEventListener(type, fn, false);
 		} else if (elem.attachEvent) {
@@ -553,34 +576,30 @@
 	};
 
 	/**
-	 * Set the style property on the given element. Adds prefixes where needed.
+	 * Set the css property on the given element. Sets prefixed properties as well.
 	 */
-	Skrollr.setStyle = function(el, prop, val) {
-		prop = Skrollr.camelCase(prop);
-
-		el.style[prop] = val;
-
-		//TODO find some intelligent way to not hardcode those
-		if(prop === 'transform' || prop === 'transformOrigin') {
-			prop = prop.substr(1);
-
-			for(var i = 0, arr = ['OT', 'MozT', 'webkitT', 'msT', 't']; i < arr.length; i++) {
-				el.style[arr[i] + prop] = val;
-			}
-		}
-	};
-
-
-	Skrollr.camelCase = function(text) {
-		return text.replace(rxCamelCase, function(str, p1) {
+	var setStyle = function(el, prop, val) {
+		//Camel case
+		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
 		}).replace('-', '');
+
+		//Unprefixed
+		el.style[prop] = val;
+
+		//Make first letter upper case for prefixed values
+		prop = prop[0].toUpperCase() + prop.substr(1);
+
+		//TODO maybe find some better way of doing this
+		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
+			el.style[arr[i] + prop] = val;
+		}
 	};
 
 	/**
 	 * Returns true if the object has an own property with this name.
 	 */
-	Skrollr.hasProp = function(obj, prop) {
+	var hasProp = function(obj, prop) {
 		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 
