@@ -62,7 +62,25 @@ You can now use the easing functions like any other.
 HTML Markup
 ------
 
-TODO
+### bootstrap
+
+```html
+<!--include in head-->
+<link href="skrollr.css" rel="stylesheet" type="text/css" />
+
+<!--include at end of body-->
+<script type="text/javascript" src="skrollr.js"></script>
+<script type="text/javascript">
+skrollr.init();
+
+//OR you may call the init-function at some other point like
+
+window.onload = function() {
+	skrollr.init();
+};
+</script>
+```
+
 
 Example
 ------
