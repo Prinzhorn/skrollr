@@ -1,7 +1,3 @@
-/*
- * TODO: when setting display to '', make sure to do it on all sub-skrollables too
- */
-
 (function(document, undefined) {
 	var noop = function() {};
 
@@ -404,7 +400,6 @@
 
 		self.container.appendChild(self.dummy);
 
-		//TODO add some throttle to scroll event
 		self.onScroll = function() {
 			var top = getScrollTop();
 
@@ -417,7 +412,7 @@
 		self.onScroll(getScrollTop());
 
 		//Let's go
-		addEvent(document, 'scroll', self.onScroll);
+		addEvent(document, 'scroll', throttle(self.onScroll, 50));
 
 		return self;
 	}
@@ -705,6 +700,42 @@
 	 */
 	var hasProp = function(obj, prop) {
 		return Object.prototype.hasOwnProperty.call(obj, prop);
+	};
+
+	/**
+	 * Throttles the given function to not execute more than once in delay ms.
+	 */
+	var throttle = function(callback, delay) {
+		var timer = null, lastTime = 0;
+
+		var fn = function() {
+			var now = new Date().getTime();
+
+			//Was the last execution long enough ago?
+			if(lastTime + delay < now) {
+				lastTime = now;
+
+				//No timer needed, we are about to execute it
+				//clearTimeout(timer);
+				//timer = null;
+
+				//Execute the original function
+				callback.apply(arguments);
+			} else {
+				if(timer === null) {
+					var args = arguments;
+
+					//Start a timer which will execute the function after a delay
+					timer = setTimeout(function() {
+						timer = null;
+						lastTime = new Date().getTime();
+						callback.apply(args);
+					}, delay);
+				}
+			}
+		};
+
+		return fn;
 	};
 
 
