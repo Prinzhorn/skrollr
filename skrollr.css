@@ -32,6 +32,10 @@ html, body {
 	-webkit-transition: anone;
 }
 
+.skrollable.hidden {
+	display:none !important;
+}
+
 .skrollable .skrollable {
 	/*
 	 * Second-level skrollables are positioned relative their parent skrollable
@@ -41,7 +45,7 @@ html, body {
 
 .skrollable .skrollable .skrollable {
 	/*
-	 * Third-level skrollables are positioned static
+	 * Third-level (and below) skrollables are positioned static
 	 */
 	position:static;
 }

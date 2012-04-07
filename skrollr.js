@@ -1,5 +1,5 @@
 /*
- * TODO: use getComputedStyle in order to keep inline elements inline and block elements block
+ * TODO: when setting display to '', make sure to do it on all sub-skrollables too
  */
 
 (function(document, undefined) {
@@ -9,7 +9,8 @@
 	var intval = parseInt;
 	var floatval = parseFloat;
 
-	var rxKeyframeAttribute = /^data-(\d+)$/;
+	var rxTrim = /^\s*(.*)\s$/;
+	var rxKeyframeAttribute = /^data-(\d+|(?:end))$/;
 	var rxPropSplit = /:|;/g;
 	var rxPropEasing = /^([a-z-]+)\[(\w+)\]$/;
 	var rxCamelCase = /-([a-z])/g;
@@ -125,6 +126,10 @@
 
 				return values;
 			},
+			/**
+			 * Calculates the new values by interpolating between the values in val1 and val2 using the given easing.
+			 * See "numeric.step" for more info.
+			 */
 			step: function(val1, val2, progress, stepped) {
 				stepped = [];
 
@@ -145,7 +150,12 @@
 				return stepped.join(' ');
 			}
 		},
+		//scale, roate, skew
 		transform: {
+			/**
+			 * Parses a value which is composed of multiple transform functions.
+			 * @return An array with an even number of entries. All odd entries contain the name of a transform function and all even entries contain the result of "numeric.parser"
+			 */
 			parser: function(all, values, match) {
 				values = [];
 
@@ -163,6 +173,9 @@
 
 				return values;
 			},
+			/**
+			 * Interpolates between multiple transform functions by using "numeric.step" on each value.
+			 */
 			step: function(val1, val2, progress, ret) {
 				ret = [];
 
@@ -179,8 +192,12 @@
 				return ret.join(' ');
 			}
 		},
-		//TODO
+		//rgb(a) and hsl(a) colors (no #fff or #ffffff)
 		color: {
+			/**
+			 * Parses a rgba or hslv value.
+			 * @return An array where the first entry is either the string "rgba" or "hsla" and the following four entries are results of "numeric.parser" on r,g,b,h,s,l or a values.
+			 */
 			parser: function(val) {
 				//remove the first element, which is the fully matched string
 				val.shift();
@@ -206,6 +223,9 @@
 
 				return val;
 			},
+			/**
+			 * Interpolates between two colors. No matter if it's rgba or hslv, the interpolation is done by using "numeric.step" on any of r,g,b,h,s,l and a.
+			 */
 			step: function(val1, val2, progress) {
 				if(val2 === undefined) {
 					var res = [];
@@ -306,27 +326,43 @@
 			var
 				el = allElements[i];
 				fx = {},
-				keyFrames = [];
+				keyFrames = [],
+				atEnd = [];
 
 
 			//Iterate over all attributes and search for keyframe attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
 				var
 					attr = el.attributes[k],
-					match = attr.name.match(rxKeyframeAttribute);
+					match = attr.name.match(rxKeyframeAttribute),
+					frame,
+					kf;
 
 				if(match !== null) {
-					var frame = (match[1] | 0) * self.scale;
+					frame = (match[1] | 0) * self.scale;
 
-					keyFrames.push({
+					kf = {
 						frame: frame,
 						props: attr.value
-					});
+					};
+
+					keyFrames.push(kf);
+
+					//special handling for data-end
+					if(match[1] === 'end') {
+						atEnd.push(kf);
+					}
 
 					if(frame > this.maxKeyFrame) {
 						self.maxKeyFrame = frame;
 					}
 				}
+			}
+
+
+			//Set all data-end keyFrames to max
+			for(var k = 0; k < atEnd.length; k++) {
+				atEnd[k].frame = self.maxKeyFrame;
 			}
 
 
@@ -350,7 +386,7 @@
 
 				self.skrollables.push(sk);
 
-				el.className += ' skrollable';
+				addClass(el, 'skrollable');
 			}
 		}
 
@@ -402,11 +438,11 @@
 
 		//We are before the first frame, don't do anything
 		if(frame < frames[0].frame) {
-			setStyle(skrollable.element, 'display', 'none');
+			addClass(skrollable.element, 'hidden');
 		}
 		//We are after the last frame, the element gets all props from last keyFrame
 		else if(frame > frames[frames.length - 1].frame) {
-			setStyle(skrollable.element, 'display', 'block');
+			removeClass(skrollable.element, 'hidden');
 
 			var last = frames[frames.length - 1], value;
 
@@ -420,7 +456,7 @@
 		}
 		//We are between two frames
 		else {
-			setStyle(skrollable.element, 'display', 'block');
+			removeClass(skrollable.element, 'hidden');
 
 			//Find out between which two keyFrames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
@@ -624,10 +660,6 @@
 	 * Set the css property on the given element. Sets prefixed properties as well.
 	 */
 	var setStyle = function(el, prop, val) {
-		if(val.indexOf('rgb') !== -1) {
-			console.log(val);
-		}
-
 		//Camel case
 		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
@@ -643,6 +675,29 @@
 		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
 			el.style[arr[i] + prop] = val;
 		}
+	};
+
+	/**
+	 * Adds a css class.
+	 */
+	var addClass = function(el, name) {
+		if(untrim(el.className).indexOf(untrim(name)) === -1) {
+			el.className = (el.className + ' ' + name).replace(rxTrim, '$1');
+		}
+	};
+
+	/**
+	 * Adds a css class.
+	 */
+	var removeClass = function(el, name) {
+		el.className = (untrim(el.className)).replace(untrim(name), '').replace(rxTrim, '$1');
+	};
+
+	/**
+	 * Adds a space before and after the string.
+	 */
+	var untrim = function(a) {
+		return ' ' + a + ' ';
 	};
 
 	/**

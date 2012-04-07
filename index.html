@@ -12,10 +12,10 @@
 </head>
 
 <body>
-	<div id="bg1" data-0="background-position:0% 0%;" data-5900="background-position:-100% -750%;"></div>
-	<div id="bg2" data-0="background-position:0% 0%;" data-5900="background-position:-50% -500%;"></div>
-	<div id="bg3" data-0="background-position:0% 0%;" data-5900="background-position:-25% -250%;"></div>
-	<div id="progress" data-0="width:0%;background:hsl(255, 100%, 50%);" data-10000="width:100%;background:hsl(0, 100%, 50%);"></div>
+	<div id="bg1" data-0="background-position:0% 0%;" data-16000="background-position:-100% -1500%;"></div>
+	<div id="bg2" data-0="background-position:0% 0%;" data-16000="background-position:-50% -1200%;"></div>
+	<div id="bg3" data-0="background-position:0% 0%;" data-16000="background-position:-25% -800%;"></div>
+	<div id="progress" data-0="width:0%;background:hsl(255, 100%, 50%);" data-end="width:100%;background:hsl(0, 100%, 50%);"></div>
 
 	<div id="intro" data-0="" data-100="opacity:1;top:3%;transform:rotate(0deg);transform-origin:0 0;" data-500="opacity:0;top:-10%;transform:rotate(-90deg);">
 		<h1>skrollr</h1>
@@ -34,22 +34,23 @@
 		<p>width, height, padding, font-size, z-index, blah blah blah</p>
 	</div>
 
-	<div id="easing_wrapper" data-3900="" data-4900="background:rgba(0, 0, 0, 0);color[swing]:rgb(0,0,0);" data-5900="background:rgba(0,0,0,1);color:rgb(255,255,255);">
+	<div id="easing_wrapper" data-3900="" data-4900="background:rgba(0, 0, 0, 0);color[swing]:rgb(0,0,0);" data-5900="background:rgba(0,0,0,1);color:rgb(255,255,255);" data-10000="top:0%;" data-12000="top:-100%;">
 		<div id="easing" data-3900="left:100%" data-4600="left:25%;">
 			<h2>easing?</h2>
 			<p>sure.</p>
-			<p>let me dim the <span data-4900="color[swing]:rgb(0,0,0);" data-5900="color:rgb(255,255,0);">lights</span> for this one...</p>
+			<p>let me dim the <span data-3900="" data-4900="color[swing]:rgb(0,0,0);" data-5900="color:rgb(255,255,0);">lights</span> for this one...</p>
+			<p data-5900="opacity:0;font-size:100%;" data-6500="opacity:1;font-size:200%;">you can define easings for each property</p>
 		</div>
 
-		<div class="drop noease" data-6500="left:10%;top[bounce]:-5%;" data-9000="top:95%;"></div>
-		<div class="drop noease" data-7100="left:30%;top[bounce]:-5%;" data-8000="top:95%;"></div>
-		<div class="drop noease" data-6500="left:50%;top[bounce]:-5%;" data-9200="top:95%;"></div>
-		<div class="drop noease" data-6900="left:70%;top[bounce]:-5%;" data-8700="top:95%;"></div>
-		<div class="drop noease" data-7300="left:90%;top[bounce]:-5%;" data-9300="top:95%;"></div>
-		<div class="drop noease" data-6500="left:20%;top[bounce]:-5%;" data-9700="top:95%;"></div>
-		<div class="drop noease" data-7200="left:40%;top[bounce]:-5%;" data-8400="top:95%;"></div>
-		<div class="drop noease" data-6400="left:60%;top[bounce]:-5%;" data-9900="top:95%;"></div>
-		<div class="drop noease" data-6800="left:80%;top[bounce]:-5%;" data-8700="top:95%;"></div>
+		<div class="drop noease" data-6500="left:10%;bottom[bounce]:110%;" data-9000="bottom:0%;"></div>
+		<div class="drop noease" data-7100="left:30%;bottom[bounce]:110%;" data-8000="bottom:0%;"></div>
+		<div class="drop noease" data-6500="left:50%;bottom[bounce]:110%;" data-9200="bottom:0%;"></div>
+		<div class="drop noease" data-6900="left:70%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
+		<div class="drop noease" data-7300="left:90%;bottom[bounce]:110%;" data-9300="bottom:0%;"></div>
+		<div class="drop noease" data-6500="left:20%;bottom[bounce]:110%;" data-9700="bottom:0%;"></div>
+		<div class="drop noease" data-7200="left:40%;bottom[bounce]:110%;" data-8400="bottom:0%;"></div>
+		<div class="drop noease" data-6400="left:60%;bottom[bounce]:110%;" data-9900="bottom:0%;"></div>
+		<div class="drop noease" data-6800="left:80%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
 	</div>
 
 	<script type="text/javascript" src="skrollr.js"></script>
