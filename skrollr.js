@@ -412,7 +412,7 @@
 		self.onScroll(getScrollTop());
 
 		//Let's go
-		addEvent(document, 'scroll', throttle(self.onScroll, 50));
+		addEvent(document, 'scroll', throttle(self.onScroll, 20));
 
 		return self;
 	}

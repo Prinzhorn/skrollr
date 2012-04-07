@@ -29,7 +29,7 @@ HTML Markup
 <script type="text/javascript">
 skrollr.init();
 
-//OR you may call the init-function at some other point like
+//OR you may call the init-function at some other point. you could for example use an image preloader.
 
 window.onload = function() {
 	skrollr.init();
@@ -41,7 +41,7 @@ You can read more about the init-function below (JavaScript-section).
 
 ### let's get serious
 
-Any markup you are about to see now must be inside the <body>.
+Any markup you are about to see now must be inside the ```<body>```.
 
 Imagine you want
 
@@ -69,7 +69,7 @@ A listener function getting called each time the internal state of skrollr chang
 
 #### easing
 
-An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1. The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 ist ok too.
+An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1 (the percentage of how much of the animation is done). The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 is just fine.
 
 Example:
 
