@@ -49,9 +49,9 @@ Imagine you want
 JavaScript
 ------
 
-On the JavaScript part there's not much to do. So if you only know CSS and HTMl, perfect.
+On the JavaScript part there's not much to do (you can, if you want to). So if you only know CSS and HTML, perfect.
 
-All there is to do is calling ```skrollr.init([options]);```.
+All there is to do is to call ```skrollr.init([options]);```.
 
 ### options
 
@@ -59,7 +59,7 @@ Possible options include
 
 #### scale=1
 
-By default skrollr uses the largest keyframe as document height, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
+By default skrollr uses the largest keyframe and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
 #### scroll
 
