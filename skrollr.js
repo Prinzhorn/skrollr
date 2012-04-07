@@ -1,25 +1,21 @@
 /*
- * TODO
- *	-foreach skrollabls
- *		-iterate over all keyFrames in order (small to large)
- *		-set properties from small keyFrames to large keyFrames if missing to allow starting from !== 0
- * 			Otherwise when starting from e.g. 500, and there are keyFrames for 100 and 300 we miss the values from 100
- *
- *	-Did this. Now I think it would make more sense to interpolate the frames in between.
- *	-And what about other direction (right hand)?
+ * TODO: use getComputedStyle in order to keep inline elements inline and block elements block
  */
 
 (function(document, undefined) {
 	var noop = function() {};
 
 	var M = Math;
+	var intval = parseInt;
+	var floatval = parseFloat;
 
 	var rxKeyframeAttribute = /^data-(\d+)$/;
 	var rxPropSplit = /:|;/g;
-	var rxPropEasing = /([a-z-]+)\[(\w+)\]/;
+	var rxPropEasing = /^([a-z-]+)\[(\w+)\]$/;
 	var rxCamelCase = /-([a-z])/g;
 	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
+	var rxColorValue = /^((?:rgba?)|(?:hsla?))\((\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
 
 	var bounceHelper = function f(x, a) {
 		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
@@ -44,7 +40,7 @@
 		swing: function(p) {
 			return (-M.cos(p * M.PI) / 2) + .5;
 		},
-		//https://www.desmos.com/calculator/tbr20s8vd2
+		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p, a) {
 			switch(true) {
 				case (p <= .5083):
@@ -94,7 +90,7 @@
 					throw 'Can\'t parse "' + val + '" as numeric value.'
 				}
 
-				return [parseFloat(match[1], 10), match[2] || ''];
+				return [floatval(match[1], 10), match[2] || ''];
 			},
 			/**
 			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
@@ -186,10 +182,54 @@
 		//TODO
 		color: {
 			parser: function(val) {
+				//remove the first element, which is the fully matched string
+				val.shift();
+
+				//is there a alpha part?
+				if(val[4] === undefined) {
+					val[0] += 'a';
+					val[4] = 1;
+				}
+
+				var unit = '';
+
+				//add percentage unit when using hsla
+				if(val[0] === 'hsla') {
+					unit = '%';
+				}
+
+				//turn them strings into numbers and add the unit (empty string is unit-less/no-unit)
+				val[1] = [intval(val[1], 10), ''];
+				val[2] = [intval(val[2], 10), unit];
+				val[3] = [intval(val[3], 10), unit];
+				val[4] = [floatval(val[4], 10), ''];
+
 				return val;
 			},
-			step: function(val1, val2, progress, easing) {
-				return val1;
+			step: function(val1, val2, progress) {
+				if(val2 === undefined) {
+					var res = [];
+
+					for(var i = 1; i < val1.length; i++) {
+						res[i - 1] = val1[i].join('');
+					}
+
+					return val1[0] + '(' + res.join(',') + ')';
+				}
+
+				//now we are going to interpolate the colors
+				//we don't care if it's rgba or hlsa, we just call it xyza
+				var res = [];
+
+				//xyz
+				for(var i = 1; i < 4; i++) {
+					res[i - 1] = intval(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10) + val1[i][1];
+				}
+
+				//a
+				res[3] = parsersAndSteps.numeric.step(val1[4], val2[4], progress);
+
+				return val1[0] + '(' + res.join(',') + ')';
 			}
 		}
 	};
@@ -474,7 +514,7 @@
 	 */
 	Skrollr.prototype._parseProp = function(val) {
 		//Guess what type of value it is
-		switch (false) {
+		switch(false) {
 			//Could be a transform value
 			case !(m = val.match(rxTransformValue)):
 				val = parsersAndSteps.transform.parser(m);
@@ -484,8 +524,13 @@
 					step: parsersAndSteps.transform.step
 				};
 			//Could be a color
-			case !(m = val.match(/bbbbbbbbbbbbbbbbbbbbbb/)):
-				break;
+			case !(m = val.match(rxColorValue)):
+				val = parsersAndSteps.color.parser(m);
+
+				return {
+					value: val,
+					step: parsersAndSteps.color.step
+				};
 			//Could be a numeric value
 			case !(m = val.match(rxNumericValue)):
 				val = parsersAndSteps.composedNumeric.parser(m);
@@ -579,6 +624,10 @@
 	 * Set the css property on the given element. Sets prefixed properties as well.
 	 */
 	var setStyle = function(el, prop, val) {
+		if(val.indexOf('rgb') !== -1) {
+			console.log(val);
+		}
+
 		//Camel case
 		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();

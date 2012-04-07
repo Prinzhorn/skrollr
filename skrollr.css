@@ -24,9 +24,24 @@ html, body {
 	-webkit-transition: all .5s;
 }
 
+.skrollable.noease {
+			transition: none;
+	     -o-transition: none;
+		-ms-transition: none;
+	   -moz-transition: none;
+	-webkit-transition: anone;
+}
+
 .skrollable .skrollable {
 	/*
-	 * Sub-level skrollables are positioned relative their parent skrollable
+	 * Second-level skrollables are positioned relative their parent skrollable
 	 */
 	position:absolute;
+}
+
+.skrollable .skrollable .skrollable {
+	/*
+	 * Third-level skrollables are positioned static
+	 */
+	position:static;
 }

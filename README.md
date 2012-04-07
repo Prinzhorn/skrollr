@@ -1,7 +1,7 @@
 skrollr
 ======
 
-**Parallax scrolling** lib with **zero dependencies** in just under **6k minified**. No JavaScript skills needed.
+**Parallax scrolling** lib with **zero dependencies** in just under **6k minified** (2.4k gzipped). No JavaScript skills needed.
 
 
 Documentation
@@ -13,6 +13,37 @@ Abstract
 skrollr allows you to animate any css property of any element depending on the horizontal scrollbar position.
 
 All you need to do is define keyframes for each element at certain points in ~~time~~ top offset. Each keyframe consists of one or multiple css properties and values.
+
+
+HTML Markup
+------
+
+### Quick start
+
+```html
+<!--include in head-->
+<link href="skrollr.css" rel="stylesheet" type="text/css" />
+
+<!--include at end of body-->
+<script type="text/javascript" src="skrollr.js"></script>
+<script type="text/javascript">
+skrollr.init();
+
+//OR you may call the init-function at some other point like
+
+window.onload = function() {
+	skrollr.init();
+};
+</script>
+```
+
+You can read more about the init-function below (JavaScript-section).
+
+### let's get serious
+
+Any markup you are about to see now must be inside the <body>.
+
+Imagine you want
 
 
 JavaScript
@@ -57,40 +88,3 @@ skrollr.init({
 ```
 
 You can now use the easing functions like any other.
-
-
-HTML Markup
-------
-
-### bootstrap
-
-```html
-<!--include in head-->
-<link href="skrollr.css" rel="stylesheet" type="text/css" />
-
-<!--include at end of body-->
-<script type="text/javascript" src="skrollr.js"></script>
-<script type="text/javascript">
-skrollr.init();
-
-//OR you may call the init-function at some other point like
-
-window.onload = function() {
-	skrollr.init();
-};
-</script>
-```
-
-
-Example
-------
-
-TODO
-
-
-
-
-
-
-
-

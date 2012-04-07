@@ -3,76 +3,58 @@
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
-	<title>Page title</title>
+	<title>skrollr - parallax scrolling for the masses</title>
 
 	<link href="skrollr.css" rel="stylesheet" type="text/css" />
-	<style type="text/css">
-	.skrollable {
-		background:red;
-	}
 
-	#blue {
-		background:blue;
-		width:50px;
-		height:50px;
-		top:50%;
-		margin-left:-25px;
-		margin-top:-25px;
-	}
-
-	#green {
-		background:green;
-	}
-
-	#big_ass_div {
-		background:#f90;
-		width:1000px;
-		height:600px;
-	}
-
-	#big_ass_div_2 {
-		background:#09f;
-		width:10000px;
-		height:600px;
-		left:200px;
-	}
-
-	#wrapper {
-		width:100%;
-		height:100%;
-		background:transparent;
-	}
-	</style>
+	<link rel="stylesheet/less" type="text/css" href="demo/style.less">
+	<script src="demo/less.js" type="text/javascript"></script>
 </head>
 
 <body>
-	<div id="wrapper" data-0="display:block;" data-500="transform:rotate(0deg) scale(1);" data-750="transform:rotate(90deg) scale(.5);" data-1000="transform:rotate(180deg) scale(1);">
-		<div id="big_ass_div" data-0="top:0px;z-index[none]:99;" data-250="z-index[none]:98;" data-500="top:-1000px;"></div>
-		<div id="big_ass_div_2" data-0="top:0px;z-index[none]:98;" data-250="z-index[none]:99;" data-1000="top:-1000px;"></div>
-		<div data-10="left:0px;font-size[nyan]:0px;" data-200="left:800px;font-size:100px;opacity:1;" data-2000="left:1700px;opacity:0;">WOOOOT</div>
-		<div data-0="width:100px;height:100px;left[bounce]:0%;top:50%;" data-800="left:50%;opacity:1;width:100px;height:100px;top:50%;" data-1200="top:100%;width:500px;height:300px;opacity:0;">
-			TEST
-			<div id="blue" data-100="left:0%;" data-200="left:100%;"></div>
+	<div id="bg1" data-0="background-position:0% 0%;" data-5900="background-position:-100% -750%;"></div>
+	<div id="bg2" data-0="background-position:0% 0%;" data-5900="background-position:-50% -500%;"></div>
+	<div id="bg3" data-0="background-position:0% 0%;" data-5900="background-position:-25% -250%;"></div>
+	<div id="progress" data-0="width:0%;background:hsl(255, 100%, 50%);" data-10000="width:100%;background:hsl(0, 100%, 50%);"></div>
+
+	<div id="intro" data-0="" data-100="opacity:1;top:3%;transform:rotate(0deg);transform-origin:0 0;" data-500="opacity:0;top:-10%;transform:rotate(-90deg);">
+		<h1>skrollr</h1>
+		<h2>parallax scrolling for the masses</h2>
+		<p>let's get scrollin' ;-)</p>
+		<p class="arrows">▼&nbsp;▼&nbsp;▼</p>
+	</div>
+
+	<div id="transform" data-500="transform:scale(0) rotate(0deg);" data-1000="transform:scale(1) rotate(1800deg);" data-1400="opacity:1;" data-1700="opacity:0;">
+		<h2>transform</h2>
+		<p>scale, skew and rotate the sh** out of any element</p>
+	</div>
+
+	<div id="properties" data-1700="font-size:2000%;" data-2200="font-size:100%;" data-3000="font-size:100%;display:block;" data-3700="font-size:2000%;display:none;">
+		<h2>all numeric properties</h2>
+		<p>width, height, padding, font-size, z-index, blah blah blah</p>
+	</div>
+
+	<div id="easing_wrapper" data-3900="" data-4900="background:rgba(0, 0, 0, 0);color[swing]:rgb(0,0,0);" data-5900="background:rgba(0,0,0,1);color:rgb(255,255,255);">
+		<div id="easing" data-3900="left:100%" data-4600="left:25%;">
+			<h2>easing?</h2>
+			<p>sure.</p>
+			<p>let me dim the <span data-4900="color[swing]:rgb(0,0,0);" data-5900="color:rgb(255,255,0);">lights</span> for this one...</p>
 		</div>
-		<div id="green" data-0="padding:0px 0px;border-radius:0em 10em;transform[cubic]:rotate(90deg) scale(2);transform-origin:0% 0%;" data-400="padding:100px 10px;border-radius:5em 1em;transform:rotate(3600deg) scale(0);transform-origin:100% 100%;">PIZZA!!!</div>
+
+		<div class="drop noease" data-6500="left:10%;top[bounce]:-5%;" data-9000="top:95%;"></div>
+		<div class="drop noease" data-7100="left:30%;top[bounce]:-5%;" data-8000="top:95%;"></div>
+		<div class="drop noease" data-6500="left:50%;top[bounce]:-5%;" data-9200="top:95%;"></div>
+		<div class="drop noease" data-6900="left:70%;top[bounce]:-5%;" data-8700="top:95%;"></div>
+		<div class="drop noease" data-7300="left:90%;top[bounce]:-5%;" data-9300="top:95%;"></div>
+		<div class="drop noease" data-6500="left:20%;top[bounce]:-5%;" data-9700="top:95%;"></div>
+		<div class="drop noease" data-7200="left:40%;top[bounce]:-5%;" data-8400="top:95%;"></div>
+		<div class="drop noease" data-6400="left:60%;top[bounce]:-5%;" data-9900="top:95%;"></div>
+		<div class="drop noease" data-6800="left:80%;top[bounce]:-5%;" data-8700="top:95%;"></div>
 	</div>
 
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
-	skrollr.init({
-		scale: 2,
-		easing: {
-			'none': function() {
-				return 0;
-			},
-			'nyan': function(p) {
-				return Math.random();
-			}
-		},
-		scroll: function(top) {
-			//console.log(top);
-		}
-	});
+	skrollr.init();
 	</script>
 </body>
 
