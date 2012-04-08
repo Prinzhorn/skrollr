@@ -17,11 +17,11 @@
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
 	var rxColorValue = /^((?:rgba?)|(?:hsla?))\((\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
 
-	var supportsHSL = true;
+	var supportsCSS3Colors = true;
 	try {
 		document.createElement('a').style.color = 'hsl(0,0%,0%,1)';
 	} catch(e) {
-		supportsHSL = false;
+		supportsCSS3Colors = false;
 	}
 
 	var bounceHelper = function f(x, a) {
@@ -214,56 +214,80 @@
 					val[4] = 1;
 				}
 
+				//turn them strings into numbers
+				val[1] = intval(val[1], 10);
+				val[2] = intval(val[2], 10);
+				val[3] = intval(val[3], 10);
+				val[4] = floatval(val[4], 10);
+
 				var unit = '';
 
 				//add percentage unit when using hsla
 				if(val[0] === 'hsla') {
-					//Convert to rgba if not supported
-					if(!supportsHSL) {
-						val = color.hsla2rgba(val);
-					} else {
-						unit = '%';
-					}
+					unit = '%';
 				}
 
-				//turn them strings into numbers and add the unit (empty string is unit-less/no-unit)
-				val[1] = [intval(val[1], 10), ''];
-				val[2] = [intval(val[2], 10), unit];
-				val[3] = [intval(val[3], 10), unit];
-				val[4] = [floatval(val[4], 10), ''];
+				//add the unit (empty string is unit-less/no-unit)
+				val[1] = [val[1], ''];
+				val[2] = [val[2], unit];
+				val[3] = [val[3], unit];
+				val[4] = [val[4], ''];
 
 				return val;
 			},
 			/**
-			 * Interpolates between two colors. No matter if it's rgba or hslv, the interpolation is done by using "numeric.step" on any of r,g,b,h,s,l and a.
+			 * Interpolates between two colors. No matter if it's rgba or hsla, the interpolation is done by using "numeric.step" on any of r,g,b,h,s,l and a.
+			 * For browsers that don't support rgba, hsl and hsla (IE, I'm looking at you), we will always return hex rgb.
 			 */
 			step: function(val1, val2, progress) {
 				if(val2 === undefined) {
-					var res = [];
-
-					for(var i = 1; i < val1.length; i++) {
-						res[i - 1] = val1[i].join('');
-					}
-
-					return val1[0] + '(' + res.join(',') + ')';
+					return parsersAndSteps.color.toString(val1);
 				}
 
 				//now we are going to interpolate the colors
 				//we don't care if it's rgba or hlsa, we just call it xyza
-				var res = [];
+				var res = [val1[0]];
 
 				//xyz
 				for(var i = 1; i < 4; i++) {
-					res[i - 1] = intval(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10) + val1[i][1];
+					res[i] = [
+						intval(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
+						val1[i][1]
+					];
 				}
 
 				//a
-				res[3] = parsersAndSteps.numeric.step(val1[4], val2[4], progress);
+				res[4] = [
+					floatval(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
+					val1[4][1]
+				];
 
-				return val1[0] + '(' + res.join(',') + ')';
+				return parsersAndSteps.color.toString(res);
 			},
-			hsla2rgba: function(val, C, H, X) {
-				//TODO
+			/**
+			 * Will turn the color value into a property string.
+			 * Return rgba values if hsla is unsupported.
+			 */
+			toString: function(val) {
+				var fn = val[0], res;
+
+				//make ie support hsla by mapping it to rgba for each step
+				if(!supportsCSS3Colors && val[0] === 'hsla') {
+					fn = 'rgb';
+
+					var rgb = hsl2rgb(val[1][0], val[2][0], val[3][0]);
+
+					res = [rgb[0], rgb[1], rgb[2]];
+				} else {
+					res = val.slice(1);
+
+					//concat values and units
+					for(var i = 0; i < 4; i++) {
+						res[i] = res[i].join('');
+					}
+				}
+
+				return fn + '(' + res.join(',') + ')';
 			}
 		}
 	};
@@ -687,7 +711,7 @@
 
 		//Unprefixed
 		if(prop in possibleStyles) {
-			el.style[prop] = val;
+			el.style[prop] = 'rgb(0,0,0)';
 		}
 
 		//Make first letter upper case for prefixed values
@@ -734,6 +758,22 @@
 
 		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
+
+	//Credits to aemkei and others https://gist.github.com/1325937
+	//modified to return 0...255 instead of 0...1
+	var hsl2rgb = function(a,b,c){
+		a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
+
+		return[
+			(b[~~a%6] * 255) | 0,
+			(b[(a|16)%6] * 255) | 0,
+			(b[(a|8)%6] * 255) | 0
+		]
+	};
+
+	//Credits to jed and others https://gist.github.com/983535
+	var rgb2hex = function(a,b,c){return'#'+((256+a<<8|b)<<8|c).toString(16).slice(1)};
+
 
 	/**
 	 * Throttles the given function to not execute more than once in delay ms.

@@ -24,7 +24,7 @@ html, body {
 	-webkit-transition: all .3s;
 }
 
-.skrollable.notransition {
+.skrollable.notransition, .notransition .skrollable {
 			transition: none;
 	     -o-transition: none;
 		-ms-transition: none;
