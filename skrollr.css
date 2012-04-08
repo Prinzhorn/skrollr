@@ -17,19 +17,19 @@ html, body {
 	 */
 	z-index:100;
 
-			transition: all 1s;
-	   /*-o-transition: all 1s;*/
-		-ms-transition: all 1s;
-	   -moz-transition: all 1s;
-	-webkit-transition: all 1s;
+			transition: all .3s;
+	   /*-o-transition: all .3s;*/
+		-ms-transition: all .3s;
+	   -moz-transition: all .3s;
+	-webkit-transition: all .3s;
 }
 
-.skrollable.noease {
+.skrollable.notransition {
 			transition: none;
 	     -o-transition: none;
 		-ms-transition: none;
 	   -moz-transition: none;
-	-webkit-transition: anone;
+	-webkit-transition: none;
 }
 
 .skrollable.hidden {

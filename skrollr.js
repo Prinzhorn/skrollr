@@ -5,6 +5,9 @@
 	var intval = parseInt;
 	var floatval = parseFloat;
 
+	//all possible css properties
+	var possibleStyles = document.createElement('div').style;
+
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data-(\d+|(?:end))$/;
 	var rxPropSplit = /:|;/g;
@@ -13,6 +16,13 @@
 	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
 	var rxColorValue = /^((?:rgba?)|(?:hsla?))\((\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
+
+	var supportsHSL = true;
+	try {
+		document.createElement('a').style.color = 'hsl(0,0%,0%,1)';
+	} catch(e) {
+		supportsHSL = false;
+	}
 
 	var bounceHelper = function f(x, a) {
 		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
@@ -208,7 +218,12 @@
 
 				//add percentage unit when using hsla
 				if(val[0] === 'hsla') {
-					unit = '%';
+					//Convert to rgba if not supported
+					if(!supportsHSL) {
+						val = color.hsla2rgba(val);
+					} else {
+						unit = '%';
+					}
 				}
 
 				//turn them strings into numbers and add the unit (empty string is unit-less/no-unit)
@@ -246,9 +261,14 @@
 				res[3] = parsersAndSteps.numeric.step(val1[4], val2[4], progress);
 
 				return val1[0] + '(' + res.join(',') + ')';
+			},
+			hsla2rgba: function(val, C, H, X) {
+				//TODO
 			}
 		}
 	};
+
+
 
 	/**
 	 * Constructor.
@@ -315,26 +335,26 @@
 
 
 
-		var allElements = self.container.getElementsByTagName('*');
+		var
+			allElements = self.container.getElementsByTagName('*'),
+			atEndKeyFrames = [];
 
 		//Iterate over all elements inside the container.
 		for(var i = 0; i < allElements.length; i++) {
 			var
 				el = allElements[i];
 				fx = {},
-				keyFrames = [],
-				atEnd = [];
-
+				keyFrames = [];
 
 			//Iterate over all attributes and search for keyframe attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
 				var
 					attr = el.attributes[k],
-					match = attr.name.match(rxKeyframeAttribute),
-					frame,
-					kf;
+					match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
+					var frame, kf;
+
 					frame = (match[1] | 0) * self.scale;
 
 					kf = {
@@ -346,7 +366,7 @@
 
 					//special handling for data-end
 					if(match[1] === 'end') {
-						atEnd.push(kf);
+						atEndKeyFrames.push(kf);
 					}
 
 					if(frame > this.maxKeyFrame) {
@@ -355,35 +375,38 @@
 				}
 			}
 
-
-			//Set all data-end keyFrames to max
-			for(var k = 0; k < atEnd.length; k++) {
-				atEnd[k].frame = self.maxKeyFrame;
-			}
-
-
 			//Does this element have keyframes?
 			if(keyFrames.length) {
-				//Make sure they are in order
-				keyFrames.sort(function(a, b) {
-					return a.frame - b.frame;
-				});
-
-				var sk = {
+				self.skrollables.push({
 					element: el,
 					keyFrames: keyFrames
-				};
-
-				//Parse the property string to objects
-				self._parseProps(sk);
-
-				//Fill keyFrames with missing properties from left and right
-				self._fillProps(sk);
-
-				self.skrollables.push(sk);
+				});
 
 				addClass(el, 'skrollable');
 			}
+		}
+
+		//Set all data-end keyFrames to max keyframe
+		for(var i = 0; i < atEndKeyFrames.length; i++) {
+			atEndKeyFrames[i].frame = self.maxKeyFrame;
+		}
+
+		atEndKeyFrames = null;
+
+		//Now that we got all keyFrame numbers right, actually parse the properties.
+		for(var i = 0; i < self.skrollables.length; i++) {
+			var sk = self.skrollables[i];
+
+			//Make sure they are in order
+			sk.keyFrames.sort(function(a, b) {
+				return a.frame - b.frame;
+			});
+
+			//Parse the property string to objects
+			self._parseProps(sk);
+
+			//Fill keyFrames with missing properties from left and right
+			self._fillProps(sk);
 		}
 
 
@@ -395,8 +418,10 @@
 		s.width = '1px';
 		s.height = (self.maxKeyFrame + getViewportHeight()) + 'px';
 		s.position = 'absolute';
-		s.left = s.top = '0px';
+		s.right = s.top = '0px';
 		s.zIndex = '0';
+
+		s = null;
 
 		self.container.appendChild(self.dummy);
 
@@ -412,7 +437,7 @@
 		self.onScroll(getScrollTop());
 
 		//Let's go
-		addEvent(document, 'scroll', throttle(self.onScroll, 20));
+		addEvent(window, 'scroll', throttle(self.onScroll, 20));
 
 		return self;
 	}
@@ -637,7 +662,7 @@
 	 * Gets the window scroll top offset
 	*/
 	var getScrollTop = function() {
-		return pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+		return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 	};
 
 	/**
@@ -646,7 +671,7 @@
 	var addEvent = function(el, type, fn) {
 		if (el.addEventListener) {
 			el.addEventListener(type, fn, false);
-		} else if (elem.attachEvent) {
+		} else if (el.attachEvent) {
 			el.attachEvent('on' + type, fn);
 		}
 	};
@@ -661,14 +686,18 @@
 		}).replace('-', '');
 
 		//Unprefixed
-		el.style[prop] = val;
+		if(prop in possibleStyles) {
+			el.style[prop] = val;
+		}
 
 		//Make first letter upper case for prefixed values
 		prop = prop[0].toUpperCase() + prop.substr(1);
 
 		//TODO maybe find some better way of doing this
 		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
-			el.style[arr[i] + prop] = val;
+			if(arr[i] + prop in possibleStyles) {
+				el.style[arr[i] + prop] = val;
+			}
 		}
 	};
 
@@ -699,6 +728,10 @@
 	 * Returns true if the object has an own property with this name.
 	 */
 	var hasProp = function(obj, prop) {
+		if(obj === undefined) {
+			alert(1);
+		}
+
 		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 

@@ -6,15 +6,13 @@
 	<title>skrollr - parallax scrolling for the masses</title>
 
 	<link href="skrollr.css" rel="stylesheet" type="text/css" />
-
-	<link rel="stylesheet/less" type="text/css" href="demo/style.less">
-	<script src="demo/less.js" type="text/javascript"></script>
+	<link href="demo/style.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
-	<div id="bg1" data-0="background-position:0% 0%;" data-16000="background-position:-100% -1500%;"></div>
-	<div id="bg2" data-0="background-position:0% 0%;" data-16000="background-position:-50% -1200%;"></div>
-	<div id="bg3" data-0="background-position:0% 0%;" data-16000="background-position:-25% -800%;"></div>
+	<div id="bg1" data-0="background-position:0% 0%;" data-end="background-position:-100% -1500%;"></div>
+	<div id="bg2" data-0="background-position:0% 0%;" data-end="background-position:-50% -1200%;"></div>
+	<div id="bg3" data-0="background-position:0% 0%;" data-end="background-position:-25% -800%;"></div>
 	<div id="progress" data-0="width:0%;background:hsl(255, 100%, 50%);" data-end="width:100%;background:hsl(0, 100%, 50%);"></div>
 
 	<div id="intro" data-0="" data-100="opacity:1;top:3%;transform:rotate(0deg);transform-origin:0 0;" data-500="opacity:0;top:-10%;transform:rotate(-90deg);">
@@ -24,12 +22,12 @@
 		<p class="arrows">▼&nbsp;▼&nbsp;▼</p>
 	</div>
 
-	<div id="transform" data-500="transform:scale(0) rotate(0deg);" data-1000="transform:scale(1) rotate(1800deg);" data-1400="opacity:1;" data-1700="opacity:0;">
+	<div id="transform" data-500="transform:scale(0) rotate(0deg);" data-1000="transform:scale(1) rotate(1800deg);opacity:1;" data-1600="" data-1700="transform:scale(10) rotate(3600deg);opacity:0;">
 		<h2>transform</h2>
 		<p>scale, skew and rotate the sh** out of any element</p>
 	</div>
 
-	<div id="properties" data-1700="font-size:2000%;" data-2200="font-size:100%;" data-3000="font-size:100%;display:block;" data-3700="font-size:2000%;display:none;">
+	<div id="properties" data-1700="top:100%;" data-2200="top:0%;" data-3000="display:block;" data-3700="top:-100%;display:none;">
 		<h2>all numeric properties</h2>
 		<p>width, height, padding, font-size, z-index, blah blah blah</p>
 	</div>
@@ -42,15 +40,15 @@
 			<p data-5900="opacity:0;font-size:100%;" data-6500="opacity:1;font-size:200%;">you can define easings for each property</p>
 		</div>
 
-		<div class="drop noease" data-6500="left:10%;bottom[bounce]:110%;" data-9000="bottom:0%;"></div>
-		<div class="drop noease" data-7100="left:30%;bottom[bounce]:110%;" data-8000="bottom:0%;"></div>
-		<div class="drop noease" data-6500="left:50%;bottom[bounce]:110%;" data-9200="bottom:0%;"></div>
-		<div class="drop noease" data-6900="left:70%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
-		<div class="drop noease" data-7300="left:90%;bottom[bounce]:110%;" data-9300="bottom:0%;"></div>
-		<div class="drop noease" data-6500="left:20%;bottom[bounce]:110%;" data-9700="bottom:0%;"></div>
-		<div class="drop noease" data-7200="left:40%;bottom[bounce]:110%;" data-8400="bottom:0%;"></div>
-		<div class="drop noease" data-6400="left:60%;bottom[bounce]:110%;" data-9900="bottom:0%;"></div>
-		<div class="drop noease" data-6800="left:80%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
+		<div class="drop notransition" data-6500="left:10%;bottom[bounce]:110%;" data-9000="bottom:0%;"></div>
+		<div class="drop notransition" data-7100="left:30%;bottom[bounce]:110%;" data-8000="bottom:0%;"></div>
+		<div class="drop notransition" data-6500="left:50%;bottom[bounce]:110%;" data-9200="bottom:0%;"></div>
+		<div class="drop notransition" data-6900="left:70%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
+		<div class="drop notransition" data-7300="left:90%;bottom[bounce]:110%;" data-9300="bottom:0%;"></div>
+		<div class="drop notransition" data-6500="left:20%;bottom[bounce]:110%;" data-9700="bottom:0%;"></div>
+		<div class="drop notransition" data-7200="left:40%;bottom[bounce]:110%;" data-8400="bottom:0%;"></div>
+		<div class="drop notransition" data-6400="left:60%;bottom[bounce]:110%;" data-9900="bottom:0%;"></div>
+		<div class="drop notransition" data-6800="left:80%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
 	</div>
 
 	<script type="text/javascript" src="skrollr.js"></script>
