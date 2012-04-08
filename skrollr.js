@@ -5,9 +5,6 @@
 	var intval = parseInt;
 	var floatval = parseFloat;
 
-	//all possible css properties
-	var possibleStyles = document.createElement('div').style;
-
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data-(\d+|(?:end))$/;
 	var rxPropSplit = /:|;/g;
@@ -210,8 +207,12 @@
 
 				//is there a alpha part?
 				if(val[4] === undefined) {
-					val[0] += 'a';
 					val[4] = 1;
+				}
+
+				//rgb or hsl without "a" at the end
+				if(val[0].length === 3) {
+					val[0] += 'a';
 				}
 
 				//turn them strings into numbers
@@ -269,25 +270,23 @@
 			 * Return rgba values if hsla is unsupported.
 			 */
 			toString: function(val) {
-				var fn = val[0], res;
-
-				//make ie support hsla by mapping it to rgba for each step
-				if(!supportsCSS3Colors && val[0] === 'hsla') {
-					fn = 'rgb';
-
-					var rgb = hsl2rgb(val[1][0], val[2][0], val[3][0]);
-
-					res = [rgb[0], rgb[1], rgb[2]];
-				} else {
-					res = val.slice(1);
-
-					//concat values and units
-					for(var i = 0; i < 4; i++) {
-						res[i] = res[i].join('');
+				//make ie "support" hsla and rgba by mapping it to hex
+				if(!supportsCSS3Colors) {
+					if(val[0] === 'hsla') {
+						return hsl2hex(val[1][0], val[2][0], val[3][0]);
+					} else {
+						return rgb2hex(val[1][0], val[2][0], val[3][0]);
 					}
 				}
 
-				return fn + '(' + res.join(',') + ')';
+				var res = val.slice(1);
+
+				//concat values and units
+				for(var i = 0; i < 4; i++) {
+					res[i] = res[i].join('');
+				}
+
+				return val[0] + '(' + res.join(',') + ')';
 			}
 		}
 	};
@@ -704,24 +703,34 @@
 	 * Set the css property on the given element. Sets prefixed properties as well.
 	 */
 	var setStyle = function(el, prop, val) {
+		var style = el.style;
+
+		//IE opacity
+		if(prop === 'opacity') {
+			style.zoom = 1;
+
+			//Remove filter attribute in IE
+			if(val >= 1 && style.removeAttribute) {
+				style.removeAttribute( "filter" );
+			} else {
+				style.filter = 'alpha(opacity=' + val * 100 + ')';
+			}
+		}
+
 		//Camel case
 		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
 		}).replace('-', '');
 
 		//Unprefixed
-		if(prop in possibleStyles) {
-			el.style[prop] = 'rgb(0,0,0)';
-		}
-
+		style[prop] = val;
+return;
 		//Make first letter upper case for prefixed values
 		prop = prop[0].toUpperCase() + prop.substr(1);
 
 		//TODO maybe find some better way of doing this
 		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
-			if(arr[i] + prop in possibleStyles) {
-				el.style[arr[i] + prop] = val;
-			}
+			style[arr[i] + prop] = val;
 		}
 	};
 
@@ -759,21 +768,16 @@
 		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 
-	//Credits to aemkei and others https://gist.github.com/1325937
-	//modified to return 0...255 instead of 0...1
-	var hsl2rgb = function(a,b,c){
+	//Credits to aemkei, jed and others
+	//Consists of https://gist.github.com/1325937 and https://gist.github.com/983535
+	var hsl2hex = function(a,b,c){
 		a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
 
-		return[
-			(b[~~a%6] * 255) | 0,
-			(b[(a|16)%6] * 255) | 0,
-			(b[(a|8)%6] * 255) | 0
-		]
+		return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1)
 	};
 
-	//Credits to jed and others https://gist.github.com/983535
-	var rgb2hex = function(a,b,c){return'#'+((256+a<<8|b)<<8|c).toString(16).slice(1)};
-
+	//https://gist.github.com/983535
+	var rgb2hex = function(a,b,c){return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)}
 
 	/**
 	 * Throttles the given function to not execute more than once in delay ms.
