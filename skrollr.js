@@ -16,6 +16,7 @@
 
 	var supportsCSS3Colors = true;
 	try {
+		//IE will throw an exception
 		document.createElement('a').style.color = 'hsl(0,0%,0%,1)';
 	} catch(e) {
 		supportsCSS3Colors = false;
@@ -724,7 +725,7 @@
 
 		//Unprefixed
 		style[prop] = val;
-return;
+
 		//Make first letter upper case for prefixed values
 		prop = prop[0].toUpperCase() + prop.substr(1);
 
