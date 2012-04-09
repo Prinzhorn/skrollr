@@ -1,7 +1,7 @@
 skrollr
 ======
 
-**Parallax scrolling** lib with **zero dependencies** in just over **6k minified** (2.5k gzipped). No JavaScript skills needed.
+**Parallax scrolling** lib with **zero dependencies** in just over **7k minified** (2.9k gzipped). No JavaScript skills needed.
 
 
 Documentation

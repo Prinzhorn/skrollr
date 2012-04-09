@@ -37,18 +37,16 @@
 			<h2>easing?</h2>
 			<p>sure.</p>
 			<p>let me dim the <span data-3900="" data-4900="color[swing]:rgb(0,0,0);" data-5900="color:rgb(255,255,0);">lights</span> for this one...</p>
-			<p data-5900="opacity:0;font-size:100%;" data-6500="opacity:1;font-size:200%;">you can define easings for each property</p>
+			<p data-5900="opacity:0;font-size:100%;" data-6500="opacity:1;font-size:150%;">you can set easings for each property and define own easing functions</p>
 		</div>
 
-		<div class="drop notransition" data-6500="left:10%;bottom[bounce]:110%;" data-9000="bottom:0%;"></div>
-		<div class="drop notransition" data-7100="left:30%;bottom[bounce]:110%;" data-8000="bottom:0%;"></div>
-		<div class="drop notransition" data-6500="left:50%;bottom[bounce]:110%;" data-9200="bottom:0%;"></div>
-		<div class="drop notransition" data-6900="left:70%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
-		<div class="drop notransition" data-7300="left:90%;bottom[bounce]:110%;" data-9300="bottom:0%;"></div>
-		<div class="drop notransition" data-6500="left:20%;bottom[bounce]:110%;" data-9700="bottom:0%;"></div>
-		<div class="drop notransition" data-7200="left:40%;bottom[bounce]:110%;" data-8400="bottom:0%;"></div>
-		<div class="drop notransition" data-6400="left:60%;bottom[bounce]:110%;" data-9900="bottom:0%;"></div>
-		<div class="drop notransition" data-6800="left:80%;bottom[bounce]:110%;" data-8700="bottom:0%;"></div>
+		<div class="drop notransition" data-6500="left:15%;bottom:100%;" data-9500="bottom:0%;">linear</div>
+		<div class="drop notransition" data-6500="left:25%;bottom[quadratic]:100%;" data-9500="bottom:0%;">quadratic</div>
+		<div class="drop notransition" data-6500="left:35%;bottom[cubic]:100%;" data-9500="bottom:0%;">cubic</div>
+		<div class="drop notransition" data-6500="left:45%;bottom[swing]:100%;" data-9500="bottom:0%;">swing</div>
+		<div class="drop notransition" data-6500="left:55%;bottom[WTF]:100%;" data-9500="bottom:0%;">WTF</div>
+		<div class="drop notransition" data-6500="left:65%;bottom[inverted]:100%;" data-9500="bottom:0%;">inverted</div>
+		<div class="drop notransition" data-6500="left:75%;bottom[bounce]:100%;" data-9500="bottom:0%;">bounce</div>
 	</div>
 
 	<div id="download" data-10000="top[cubic]:100%;border-radius[cubic]:0em;background:rgb(0,50,100);border-width:0px;" data-12000="top:10%;border-radius:2em;background:rgb(190,230,255);border-width:10px;">
@@ -59,7 +57,14 @@
 
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
-	skrollr.init();
+	skrollr.init({
+		easing: {
+			WTF: Math.random,
+			inverted: function(p) {
+				return 1-p;
+			}
+		}
+	});
 	</script>
 </body>
 
