@@ -12,7 +12,7 @@
 	var rxCamelCase = /-([a-z])/g;
 	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
-	var rxColorValue = /^((?:rgba?)|(?:hsla?))\((\d{1,3})\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
+	var rxColorValue = /^((?:rgba?)|(?:hsla?))\(((?:-|\+)?\d+)\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
 
 	var supportsCSS3Colors = true;
 	try {
