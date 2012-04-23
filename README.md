@@ -18,23 +18,32 @@ All you need to do is define keyframes for each element at certain points in ~~t
 HTML Markup
 ------
 
-### Quick start
+### Quick start shim
 
 ```html
-<!--include in head-->
-<link href="skrollr.css" rel="stylesheet" type="text/css" />
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Your title</title>
 
-<!--include at end of body-->
-<script type="text/javascript" src="skrollr.js"></script>
-<script type="text/javascript">
-skrollr.init();
+	<link href="skrollr.css" rel="stylesheet" type="text/css" />
+</head>
 
-//OR you may call the init-function at some other point. you could for example use an image preloader.
+<body>
+	<!-- Your elements go here -->
 
-window.onload = function() {
+	<script type="text/javascript" src="skrollr.js"></script>
+	<script type="text/javascript">
 	skrollr.init();
-};
-</script>
+
+	//OR you may call the init-function at some other point. you could for example use an image preloader.
+	//window.onload = function() {
+	//	skrollr.init();
+	//};
+	</script>
+</body>
+
+</html>
 ```
 
 You can read more about the init-function below (JavaScript-section).
@@ -43,8 +52,27 @@ You can read more about the init-function below (JavaScript-section).
 
 Any markup you are about to see now must be inside the ```<body>```.
 
-Imagine you want
+Simple animation of one property
 
+```html
+<div data-0="padding:0px;" data-1000="padding:300px;">WOOOT</div>
+```
+
+That was easy, right?
+
+The numbers represent the keyFrame position (the top scroll offset in pixel). The highest keyFrame found in the document will be used to set the the max top scroll offset. There's one special keyFrame called "end" (i.e. "**data-end**=") which is the same as setting the largest value on each element. This makes it easier to have animations stop at the same time on the end.
+
+You can set multiple properties.
+
+```html
+<div data-0="padding:0px;color[cubic]:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+```
+
+And you can specify easing functions for each property using square brackets.
+
+```html
+<div data-0="padding[cubic]:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+```
 
 JavaScript
 ------
