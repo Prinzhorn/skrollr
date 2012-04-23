@@ -460,17 +460,21 @@
 
 			//In what direction are we scrolling?
 			self.dir = (top > self._lastTop) ? 'down' : 'up';
-			self._lastTop = top;
 
 			//Tell the listener we just scrolled
-			self.listeners.scroll.call(self, {
-				top: top,
-				progress: (top / self.maxKeyFrame),
+			var result = self.listeners.scroll.call(self, {
+				curTop: top,
+				lastTop: self._lastTop,
+				maxTop: self.maxKeyFrame,
 				direction: self.dir
 			});
 
-			//Now render everything for the current scroll amount
-			self._render(top);
+			self._lastTop = top;
+
+			if(result !== false) {
+				//Now render everything for the current scroll amount
+				self._render(top);
+			}
 		};
 
 		//Make sure everything loads correctly

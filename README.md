@@ -12,7 +12,7 @@ Abstract
 
 skrollr allows you to animate any css property of any element depending on the horizontal scrollbar position.
 
-All you need to do is define keyframes for each element at certain points in ~~time~~ top offset. Each keyframe consists of one or multiple css properties and values.
+All you need to do is define key frames for each element at certain points in ~~time~~ top offset. Each key frame consists of one or multiple css properties and values.
 
 
 HTML Markup
@@ -60,7 +60,7 @@ Simple animation of one property
 
 That was easy, right?
 
-The numbers represent the keyFrame position (the top scroll offset in pixel). The highest keyFrame found in the document will be used to set the the max top scroll offset. There's one special keyFrame called "end" (i.e. "**data-end**=") which is the same as setting the largest value on each element. This makes it easier to have animations stop at the same time on the end.
+The numbers represent the key frame position (the top scroll offset in pixel). The highest key frame found in the document will be used to set the the max top scroll offset. There's one special key frame called "end" (i.e. "**data-end**=") which is the same as setting the largest value on each element. This makes it easier to have animations stop at the same time on the end.
 
 You can set multiple properties.
 
@@ -87,11 +87,22 @@ Possible options include
 
 #### scale=1
 
-By default skrollr uses the largest keyframe and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
+By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
 #### scroll
 
-A listener function getting called each time the internal state of skrollr changes because of a native scroll event. The function will be passed the new top scroll offset as first parameter and the maximum top scroll offset as second argument.
+A listener function getting called each time **before** the internal state of skrollr changes because of a native scroll event. The function will be passed an object with the following properties:
+
+```js
+{
+	curTop: 10, //the current scroll top offset
+	lastTop: 0, //the top value of last time
+	maxTop: 100, //the max value you can scroll to. curTop/maxTop will give you the current progress.
+	direction: 'down' //either up or down
+}
+```
+
+Returning ```false``` will prevent rendering.
 
 **Note:** this event does not necessarily fire a often as the native event does, because skrollr throttles the event in order to guarantee smooth transitions.
 
