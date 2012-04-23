@@ -17,12 +17,12 @@
 	var supportsCSS3Colors = true;
 	try {
 		//IE will throw an exception
-		document.createElement('a').style.color = 'hsl(0,0%,0%,1)';
+		document.createElement('a').style.color = 'hsl(0,0%,0%)';
 	} catch(e) {
 		supportsCSS3Colors = false;
 	}
 
-	var bounceHelper = function f(x, a) {
+	var bounceHelper = function(x, a) {
 		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
 	};
 
@@ -357,6 +357,11 @@
 		//Will contain the max keyFrame value available.
 		self.maxKeyFrame = 0;
 
+		//Current direction (up/down)
+		self.dir = 'down';
+
+		//The last top offset value. Needed to determine direction.
+		self._lastTop = 0;
 
 
 		var
@@ -449,11 +454,22 @@
 
 		self.container.appendChild(self.dummy);
 
+		//Handles the window scoll event
 		self.onScroll = function() {
 			var top = getScrollTop();
 
-			self.listeners.scroll(top);
+			//In what direction are we scrolling?
+			self.dir = (top > self._lastTop) ? 'down' : 'up';
+			self._lastTop = top;
 
+			//Tell the listener we just scrolled
+			self.listeners.scroll.call(self, {
+				top: top,
+				progress: (top / self.maxKeyFrame),
+				direction: self.dir
+			});
+
+			//Now render everything for the current scroll amount
 			self._render(top);
 		};
 
