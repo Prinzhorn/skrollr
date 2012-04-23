@@ -748,7 +748,7 @@
 		style[prop] = val;
 
 		//Make first letter upper case for prefixed values
-		prop = prop[0].toUpperCase() + prop.substr(1);
+		prop = prop.substr(0,1).toUpperCase() + prop.substr(1);
 
 		//TODO maybe find some better way of doing this
 		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
