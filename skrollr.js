@@ -471,6 +471,7 @@
 
 			self._lastTop = top;
 
+			//The listener function is able the cancel rendering
 			if(result !== false) {
 				//Now render everything for the current scroll amount
 				self._render(top);
