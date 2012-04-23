@@ -1,2 +1,0 @@
--the scroll event needs to get a "direction" parameter passed
-	-we need to keep track of direction interally
