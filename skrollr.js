@@ -838,6 +838,7 @@
 		//Main entry point
 		init: function(options) {
 			return new Skrollr(options);
-		}
+		},
+		VERSION: '0.1.0'
 	};
 }(document));
