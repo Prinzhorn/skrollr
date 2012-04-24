@@ -1,7 +1,7 @@
-skrollr (v 0.1.0)
+skrollr (v 0.2.0)
 ======
 
-**Parallax scrolling** lib with **zero dependencies** in just over **7k minified** (2.9k gzipped). No JavaScript skills needed.
+**Parallax scrolling** lib with **zero dependencies** in just over **7k minified** (3k gzipped). No JavaScript skills needed.
 
 
 Documentation
@@ -104,7 +104,7 @@ A listener function getting called each time **before** the internal state of sk
 
 Returning ```false``` will prevent rendering.
 
-**Note:** this event does not necessarily fire a often as the native event does, because skrollr throttles the event in order to guarantee smooth transitions.
+**Note:** the event fires as often as the native event does, but rendering is async using requestAnimationFrame in order to guarantee smooth transitions.
 
 #### easing
 

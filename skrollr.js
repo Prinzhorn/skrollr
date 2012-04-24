@@ -1,4 +1,4 @@
-(function(document, undefined) {
+(function(window, document, undefined) {
 	var noop = function() {};
 
 	var M = Math;
@@ -361,7 +361,10 @@
 		self.dir = 'down';
 
 		//The last top offset value. Needed to determine direction.
-		self._lastTop = 0;
+		self.lastTop = -1;
+
+		//The current top offset, needed for async rendering.
+		self.curTop = 0;
 
 
 		var
@@ -456,33 +459,32 @@
 
 		//Handles the window scoll event
 		self.onScroll = function() {
-			var top = getScrollTop();
+			self.curTop = getScrollTop();
 
 			//In what direction are we scrolling?
-			self.dir = (top > self._lastTop) ? 'down' : 'up';
+			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
 
 			//Tell the listener we just scrolled
 			var result = self.listeners.scroll.call(self, {
-				curTop: top,
-				lastTop: self._lastTop,
+				curTop: self.curTop,
+				lastTop: self.lastTop,
 				maxTop: self.maxKeyFrame,
 				direction: self.dir
 			});
 
-			self._lastTop = top;
-
 			//The listener function is able the cancel rendering
-			if(result !== false) {
-				//Now render everything for the current scroll amount
-				self._render(top);
+			if(result === false) {
+				//Will prevent rendering
+				self.lastTop = self.curTop;
 			}
 		};
 
 		//Make sure everything loads correctly
 		self.onScroll(getScrollTop());
+		self._render();
 
 		//Let's go
-		addEvent(window, 'scroll', throttle(self.onScroll, 20));
+		addEvent(window, 'scroll', self.onScroll);
 
 		return self;
 	}
@@ -560,12 +562,23 @@
 	/**
 	 * Renders all elements
 	 */
-	Skrollr.prototype._render = function(top) {
-		for(var i = 0; i < this.skrollables.length; i++) {
-			this._calcSteps(this.skrollables[i], top);
+	Skrollr.prototype._render = function() {
+		var self = this;
+
+		if(self.lastTop !== self.curTop) {
+			self.lastTop = self.curTop;
+
+			for(var i = 0; i < self.skrollables.length; i++) {
+				self._calcSteps(self.skrollables[i], self.curTop);
+			}
 		}
 
-		return this;
+		//Decouple scroll event from render loop (#2)
+		window.requestAnimationFrame(function() {
+			self._render();
+		});
+
+		return self;
 	};
 
 	/**
@@ -801,41 +814,17 @@
 	//https://gist.github.com/983535
 	var rgb2hex = function(a,b,c){return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)}
 
-	/**
-	 * Throttles the given function to not execute more than once in delay ms.
-	 */
-	var throttle = function(callback, delay) {
-		var timer = null, lastTime = 0;
 
-		var fn = function() {
-			var now = new Date().getTime();
-
-			//Was the last execution long enough ago?
-			if(lastTime + delay < now) {
-				lastTime = now;
-
-				//No timer needed, we are about to execute it
-				//clearTimeout(timer);
-				//timer = null;
-
-				//Execute the original function
-				callback.apply(arguments);
-			} else {
-				if(timer === null) {
-					var args = arguments;
-
-					//Start a timer which will execute the function after a delay
-					timer = setTimeout(function() {
-						timer = null;
-						lastTime = new Date().getTime();
-						callback.apply(args);
-					}, delay);
-				}
-			}
+	window.requestAnimationFrame =
+		window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function(fn) {
+			//Just 30 fps, because that's enough for those legacy browsers
+			window.setTimeout(fn, 1000 / 30);
 		};
-
-		return fn;
-	};
 
 
 	//Global api
@@ -844,6 +833,6 @@
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.1.0'
+		VERSION: '0.2.0'
 	};
-}(document));
+}(window, document));
