@@ -65,13 +65,31 @@ The numbers represent the key frame position (the top scroll offset in pixel). T
 You can set multiple properties.
 
 ```html
-<div data-0="padding:0px;color[cubic]:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+<div data-0="padding:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
 ```
 
 And you can specify easing functions for each property using square brackets.
 
 ```html
 <div data-0="padding[cubic]:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+```
+
+### more details
+
+Now that you know how to set up simple animations, it's time for some details.
+
+Imagine the following animation
+
+```html
+<div data-100="left:0%;" data-200="top:0%;" data-300="left:50%;" data-400="top:50%;"></div>
+```
+
+The first thing you need to know: The element won't be rendered for frames 0 to 99. If you wan't to make an element visible without defining any properties, you can use an empty attribute like ```data-50=""```. The key-frame will then interhit all properties from his right neighbors (see next paragraph).
+
+One could expect "left" to have a value of "25%" at keyframe 200. That is **not** the case, by design skrollr only interpolates values between key frames which are direct **neighbors**. What actually happens is that skrollr internally fills out all holes once from left and then from right. So the above is equivalent to
+
+```html
+<div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
 
 JavaScript
