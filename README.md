@@ -10,9 +10,9 @@ Documentation
 Abstract
 ------
 
-skrollr allows you to animate any css property of any element depending on the horizontal scrollbar position.
+skrollr allows you to animate any CSS property of any element depending on the horizontal scrollbar position.
 
-All you need to do is define key frames for each element at certain points in ~~time~~ top offset. Each key frame consists of one or multiple css properties and values.
+All you need to do is define key frames for each element at certain points in ~~time~~ top offset. Each key frame consists of one or multiple CSS properties and values.
 
 
 HTML Markup
@@ -91,6 +91,27 @@ One could expect "left" to have a value of "25%" at keyframe 200. That is **not*
 ```html
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
+
+### CSS prefixes
+
+skrollr automatically **sets the prefixed properties for you**. You not just don't have to use prefixed properties, it's even wrong to do so. The following will rotate an element in every browser that supports transform, no matter if they call it "-moz-transform" or "-webkit-transform".
+
+```html
+<div data-0="transform:rotate(0deg);" data-1000="transform:rotate(180deg);">Look ma, I'm rotating!</div>
+```
+
+### limitations
+
+Now that we just talked about CSS transforms, there are some limitations of skrollr you should be aware of.
+
+* All numeric values have to have the same unit. It's not possible to animate from "0%" to "100px".
+* Animations between values which are composed of multiple numeric values like "margin:0 0 0 0;" are only possible for the same number of values. "margin:0px 0px 0px 0px;" to "margin:0px 100px 50px 3px;" is fine, but not "margin:10px;" to "margin:5px 10px;".
+* "matrix()" is not supported for CSS transforms.
+* Animations between CSS transforms only work when they use the same functions in same order. From "rotate(0deg) scale(1)" to "roate(1000deg) scale(5)" is fine.
+* Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use "rgb", "rgba", "hsl" and "hsla". Don't worry, skrollr includes a polyfill for "hsl" (without "a"!) for IE < 9.
+* Color animations only work for same color functions. "hsl" to "hsl" or "hsla" is fine, but not "rgb" to "hsl". Which makes sense, because animating from the same colors in rgb space and in hsl space results in different animations (hsl gives you the nice rainbow stuff).
+
+But feel free to send in a pull request to fix any of them. Just keep in mind that keeping skrollr as lightweight as possible has high priority.
 
 JavaScript
 ------
