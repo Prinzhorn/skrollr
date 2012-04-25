@@ -57,9 +57,12 @@
 
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
-	skrollr.init({
+	var s = skrollr.init({
 		scroll: function(data) {
-			//
+			//console.log('scroll');
+		},
+		render: function() {
+			//console.log('render');
 		},
 		easing: {
 			WTF: Math.random,

@@ -319,7 +319,8 @@
 
 		self.listeners = {
 			//Function to be called when scolling
-			scroll: options.scroll || noop
+			scroll: options.scroll || noop,
+			render: options.render || noop
 		};
 
 		/*
@@ -497,6 +498,11 @@
 		this.onScroll();
 	};
 
+
+	Skrollr.prototype.on = function(name, fn) {
+		this.listeners[name] = fn || noop;
+	}
+
 	/**
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
@@ -571,6 +577,8 @@
 			for(var i = 0; i < self.skrollables.length; i++) {
 				self._calcSteps(self.skrollables[i], self.curTop);
 			}
+
+			self.listeners.render.call(self);
 		}
 
 		//Decouple scroll event from render loop (#2)
