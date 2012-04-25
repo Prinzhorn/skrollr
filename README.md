@@ -12,7 +12,7 @@ Abstract
 
 skrollr allows you to animate any CSS property of any element depending on the horizontal scrollbar position.
 
-All you need to do is define key frames for each element at certain points in ~~time~~ top offset. Each key frame consists of one or multiple CSS properties and values.
+All you need to do is define key frames for each element at certain points in top offset. Each key frame consists of one or multiple CSS properties and values.
 
 
 HTML Markup
