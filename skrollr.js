@@ -503,6 +503,10 @@
 		this.listeners[name] = fn || noop;
 	}
 
+	Skrollr.prototype.off = function(name) {
+		this.listeners[name] = noop;
+	}
+
 	/**
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
