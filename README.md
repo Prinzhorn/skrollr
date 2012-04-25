@@ -3,7 +3,7 @@ skrollr (v 0.2.0)
 
 **Parallax* scrolling** lib with **zero dependencies** in just over **7k minified** (3k gzipped). No JavaScript skills needed.
 
-*Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leaverages HTML5 and CSS3 ;-)
+*Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages **HTML5** and **CSS3** ;-)
 
 
 Documentation
