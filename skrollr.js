@@ -6,7 +6,7 @@
 	var floatval = parseFloat;
 
 	var rxTrim = /^\s*(.*)\s$/;
-	var rxKeyframeAttribute = /^data-(\d+|(?:end))$/;
+	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
 	var rxPropSplit = /:|;/g;
 	var rxPropEasing = /^([a-z-]+)\[(\w+)\]$/;
 	var rxCamelCase = /-([a-z])/g;
@@ -314,7 +314,7 @@
 		//The container element. The parent of all skrollables.
 		self.container = document.getElementsByTagName('body')[0];
 
-		//Scale factor to scale keyFrames.
+		//Scale factor to scale key frames.
 		self.scale = options.scale || 1;
 
 		self.listeners = {
@@ -325,7 +325,7 @@
 
 		/*
 			A list of all elements which should be animated associated with their the metadata.
-			Exmaple skrollable with two keyFrames animating from 100px width to 20px:
+			Exmaple skrollable with two key frames animating from 100px width to 20px:
 
 			skrollable = {
 				element: <the DOM element>,
@@ -355,7 +355,7 @@
 		*/
 		self.skrollables = [];
 
-		//Will contain the max keyFrame value available.
+		//Will contain the max key frame value available.
 		self.maxKeyFrame = 0;
 
 		//Current direction (up/down)
@@ -379,7 +379,7 @@
 				fx = {},
 				keyFrames = [];
 
-			//Iterate over all attributes and search for keyframe attributes.
+			//Iterate over all attributes and search for key frame attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
 				var
 					attr = el.attributes[k],
@@ -388,7 +388,7 @@
 				if(match !== null) {
 					var frame, kf;
 
-					frame = (match[1] | 0) * self.scale;
+					frame = (match[2] | 0) * self.scale;
 
 					kf = {
 						frame: frame,
@@ -398,7 +398,7 @@
 					keyFrames.push(kf);
 
 					//special handling for data-end
-					if(match[1] === 'end') {
+					if(match[1] === '-end') {
 						atEndKeyFrames.push(kf);
 					}
 
@@ -408,7 +408,7 @@
 				}
 			}
 
-			//Does this element have keyframes?
+			//Does this element have key frames?
 			if(keyFrames.length) {
 				self.skrollables.push({
 					element: el,
@@ -419,14 +419,13 @@
 			}
 		}
 
-		//Set all data-end keyFrames to max keyframe
+		//Set all data-end key frames to max key frame
 		for(var i = 0; i < atEndKeyFrames.length; i++) {
-			atEndKeyFrames[i].frame = self.maxKeyFrame;
+			var kf = atEndKeyFrames[i];
+			kf.frame = self.maxKeyFrame - kf.frame;
 		}
 
-		atEndKeyFrames = null;
-
-		//Now that we got all keyFrame numbers right, actually parse the properties.
+		//Now that we got all key frame numbers right, actually parse the properties.
 		for(var i = 0; i < self.skrollables.length; i++) {
 			var sk = self.skrollables[i];
 
@@ -438,25 +437,22 @@
 			//Parse the property string to objects
 			self._parseProps(sk);
 
-			//Fill keyFrames with missing properties from left and right
+			//Fill key frames with missing properties from left and right
 			self._fillProps(sk);
 		}
 
 
 		//Add a dummy element in order to get a large enough scrollbar
-		self.dummy = document.createElement('div');
+		var dummy = document.createElement('div');
 
-		var s = self.dummy.style;
+		var dummyStyle = dummy.style;
 
-		s.width = '1px';
-		s.height = (self.maxKeyFrame + getViewportHeight()) + 'px';
-		s.position = 'absolute';
-		s.right = s.top = '0px';
-		s.zIndex = '0';
+		dummyStyle.width = '1px';
+		dummyStyle.height = (self.maxKeyFrame + getViewportHeight()) + 'px';
+		dummyStyle.position = 'absolute';
+		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
 
-		s = null;
-
-		self.container.appendChild(self.dummy);
+		self.container.appendChild(dummy);
 
 		//Handles the window scoll event
 		self.onScroll = function() {
@@ -481,11 +477,16 @@
 		};
 
 		//Make sure everything loads correctly
-		self.onScroll(getScrollTop());
+		self.onScroll();
 		self._render();
 
 		//Let's go
 		addEvent(window, 'scroll', self.onScroll);
+
+		//Clean up
+		dummy = null;
+		dummyStyle = null;
+		atEndKeyFrames = null;
 
 		return self;
 	}
@@ -517,7 +518,7 @@
 		if(frame < frames[0].frame) {
 			addClass(skrollable.element, 'hidden');
 		}
-		//We are after the last frame, the element gets all props from last keyFrame
+		//We are after the last frame, the element gets all props from last key frame
 		else if(frame > frames[frames.length - 1].frame) {
 			removeClass(skrollable.element, 'hidden');
 
@@ -535,7 +536,7 @@
 		else {
 			removeClass(skrollable.element, 'hidden');
 
-			//Find out between which two keyFrames we are right now
+			//Find out between which two key frames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
 				if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
 					var left, right;
@@ -546,7 +547,7 @@
 					for(var key in left.props) {
 						if(hasProp(left.props, key)) {
 
-							//If the left keyframe has a property which the right doesn't, we just set it without interprolating
+							//If the left key frame has a property which the right doesn't, we just set it without interprolating
 							if(!hasProp(right.props, key)) {
 								var value = left.props[key].step(left.props[key].value);
 
@@ -594,12 +595,12 @@
 	};
 
 	/**
-	 * Parses the properties for each keyFrame of the given skrollable.
+	 * Parses the properties for each key frame of the given skrollable.
 	 */
 	Skrollr.prototype._parseProps = function(skrollable) {
 		var self = this;
 
-		//Iterate over all keyframes
+		//Iterate over all key frames
 		for(var i = 0; i < skrollable.keyFrames.length; i++) {
 			var
 				frame = skrollable.keyFrames[i],
@@ -625,7 +626,7 @@
 
 				value = self._parseProp(value);
 
-				//Save the prop for this keyframe with his value and easing function
+				//Save the prop for this key frame with his value and easing function
 				frame.props[prop] = {
 					value: value.value,
 					step: value.step,
@@ -675,17 +676,17 @@
 	}
 
 	/**
-	 * Fills the keyFrames with missing left hand properties.
-	 * If keyFrame 1 has property X and keyFrame 2 is missing X,
-	 * but keyFrame 3 has X again, then we need to assign X to keyFrame 2 too.
+	 * Fills the key frames with missing left hand properties.
+	 * If key frame 1 has property X and key frame 2 is missing X,
+	 * but key frame 3 has X again, then we need to assign X to key frame 2 too.
 	 *
 	 * @param sk A skrollable.
 	 */
 	Skrollr.prototype._fillProps = function(sk) {
-		//Will collect the properties keyFrame by keyFrame
+		//Will collect the properties key frame by key frame
 		var propList = {};
 
-		//Iterate over all keyFrames from left to right
+		//Iterate over all key frames from left to right
 		for(var i = 0; i < sk.keyFrames.length; i++) {
 			this._fillPropForFrame(sk.keyFrames[i], propList);
 		}
@@ -694,7 +695,7 @@
 
 		propList = {};
 
-		//Iterate over all keyFrames from right to left
+		//Iterate over all key frames from right to left
 		for(var i = sk.keyFrames.length - 1; i >= 0; i--) {
 			this._fillPropForFrame(sk.keyFrames[i], propList);
 		}
@@ -702,8 +703,8 @@
 
 
 	Skrollr.prototype._fillPropForFrame = function(frame, propList) {
-		//For each keyframe iterate over all right hand properties and assign them,
-		//but only if the current keyFrame doesn't have the property by itself
+		//For each key frame iterate over all right hand properties and assign them,
+		//but only if the current key frame doesn't have the property by itself
 		for(var key in propList) {
 			//The current frame misses this property, so assign it.
 			if(!hasProp(frame.props, key)) {
@@ -845,6 +846,6 @@
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.2.0'
+		VERSION: '0.2.1'
 	};
 }(window, document));
