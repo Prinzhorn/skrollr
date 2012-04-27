@@ -356,7 +356,7 @@
 		self.skrollables = [];
 
 		//Will contain the max key frame value available.
-		self.maxKeyFrame = 0;
+		self.maxKeyFrame = options.maxKeyFrame || 0;
 
 		//Current direction (up/down)
 		self.dir = 'down';
