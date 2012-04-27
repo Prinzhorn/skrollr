@@ -62,7 +62,7 @@ Simple animation of one property
 
 That was easy, right?
 
-The numbers represent the key frame position (the top scroll offset in pixel). The highest key frame found in the document will be used to set the the max top scroll offset. There's one special key frame called "end" (i.e. "**data-end**=") which is the same as setting the largest value on each element. This makes it easier to have animations stop at the same time on the end.
+We are using the HTML5 data attributes to attach key frames to DOM elements. The numbers represent the key frame position (the top scroll offset in pixel). The highest key frame found in the document will be used to set the the max top scroll offset.
 
 You can set multiple properties.
 
@@ -93,6 +93,37 @@ One could expect "left" to have a value of "25%" at keyframe 200. That is **not*
 ```html
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
+
+### data-end-<offset>, doing it from behind
+
+Imagine you have 100 elements with different key frames and you want to add the 101th element with an animation which runs for the last 200 pixels. It's hard to find which of the 100 elements has the biggest key frame and it would be a pain to later adjust all values because you need more room to add some animations in between.
+
+That's why it's possible to add key frames **counting from the end**. It's best practice to add the actual key frame value to elements, which sure will be there for the whole time like backgrounds and
+then use data-end to synchronize others with this element.
+
+Example
+
+```html
+<div data-0="background:rgb(0,100,0);" data-1000="background:rgb(100,100,255);">
+    I will change color for the whole 1000 pixels of scrolling
+</div>
+
+<div data-end-200="top:0px;" data-end="top:100px;">
+    I will appear 200 pixels before we reach the bottom and move for the last 200 pixels
+</div>
+```
+
+Even better, you can use both notations on the same element
+
+```html
+<!-- In this example data-end-100 is equal to data-900 -->
+<div data-0="left:0px;" data-end-100="left:100px;top:0px;" data-1000="top:100px;">
+    I will move 100 pixels from the left for 900 pixels of scrolling
+    and then I will move down for the last 100 pixels of scrolling.
+</div>
+```
+
+**heads up:** In the above example ```data-end-100``` is equal to ```data-900```, because there's no other element on the page. data-end is the **global** max key frame, not for the element it is on. If there would be another element with ```data-5000```, when ```data-end-100``` would equal ```data-4900```.
 
 ### skrollr.css
 
