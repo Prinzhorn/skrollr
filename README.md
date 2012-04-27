@@ -94,7 +94,7 @@ One could expect "left" to have a value of "25%" at keyframe 200. That is **not*
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
 
-### data-end-<offset>, doing it from behind
+### data-end-[offset], doing it from behind
 
 Imagine you have 100 elements with different key frames and you want to add the 101th element with an animation which runs for the last 200 pixels. It's hard to find which of the 100 elements has the biggest key frame and it would be a pain to later adjust all values because you need more room to add some animations in between.
 
@@ -127,7 +127,7 @@ Even better, you can use both notations on the same element
 
 ### skrollr.css
 
-skrollr comes with a file called ```skrollr.css```. This file contains a small set of CSS rules to get you started with skrollr. Every element with a "data-<number>" attribute will automatically get the "skrollable" class. This file is by no means complete or even mandatory. The default rules do make sense for desktop development, where it's not a problem to position elements "fixed". If you just want to do some lightweight stuff, maybe just scroll the background at a different speed then the rest of your page, just throw ```skrollr.css``` away an add your data- attributes to the body element.
+skrollr comes with a file called ```skrollr.css```. This file contains a small set of CSS rules to get you started with skrollr. Every element with a "data-[number]" attribute will automatically get the "skrollable" class. This file is by no means complete or even mandatory. The default rules do make sense for desktop development, where it's not a problem to position elements "fixed". If you just want to do some lightweight stuff, maybe just scroll the background at a different speed then the rest of your page, just throw ```skrollr.css``` away an add your data- attributes to the body element.
 
 ### CSS prefixes
 
