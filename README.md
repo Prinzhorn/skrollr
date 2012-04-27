@@ -3,7 +3,7 @@ skrollr (v 0.2.0)
 
 **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7k minified** (3k gzipped). No JavaScript skills needed.
 
-\**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages **HTML5** and **CSS3** ;-)*
+\**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
 
 Documentation
@@ -93,6 +93,10 @@ One could expect "left" to have a value of "25%" at keyframe 200. That is **not*
 ```html
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
+
+### skrollr.css
+
+skrollr comes with a file called ```skrollr.css```. This file contains a small set of CSS rules to get you started with skrollr. Every element with a "data-<number>" attribute will automatically get the "skrollable" class. This file is by no means complete or even mandatory. The default rules do make sense for desktop development, where it's not a problem to position elements "fixed". If you just want to do some lightweight stuff, maybe just scroll the background at a different speed then the rest of your page, just throw ```skrollr.css``` away an add your data- attributes to the body element.
 
 ### CSS prefixes
 
