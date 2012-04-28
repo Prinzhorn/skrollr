@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<title>Page title</title>
+
+	<link href="../skrollr.css" rel="stylesheet" type="text/css" />
+
+	<style type="text/css">
+	#thing {
+		width:32px;
+		height:32px;
+		border-radius:16px;
+		background:#000;
+	}
+	</style>
+</head>
+
+<body class="notransition">
+	<div id="thing" data-0="left[cos]:10%;top[sin]:10%;" data-10000="left:90%;top:90%;"></div>
+
+	<script type="text/javascript" src="../skrollr.js"></script>
+	<script type="text/javascript">
+	skrollr.init({
+		easing: {
+			sin: function(p) {
+				return (Math.sin(p * Math.PI * 2 - Math.PI/2) + 1) / 2;
+			},
+			cos: function(p) {
+				return (Math.cos(p * Math.PI * 2 - Math.PI/2) + 1) / 2;
+			},
+		}
+	});
+	</script>
+</body>
+
+</html>
