@@ -369,8 +369,9 @@
 
 
 		var
-			allElements = self.container.getElementsByTagName('*'),
+			allElements = document.getElementsByTagName('*'),
 			atEndKeyFrames = [];
+
 
 		//Iterate over all elements inside the container.
 		for(var i = 0; i < allElements.length; i++) {
@@ -846,6 +847,6 @@
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.2.1'
+		VERSION: '0.2.2'
 	};
 }(window, document));
