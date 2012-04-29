@@ -39,18 +39,18 @@
             return p * p * p * p;
         },
         swing: function(p) {
-            return (-Math.cos(p * Math.PI) / 2) + .5;
+            return (-Math.cos(p * Math.PI) / 2) + 0.5;
         },
         //see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
         bounce: function(p, a) {
             switch(true) {
-                case (p <= .5083):
+                case (p <= 0.5083):
                     a = 3; break;
-                case (p <= .8489):
+                case (p <= 0.8489):
                     a = 9; break;
-                case (p <= .96208):
+                case (p <= 0.96208):
                     a = 27; break;
-                case (p <= .99981):
+                case (p <= 0.99981):
                     a = 91; break;
                 default:
                     return 1;
@@ -88,7 +88,7 @@
                 match = rxNumericValue.exec(val);
 
                 if(match === null) {
-                    throw 'Can\'t parse "' + val + '" as numeric value.'
+                    throw 'Can\'t parse "' + val + '" as numeric value.';
                 }
 
                 return [parseFloat(match[1], 10), match[2] || ''];
@@ -668,9 +668,9 @@
                 return {
                     value: val,
                     step: parsersAndSteps.constant.step
-                }
+                };
         }
-    }
+    };
 
     /**
      * Fills the key frames with missing left hand properties.
@@ -805,13 +805,15 @@
     //Credits to aemkei, jed and others
     //Consists of https://gist.github.com/1325937 and https://gist.github.com/983535
     var hsl2hex = function(a,b,c){
-        a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
+        a/=60;c/=100;b=[c+=b*=(c<0.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
 
-        return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1)
+        return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1);
     };
 
     //https://gist.github.com/983535
-    var rgb2hex = function(a,b,c){return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)}
+    var rgb2hex = function(a,b,c){
+        return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1);
+    };
 
 
     window.requestAnimationFrame =
@@ -832,6 +834,6 @@
         init: function(options) {
             return new Skrollr(options);
         },
-        VERSION: '0.2.2'
+        VERSION: '0.2.3'
     };
 }(window, document));
