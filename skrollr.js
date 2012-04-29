@@ -116,7 +116,7 @@
 
 				//Check if the units are the same
 				if(val1[1] !== val2[1]) {
-					throw "Can't interpolate between '" + val[0] + val1[1] + "' and '" + val1[0] + val2[1] + "'";
+					throw 'Can\'t interpolate between "' + val[0] + val1[1] + '" and "' + val1[0] + val2[1] + '"';
 				}
 
 				return (val1[0] + ((val2[0] - val1[0]) * progress)) + val1[1];
@@ -151,7 +151,7 @@
 					}
 				} else {
 					if(val1.length !== val2.length) {
-						throw "Can't interpolate between two composed values with different number of values.";
+						throw 'Can\'t interpolate between two composed values with different number of values.';
 					}
 
 					for(var i = 0; i < val1.length; i++) {
@@ -727,7 +727,7 @@
 
 			//Remove filter attribute in IE
 			if(val >= 1 && style.removeAttribute) {
-				style.removeAttribute( "filter" );
+				style.removeAttribute('filter');
 			} else {
 				style.filter = 'alpha(opacity=' + val * 100 + ')';
 			}
@@ -783,7 +783,7 @@
 
 	//https://gist.github.com/983535
 	var rgb2hex = function(a,b,c){
-		return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)
+		return'#'+((256+a<<8|b)<<8|c).toString(16).slice(1)
 	};
 
 	//Global api
