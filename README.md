@@ -201,3 +201,9 @@ skrollr.init({
 ```
 
 You can now use the easing functions like any other.
+
+Contributors
+------
+
+* [Alexander Prinzhorn](https://github.com/Prinzhorn)
+* [Ali Karbassi](https://github.com/karbassi)
