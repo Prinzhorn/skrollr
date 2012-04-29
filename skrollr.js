@@ -364,26 +364,24 @@
 		self.curTop = 0;
 
 
-		var
-			allElements = document.getElementsByTagName('*'),
-			atEndKeyFrames = [];
+		var allElements = document.getElementsByTagName('*');
+		var atEndKeyFrames = [];
 
 
 		//Iterate over all elements inside the container.
 		for(var i = 0; i < allElements.length; i++) {
-			var
-				el = allElements[i];
-				fx = {},
-				keyFrames = [];
+			var el = allElements[i];
+			var fx = {};
+			var keyFrames = [];
 
 			//Iterate over all attributes and search for key frame attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
-				var
-					attr = el.attributes[k],
-					match = attr.name.match(rxKeyframeAttribute);
+				var attr = el.attributes[k];
+				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
-					var frame, kf;
+					var frame;
+					var kf;
 
 					frame = (match[2] | 0) * self.scale;
 
@@ -536,7 +534,8 @@
 			//Find out between which two key frames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
 				if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
-					var left, right;
+					var left;
+					var right;
 
 					left = frames[i];
 					right = frames[i + 1];
@@ -599,11 +598,12 @@
 
 		//Iterate over all key frames
 		for(var i = 0; i < skrollable.keyFrames.length; i++) {
-			var
-				frame = skrollable.keyFrames[i],
-				//Get all properties and values in an array
-				allProps = frame.props.split(rxPropSplit),
-				prop, value, easing;
+			var frame = skrollable.keyFrames[i];
+			//Get all properties and values in an array
+			var allProps = frame.props.split(rxPropSplit);
+			var prop;
+			var value;
+			var easing;
 
 			frame.props = {};
 
