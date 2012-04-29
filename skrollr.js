@@ -1,9 +1,10 @@
 (function(window, document, undefined) {
 	var noop = function() {};
 
-	var M = Math;
-	var intval = parseInt;
-	var floatval = parseFloat;
+	//Minify optimizations
+	var _parseInt = parseInt;
+	var _parseFloat = parseFloat;
+	var hasProp = Object.prototype.hasOwnProperty;
 
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
@@ -23,7 +24,7 @@
 	}
 
 	var bounceHelper = function(x, a) {
-		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
+		return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
 	};
 
 	var easings = {
@@ -43,7 +44,7 @@
 			return p * p * p * p;
 		},
 		swing: function(p) {
-			return (-M.cos(p * M.PI) / 2) + .5;
+			return (-Math.cos(p * Math.PI) / 2) + .5;
 		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p, a) {
@@ -95,7 +96,7 @@
 					throw 'Can\'t parse "' + val + '" as numeric value.'
 				}
 
-				return [floatval(match[1], 10), match[2] || ''];
+				return [_parseFloat(match[1], 10), match[2] || ''];
 			},
 			/**
 			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
@@ -217,10 +218,10 @@
 				}
 
 				//turn them strings into numbers
-				val[1] = intval(val[1], 10);
-				val[2] = intval(val[2], 10);
-				val[3] = intval(val[3], 10);
-				val[4] = floatval(val[4], 10);
+				val[1] = _parseInt(val[1], 10);
+				val[2] = _parseInt(val[2], 10);
+				val[3] = _parseInt(val[3], 10);
+				val[4] = _parseFloat(val[4], 10);
 
 				var unit = '';
 
@@ -253,14 +254,14 @@
 				//xyz
 				for(var i = 1; i < 4; i++) {
 					res[i] = [
-						intval(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
+						_parseInt(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
 						val1[i][1]
 					];
 				}
 
 				//a
 				res[4] = [
-					floatval(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
+					_parseFloat(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
 					val1[4][1]
 				];
 
@@ -526,7 +527,7 @@
 			var last = frames[frames.length - 1], value;
 
 			for(var key in last.props) {
-				if(hasProp(last.props, key)) {
+				if(hasProp.call(last.props, key)) {
 					value = last.props[key].step(last.props[key].value);
 
 					setStyle(skrollable.element, key, value);
@@ -546,10 +547,10 @@
 					right = frames[i + 1];
 
 					for(var key in left.props) {
-						if(hasProp(left.props, key)) {
+						if(hasProp.call(left.props, key)) {
 
 							//If the left key frame has a property which the right doesn't, we just set it without interprolating
-							if(!hasProp(right.props, key)) {
+							if(!hasProp.call(right.props, key)) {
 								var value = left.props[key].step(left.props[key].value);
 
 								setStyle(skrollable.element, key, value);
@@ -708,7 +709,7 @@
 		//but only if the current key frame doesn't have the property by itself
 		for(var key in propList) {
 			//The current frame misses this property, so assign it.
-			if(!hasProp(frame.props, key)) {
+			if(!hasProp.call(frame.props, key)) {
 				frame.props[key] = propList[key];
 			}
 		}
@@ -804,17 +805,6 @@
 	 */
 	var untrim = function(a) {
 		return ' ' + a + ' ';
-	};
-
-	/**
-	 * Returns true if the object has an own property with this name.
-	 */
-	var hasProp = function(obj, prop) {
-		if(obj === undefined) {
-			alert(1);
-		}
-
-		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 
 	//Credits to aemkei, jed and others
