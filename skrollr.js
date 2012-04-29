@@ -93,7 +93,7 @@
 				match = rxNumericValue.exec(val);
 
 				if(match === null) {
-					throw 'Can\'t parse "' + val + '" as numeric value.'
+					throw 'Can\'t parse "' + val + '" as numeric value.';
 				}
 
 				return [_parseFloat(match[1], 10), match[2] || ''];
@@ -672,9 +672,9 @@
 				return {
 					value: val,
 					step: parsersAndSteps.constant.step
-				}
+				};
 		}
-	}
+	};
 
 	/**
 	 * Fills the key frames with missing left hand properties.
@@ -811,11 +811,13 @@
 	var hsl2hex = function(a,b,c){
 		a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
 
-		return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1)
+		return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1);
 	};
 
 	//https://gist.github.com/983535
-	var rgb2hex = function(a,b,c){return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)}
+	var rgb2hex = function(a,b,c){
+		return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)
+	};
 
 
 	window.requestAnimationFrame =
