@@ -5,6 +5,8 @@ skrollr (v 0.2.3)
 
 \**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
+[Examples](https://github.com/Prinzhorn/skrollr/tree/master/examples)
+
 
 Documentation
 ======
