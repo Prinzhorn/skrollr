@@ -1,4 +1,4 @@
-skrollr (v 0.2.2)
+skrollr (v 0.2.3)
 ======
 
 **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.5k minified** (3k gzipped). No JavaScript skills needed.
@@ -165,9 +165,9 @@ Possible options include
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
-#### scroll
+#### beforerender
 
-A listener function getting called each time **before** the internal state of skrollr changes because of a native scroll event. The function will be passed an object with the following properties:
+A listener function getting called each time right before we render everything. The function will be passed an object with the following properties:
 
 ```js
 {

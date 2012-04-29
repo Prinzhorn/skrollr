@@ -59,8 +59,8 @@
 	<script type="text/javascript" src="skrollr.js"></script>
 	<script type="text/javascript">
 	var s = skrollr.init({
-		scroll: function(data) {
-			//console.log('scroll');
+		beforerender: function(data) {
+			//console.log('beforerender');
 		},
 		render: function() {
 			//console.log('render');

@@ -17,7 +17,6 @@
 			setTimeout(fn, 1000 / 30);
 		};
 
-
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
 	var rxPropSplit = /:|;/g;
@@ -328,7 +327,7 @@
 
 		self.listeners = {
 			//Function to be called when scolling
-			scroll: options.scroll || noop,
+			beforerender: options.beforerender || noop,
 			render: options.render || noop
 		};
 
@@ -453,40 +452,14 @@
 		var dummyStyle = dummy.style;
 
 		dummyStyle.width = '1px';
-		dummyStyle.height = (self.maxKeyFrame + getViewportHeight()) + 'px';
+		dummyStyle.height = (self.maxKeyFrame + document.documentElement.clientHeight) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
 
 		self.container.appendChild(dummy);
 
-		//Handles the window scoll event
-		self.onScroll = function() {
-			self.curTop = getScrollTop();
-
-			//In what direction are we scrolling?
-			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
-
-			//Tell the listener we just scrolled
-			var result = self.listeners.scroll.call(self, {
-				curTop: self.curTop,
-				lastTop: self.lastTop,
-				maxTop: self.maxKeyFrame,
-				direction: self.dir
-			});
-
-			//The listener function is able the cancel rendering
-			if(result === false) {
-				//Will prevent rendering
-				self.lastTop = self.curTop;
-			}
-		};
-
-		//Make sure everything loads correctly
-		self.onScroll();
-		self._render();
-
 		//Let's go
-		addEvent(window, 'scroll', self.onScroll);
+		self._render();
 
 		//Clean up
 		dummy = null;
@@ -500,18 +473,15 @@
 		pageYOffset = top;
 		document.body.scrollTop = top;
 		document.documentElement.scrollTop = top;
-
-		this.onScroll();
 	};
-
 
 	Skrollr.prototype.on = function(name, fn) {
 		this.listeners[name] = fn || noop;
-	}
+	};
 
 	Skrollr.prototype.off = function(name) {
 		this.listeners[name] = noop;
-	}
+	};
 
 	/**
 	 * Calculate and sets the style properties for the element at the given frame
@@ -580,22 +550,37 @@
 	Skrollr.prototype._render = function() {
 		var self = this;
 
-		if(self.lastTop !== self.curTop) {
-			self.lastTop = self.curTop;
+		self.curTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
 
-			for(var i = 0; i < self.skrollables.length; i++) {
-				self._calcSteps(self.skrollables[i], self.curTop);
+		//Does the scroll position event change?
+		if(self.lastTop !== self.curTop) {
+			//Remember in which direction are we scrolling?
+			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
+
+			//Tell the listener we are about to render.
+			var continueRendering = self.listeners.beforerender.call(self, {
+				curTop: self.curTop,
+				lastTop: self.lastTop,
+				maxTop: self.maxKeyFrame,
+				direction: self.dir
+			});
+
+			//The beforerender listener function is able the cancel rendering.
+			if(continueRendering !== false) {
+				for(var i = 0; i < self.skrollables.length; i++) {
+					self._calcSteps(self.skrollables[i], self.curTop);
+				}
+
+				self.listeners.render.call(self);
 			}
 
-			self.listeners.render.call(self);
+			//Remember when we last rendered.
+			self.lastTop = self.curTop;
 		}
 
-		//Decouple scroll event from render loop (#2)
 		requestAnimFrame(function() {
 			self._render();
 		});
-
-		return self;
 	};
 
 	/**
@@ -729,30 +714,6 @@
 	/*
 		Helpers
 	*/
-	/**
-	 * Gets the height of the viewport
-	 */
-	var getViewportHeight = function() {
-		return document.documentElement.clientHeight;
-	};
-
-	/**
-	 * Gets the window scroll top offset
-	*/
-	var getScrollTop = function() {
-		return window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
-	};
-
-	/**
-		Attach an event handler to a DOM element
-	*/
-	var addEvent = function(el, type, fn) {
-		if (el.addEventListener) {
-			el.addEventListener(type, fn, false);
-		} else if (el.attachEvent) {
-			el.attachEvent('on' + type, fn);
-		}
-	};
 
 	/**
 	 * Set the css property on the given element. Sets prefixed properties as well.
@@ -831,6 +792,6 @@
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.2.2'
+		VERSION: '0.2.3'
 	};
 }(window, document));
