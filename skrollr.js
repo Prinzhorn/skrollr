@@ -520,7 +520,8 @@
 			var last = frames[frames.length - 1], value;
 
 			for(var key in last.props) {
-				if(hasProp(last.props, key)) {
+				// if(hasProp(last.props, key)) {
+				if(last.props.hasOwnProperty(key)) {
 					value = last.props[key].step(last.props[key].value);
 
 					setStyle(skrollable.element, key, value);
@@ -541,10 +542,10 @@
 					right = frames[i + 1];
 
 					for(var key in left.props) {
-						if(hasProp(left.props, key)) {
+						if(left.props.hasOwnProperty(key)) {
 
 							//If the left key frame has a property which the right doesn't, we just set it without interprolating
-							if(!hasProp(right.props, key)) {
+							if(!right.props.hasOwnProperty(key)) {
 								var value = left.props[key].step(left.props[key].value);
 
 								setStyle(skrollable.element, key, value);
@@ -704,7 +705,7 @@
 		//but only if the current key frame doesn't have the property by itself
 		for(var key in propList) {
 			//The current frame misses this property, so assign it.
-			if(!hasProp(frame.props, key)) {
+			if(!frame.props.hasOwnProperty(key)) {
 				frame.props[key] = propList[key];
 			}
 		}
@@ -800,17 +801,6 @@
 	 */
 	var untrim = function(a) {
 		return ' ' + a + ' ';
-	};
-
-	/**
-	 * Returns true if the object has an own property with this name.
-	 */
-	var hasProp = function(obj, prop) {
-		if(obj === undefined) {
-			alert(1);
-		}
-
-		return Object.prototype.hasOwnProperty.call(obj, prop);
 	};
 
 	//Credits to aemkei, jed and others
