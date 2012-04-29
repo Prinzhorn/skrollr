@@ -18,10 +18,6 @@
         supportsCSS3Colors = false;
     }
 
-    var bounceHelper = function(x, a) {
-        return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
-    };
-
     var easings = {
         begin: function() {
             return 0;
@@ -43,20 +39,19 @@
         },
         //see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
         bounce: function(p, a) {
-            switch(true) {
-                case (p <= 0.5083):
-                    a = 3; break;
-                case (p <= 0.8489):
-                    a = 9; break;
-                case (p <= 0.96208):
-                    a = 27; break;
-                case (p <= 0.99981):
-                    a = 91; break;
-                default:
-                    return 1;
+            if (p <= 0.5083) {
+                a = 3;
+            } else if (p <= 0.8489) {
+                a = 9;
+            } else if (p <= 0.96208) {
+                a = 27;
+            } else if (p <= 0.99981) {
+                a = 91;
+            } else {
+                return 1;
             }
 
-            return bounceHelper(p, a);
+            return 1 - Math.abs(3 * Math.cos(p * a * 1.028) / a);
         }
     };
 
