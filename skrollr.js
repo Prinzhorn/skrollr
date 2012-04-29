@@ -6,6 +6,18 @@
 	var _parseFloat = parseFloat;
 	var hasProp = Object.prototype.hasOwnProperty;
 
+	var requestAnimFrame =
+		window.requestAnimationFrame ||
+		window.webkitRequestAnimationFrame ||
+		window.mozRequestAnimationFrame ||
+		window.oRequestAnimationFrame ||
+		window.msRequestAnimationFrame ||
+		function(fn) {
+			//Just 30 fps, because that's enough for those legacy browsers
+			setTimeout(fn, 1000 / 30);
+		};
+
+
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
 	var rxPropSplit = /:|;/g;
@@ -117,8 +129,8 @@
 			 * Parses a value which is composed of multiple numeric values separated by a single space.
 			 * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
 			 */
-			parser: function(all, values) {
-				values = [];
+			parser: function(all) {
+				var values = [];
 
 				for(var i = 0; i < all.length; i++) {
 					//Use the simple numeric parser for the indiviual values
@@ -131,8 +143,8 @@
 			 * Calculates the new values by interpolating between the values in val1 and val2 using the given easing.
 			 * See "numeric.step" for more info.
 			 */
-			step: function(val1, val2, progress, stepped) {
-				stepped = [];
+			step: function(val1, val2, progress) {
+				var stepped = [];
 
 				if(val2 === undefined) {
 					for(var i = 0; i < val1.length; i++) {
@@ -364,10 +376,8 @@
 		//The current top offset, needed for async rendering.
 		self.curTop = 0;
 
-
 		var allElements = document.getElementsByTagName('*');
 		var atEndKeyFrames = [];
-
 
 		//Iterate over all elements inside the container.
 		for(var i = 0; i < allElements.length; i++) {
@@ -581,7 +591,7 @@
 		}
 
 		//Decouple scroll event from render loop (#2)
-		window.requestAnimationFrame(function() {
+		requestAnimFrame(function() {
 			self._render();
 		});
 
@@ -814,19 +824,6 @@
 	var rgb2hex = function(a,b,c){
 		return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1)
 	};
-
-
-	window.requestAnimationFrame =
-		window.requestAnimationFrame ||
-		window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame ||
-		window.oRequestAnimationFrame ||
-		window.msRequestAnimationFrame ||
-		function(fn) {
-			//Just 30 fps, because that's enough for those legacy browsers
-			window.setTimeout(fn, 1000 / 30);
-		};
-
 
 	//Global api
 	window.skrollr = {
