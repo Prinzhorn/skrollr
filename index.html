@@ -4,6 +4,7 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
 
 	<title>skrollr - parallax scrolling for the masses</title>
+	<script type="text/javascript" src="https://raw.github.com/bestiejs/xstats.js/master/xstats.js"></script>
 
 	<link href="skrollr.css" rel="stylesheet" type="text/css" />
 	<link href="demo/style.css" rel="stylesheet" type="text/css" />
@@ -73,6 +74,16 @@
 		}
 	});
 	</script>
+	<script type="text/javascript">
+	var stats = new xStats;
+	document.body.appendChild(stats.element);
+	</script>
+	<style type="text/css">
+	.xstats {
+		position: fixed;
+		z-index: 99999;
+	}
+	</style>
 </body>
 
 </html>
