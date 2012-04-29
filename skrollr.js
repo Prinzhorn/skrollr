@@ -520,7 +520,6 @@
             var last = frames[frames.length - 1], value;
 
             for(var key in last.props) {
-                // if(hasProp(last.props, key)) {
                 if(last.props.hasOwnProperty(key)) {
                     value = last.props[key].step(last.props[key].value);
 
