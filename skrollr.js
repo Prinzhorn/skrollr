@@ -111,8 +111,8 @@
              * Parses a value which is composed of multiple numeric values separated by a single space.
              * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
              */
-            parser: function(all, values) {
-                values = [];
+            parser: function(all) {
+                var values = [];
 
                 for(var i = 0; i < all.length; i++) {
                     //Use the simple numeric parser for the indiviual values
@@ -126,18 +126,20 @@
              * See "numeric.step" for more info.
              */
             step: function(val1, val2, progress, stepped) {
+                if (!val1) {
+                    return;
+                }
+
                 stepped = [];
 
-                if(val2 === undefined) {
-                    for(var i = 0; i < val1.length; i++) {
-                        stepped.push(parsersAndSteps.numeric.step(val1[i]));
-                    }
-                } else {
-                    if(val1.length !== val2.length) {
-                        throw "Can't interpolate between two composed values with different number of values.";
-                    }
+                if(val1 && val2 && val1.length !== val2.length) {
+                    throw "Can't interpolate between two composed values with different number of values.";
+                }
 
-                    for(var i = 0; i < val1.length; i++) {
+                for(var i = 0; i < val1.length; i++) {
+                    if(val2 === undefined) {
+                        stepped.push(parsersAndSteps.numeric.step(val1[i]));
+                    } else {
                         stepped.push(parsersAndSteps.numeric.step(val1[i], val2[i], progress));
                     }
                 }
@@ -174,12 +176,10 @@
             step: function(val1, val2, progress, ret) {
                 ret = [];
 
-                if(val2 === undefined) {
-                    for(var i = 0; i < val1.length - 1; i += 2) {
+                for(var i = 0; i < val1.length - 1; i += 2) {
+                    if(val2 === undefined) {
                         ret.push(val1[i] + '(' + val1[i + 1].join('') + ')');
-                    }
-                } else {
-                    for(var i = 0; i < val1.length - 1; i += 2) {
+                    } else {
                         ret.push(val1[i] + '(' + parsersAndSteps.numeric.step(val1[i + 1], val2[i + 1], progress) + ')');
                     }
                 }
@@ -362,7 +362,6 @@
         var allElements = document.getElementsByTagName('*');
         var atEndKeyFrames = [];
 
-
         //Iterate over all elements inside the container.
         for(var i = 0; i < allElements.length; i++) {
             var el = allElements[i];
@@ -448,6 +447,10 @@
         self.onScroll = function() {
             self.curTop = getScrollTop();
 
+            if (self.curTop < 0) {
+                return;
+            }
+
             //In what direction are we scrolling?
             self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
 
@@ -503,6 +506,7 @@
      */
     Skrollr.prototype._calcSteps = function(skrollable, frame) {
         var frames = skrollable.keyFrames;
+        var value;
 
         //We are before the first frame, don't do anything
         if(frame < frames[0].frame) {
@@ -512,14 +516,15 @@
         else if(frame > frames[frames.length - 1].frame) {
             removeClass(skrollable.element, 'hidden');
 
-            var last = frames[frames.length - 1], value;
+            var last = frames[frames.length - 1];
 
             for(var key in last.props) {
-                if(last.props.hasOwnProperty(key)) {
-                    value = last.props[key].step(last.props[key].value);
-
-                    setStyle(skrollable.element, key, value);
+                if(!last.props.hasOwnProperty(key)) {
+                    continue;
                 }
+                value = last.props[key].step(last.props[key].value);
+
+                setStyle(skrollable.element, key, value);
             }
         }
         //We are between two frames
@@ -528,35 +533,35 @@
 
             //Find out between which two key frames we are right now
             for(var i = 0; i < frames.length - 1; i++) {
-                if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
-                    var left;
-                    var right;
+                if(!(frame >= frames[i].frame && frame <= frames[i + 1].frame)) {
+                    continue;
+                }
 
-                    left = frames[i];
-                    right = frames[i + 1];
+                var left = frames[i];
+                var right = frames[i + 1];
 
-                    for(var key in left.props) {
-                        if(left.props.hasOwnProperty(key)) {
-
-                            //If the left key frame has a property which the right doesn't, we just set it without interprolating
-                            if(!right.props.hasOwnProperty(key)) {
-                                var value = left.props[key].step(left.props[key].value);
-
-                                setStyle(skrollable.element, key, value);
-                            } else {
-                                var progress = (frame - left.frame) / (right.frame - left.frame);
-
-                                progress = left.props[key].easing(progress);
-
-                                var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
-
-                                setStyle(skrollable.element, key, value);
-                            }
-                        }
+                for(var key in left.props) {
+                    if(!left.props.hasOwnProperty(key)) {
+                        continue;
                     }
 
-                    break;
+                    //If the left key frame has a property which the right doesn't, we just set it without interprolating
+                    if(!right.props.hasOwnProperty(key)) {
+                        value = left.props[key].step(left.props[key].value);
+
+                        setStyle(skrollable.element, key, value);
+                    } else {
+                        var progress = (frame - left.frame) / (right.frame - left.frame);
+
+                        progress = left.props[key].easing(progress);
+
+                        value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
+
+                        setStyle(skrollable.element, key, value);
+                    }
                 }
+
+                break;
             }
         }
     };
@@ -809,7 +814,6 @@
     var rgb2hex = function(a,b,c){
         return"#"+((256+a<<8|b)<<8|c).toString(16).slice(1);
     };
-
 
     window.requestAnimationFrame =
         window.requestAnimationFrame ||
