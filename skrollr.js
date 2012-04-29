@@ -1,10 +1,6 @@
 (function(window, document, undefined) {
 	var noop = function() {};
 
-	var M = Math;
-	var intval = parseInt;
-	var floatval = parseFloat;
-
 	var rxTrim = /^\s*(.*)\s$/;
 	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
 	var rxPropSplit = /:|;/g;
@@ -23,7 +19,7 @@
 	}
 
 	var bounceHelper = function(x, a) {
-		return 1 - M.abs(3 * M.cos(x * a * 1.028) / a);
+		return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
 	};
 
 	var easings = {
@@ -43,7 +39,7 @@
 			return p * p * p * p;
 		},
 		swing: function(p) {
-			return (-M.cos(p * M.PI) / 2) + .5;
+			return (-Math.cos(p * Math.PI) / 2) + .5;
 		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p, a) {
@@ -95,7 +91,7 @@
 					throw 'Can\'t parse "' + val + '" as numeric value.'
 				}
 
-				return [floatval(match[1], 10), match[2] || ''];
+				return [parseFloat(match[1], 10), match[2] || ''];
 			},
 			/**
 			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
@@ -217,10 +213,10 @@
 				}
 
 				//turn them strings into numbers
-				val[1] = intval(val[1], 10);
-				val[2] = intval(val[2], 10);
-				val[3] = intval(val[3], 10);
-				val[4] = floatval(val[4], 10);
+				val[1] = parseInt(val[1], 10);
+				val[2] = parseInt(val[2], 10);
+				val[3] = parseInt(val[3], 10);
+				val[4] = parseFloat(val[4], 10);
 
 				var unit = '';
 
@@ -253,14 +249,14 @@
 				//xyz
 				for(var i = 1; i < 4; i++) {
 					res[i] = [
-						intval(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
+						parseInt(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
 						val1[i][1]
 					];
 				}
 
 				//a
 				res[4] = [
-					floatval(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
+					parseFloat(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
 					val1[4][1]
 				];
 
