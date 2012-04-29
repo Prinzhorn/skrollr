@@ -23,10 +23,6 @@
 		supportsCSS3Colors = false;
 	}
 
-	var bounceHelper = function(x, a) {
-		return 1 - Math.abs(3 * Math.cos(x * a * 1.028) / a);
-	};
-
 	var easings = {
 		begin: function() {
 			return 0;
@@ -61,7 +57,7 @@
 					return 1;
 			}
 
-			return bounceHelper(p, a);
+			return 1 - Math.abs(3 * Math.cos(p * a * 1.028) / a);
 		}
 	};
 
