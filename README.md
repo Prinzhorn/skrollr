@@ -107,11 +107,11 @@ Example
 
 ```html
 <div data-0="background:rgb(0,100,0);" data-1000="background:rgb(100,100,255);">
-    I will change color for the whole 1000 pixels of scrolling
+\tI will change color for the whole 1000 pixels of scrolling
 </div>
 
 <div data-end-200="top:0px;" data-end="top:100px;">
-    I will appear 200 pixels before we reach the bottom and move for the last 200 pixels
+\tI will appear 200 pixels before we reach the bottom and move for the last 200 pixels
 </div>
 ```
 
@@ -120,8 +120,8 @@ Even better, you can use both notations on the same element
 ```html
 <!-- In this example data-end-100 is equal to data-900 -->
 <div data-0="left:0px;" data-end-100="left:100px;top:0px;" data-1000="top:100px;">
-    I will move 100 pixels from the left for 900 pixels of scrolling
-    and then I will move down for the last 100 pixels of scrolling.
+\tI will move 100 pixels from the left for 900 pixels of scrolling
+\tand then I will move down for the last 100 pixels of scrolling.
 </div>
 ```
 

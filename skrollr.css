@@ -26,7 +26,7 @@ html, body {
 
 .skrollable.notransition, .notransition .skrollable {
 			transition: none;
-	     -o-transition: none;
+		 -o-transition: none;
 		-ms-transition: none;
 	   -moz-transition: none;
 	-webkit-transition: none;
