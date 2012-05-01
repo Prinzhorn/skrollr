@@ -41,13 +41,14 @@
 
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
-	var supportsCSS3Colors = true;
-	try {
-		//IE will throw an exception
-		document.createElement('a').style.color = 'hsl(0,0%,0%)';
-	} catch(e) {
-		supportsCSS3Colors = false;
-	}
+	var supportsCSS3Colors = (function(s) {
+		try {
+			s.backgroundColor = 'hsla(180,50%,50%,.5)';
+			return s.backgroundColor.indexOf('hsla') !== -1 || s.backgroundColor.indexOf('rgba') !== -1;
+		} catch(e) {
+			return false;
+		}
+	}(document.createElement('a').style));
 
 	//Built in easing functions.
 	var easings = {
@@ -297,13 +298,10 @@
 			 * Return hex values if hsla is unsupported.
 			 */
 			toString: function(val) {
-				//make ie "support" hsla and rgba by mapping it to hex
+				//Make browsers "support" hsl, hsla and rgba by mapping it to hex.
+				//Sadly, alpha is lost. But more important, you can use hsl!
 				if(!supportsCSS3Colors) {
-					if(val[0] === 'hsla') {
-						return hsl2hex(val[1][0], val[2][0], val[3][0]);
-					} else {
-						return rgb2hex(val[1][0], val[2][0], val[3][0]);
-					}
+					return toHex[val[0]](val[1][0], val[2][0], val[3][0]);
 				}
 
 				var res = val.slice(1);
@@ -399,6 +397,10 @@
 		for(var i = 0; i < allElements.length; i++) {
 			var el = allElements[i];
 			var keyFrames = [];
+
+			if(!el.attributes) {
+				continue;
+			}
 
 			//Iterate over all attributes and search for key frame attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
@@ -759,7 +761,7 @@
 		style[prop] = val;
 
 		//Make first letter upper case for prefixed values
-		prop = prop.substr(0,1).toUpperCase() + prop.substr(1);
+		prop = prop.slice(0,1).toUpperCase() + prop.slice(1);
 
 		//TODO maybe find some better way of doing this
 		for(var i = 0; i < prefixes.length; i++) {
@@ -790,18 +792,26 @@
 		return ' ' + a + ' ';
 	};
 
-	//Credits to aemkei, jed and others
-	//Consists of https://gist.github.com/1325937 and https://gist.github.com/983535
-	var hsl2hex = function(a,b,c){
-		a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
+	/**
+	 * Converts rgb or hsl color to hex color.
+	 */
+	var toHex = {
+		//Credits to aemkei, jed and others
+		//Based on https://gist.github.com/1325937 and https://gist.github.com/983535
+		hsla: function(a,b,c,y){
+			a%=360;
+			a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
 
-		return'#'+((256+(b[~~a%6] * 255)<<8|(b[(a|16)%6] * 255))<<8|(b[(a|8)%6] * 255)).toString(16).slice(1);
-	};
+			y = [b[~~a%6],b[(a|16)%6],b[(a|8)%6]];
 
-	//https://gist.github.com/983535
-	var rgb2hex = function(a,b,c){
-		return'#'+((256+a<<8|b)<<8|c).toString(16).slice(1)
-	};
+			return toHex.rgba(_parseInt(y[0] * 255), _parseInt(y[1] * 255), _parseInt(y[2] * 255));
+		},
+		//https://gist.github.com/983535
+		rgba: function(a,b,c){
+			return'#' + ((256+a<<8|b)<<8|c).toString(16).slice(1);
+		}
+	}
+
 
 	//Global api
 	window.skrollr = {
