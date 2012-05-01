@@ -571,11 +571,11 @@
 					self._calcSteps(self.skrollables[i], self.curTop);
 				}
 
+				//Remember when we last rendered.
+				self.lastTop = self.curTop;
+
 				self.listeners.render.call(self);
 			}
-
-			//Remember when we last rendered.
-			self.lastTop = self.curTop;
 		}
 
 		requestAnimFrame(function() {

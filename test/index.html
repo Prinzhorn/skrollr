@@ -21,11 +21,11 @@
 	</style>
 </head>
 <body class="notransition">
-	<div id="visible-100-to-400" data-100="" data-200="">TEST</div>
+	<div id="visible-from-100" data-100="">TEST</div>
 	<div id="simple-numeric" data-0="left:0px;" data-500="left:100px;">TEST</div>
 	<div id="compound-numeric" data-0="margin:0px 10px 20px 30px;" data-500="margin:30px 20px 10px 0px;">TEST</div>
 	<div id="rgb-color" data-0="color:rgb(0,0,0);" data-500="color:rgb(50,100,150);">TEST</div>
-	<div id="rgba-color" data-0="color:rgb(0,0,0,.0);" data-500="color:rgb(50,100,150,.5);">TEST</div>
+	<div id="rgba-color" data-0="color:rgb(0,0,0,.2);" data-500="color:rgb(50,100,150,.5);">TEST</div>
 	<div id="hsl-color" data-0="color:hsl(0,0%,0%);" data-500="color:hsl(3600,50%,50%);">TEST</div>
 	<div id="hsla-color" data-0="color:hsla(0,0%,0%,.0);" data-500="color:hsla(3600,50%,50%,.5);">TEST</div>
 	<div id="simple-transform" data-0="transform:rotate(0deg);" data-500="transform:rotate(3600deg);">TEST</div>
@@ -34,6 +34,7 @@
 	<div id="qunit"></div>
 
 	<script src="qunit.js" type="text/javascript"></script>
+	<script src="qunit-numeric-css-property-equals.js" type="text/javascript"></script>
 	<script src="jquery.js" type="text/javascript"></script>
 	<script src="../skrollr.js" type="text/javascript"></script>
 	<script src="tests.js" type="text/javascript"></script>
