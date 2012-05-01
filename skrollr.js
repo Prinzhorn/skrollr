@@ -26,6 +26,8 @@
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
 	var rxColorValue = /^((?:rgba?)|(?:hsla?))\(((?:-|\+)?\d+)\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
 
+	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
+
 	var supportsCSS3Colors = true;
 	try {
 		//IE will throw an exception
@@ -54,7 +56,9 @@
 			return (-Math.cos(p * Math.PI) / 2) + .5;
 		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
-		bounce: function(p, a) {
+		bounce: function(p) {
+			var a;
+
 			switch(true) {
 				case (p <= .5083):
 					a = 3; break;
@@ -94,10 +98,10 @@
 			 * Parses a single numeric value with optional unit.
 			 * @return An array with the numeric value at first position and the unit at second position.
 			 */
-			parser: function(val, match) {
+			parser: function(val) {
 				rxNumericValue.lastIndex = 0;
 
-				match = rxNumericValue.exec(val);
+				var match = rxNumericValue.exec(val);
 
 				if(match === null) {
 					throw 'Can\'t parse "' + val + '" as numeric value.';
@@ -168,13 +172,13 @@
 			 * Parses a value which is composed of multiple transform functions.
 			 * @return An array with an even number of entries. All odd entries contain the name of a transform function and all even entries contain the result of "numeric.parser"
 			 */
-			parser: function(all, values, match) {
-				values = [];
+			parser: function(all) {
+				var values = [];
 
 				for(var i = 0; i < all.length; i++) {
 					rxTransformValue.lastIndex = 0;
 
-					match = rxTransformValue.exec(all[i]);
+					var match = rxTransformValue.exec(all[i]);
 
 					//The transform function
 					values.push(match[1]);
@@ -188,8 +192,8 @@
 			/**
 			 * Interpolates between multiple transform functions by using "numeric.step" on each value.
 			 */
-			step: function(val1, val2, progress, ret) {
-				ret = [];
+			step: function(val1, val2, progress) {
+				var ret = [];
 
 				if(val2 === undefined) {
 					for(var i = 0; i < val1.length - 1; i += 2) {
@@ -310,24 +314,21 @@
 
 		options = options || {};
 
-		self.easings = easings;
-
 		//We allow defining custom easings or overwrite existing
 		if(options.easing) {
 			for(var e in options.easing) {
-				self.easings[e] = options.easing[e];
+				easings[e] = options.easing[e];
 			}
 		}
-
-		//The container element. The parent of all skrollables.
-		self.container = document.getElementsByTagName('body')[0];
 
 		//Scale factor to scale key frames.
 		self.scale = options.scale || 1;
 
 		self.listeners = {
-			//Function to be called when scolling
+			//Function to be called right before rendering.
 			beforerender: options.beforerender || noop,
+
+			//Function to be called right after finishing rendering.
 			render: options.render || noop
 		};
 
@@ -366,7 +367,7 @@
 		//Will contain the max key frame value available.
 		self.maxKeyFrame = options.maxKeyFrame || 0;
 
-		//Current direction (up/down)
+		//Current direction (up/down).
 		self.dir = 'down';
 
 		//The last top offset value. Needed to determine direction.
@@ -376,12 +377,13 @@
 		self.curTop = 0;
 
 		var allElements = document.getElementsByTagName('*');
+
+		//Will contain references to all "data-end" key frames.
 		var atEndKeyFrames = [];
 
-		//Iterate over all elements inside the container.
+		//Iterate over all elements in document.
 		for(var i = 0; i < allElements.length; i++) {
 			var el = allElements[i];
-			var fx = {};
 			var keyFrames = [];
 
 			//Iterate over all attributes and search for key frame attributes.
@@ -456,15 +458,16 @@
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
 
-		self.container.appendChild(dummy);
+		document.getElementsByTagName('body')[0].appendChild(dummy);
 
 		//Let's go
 		self._render();
 
 		//Clean up
-		dummy = null;
-		dummyStyle = null;
-		atEndKeyFrames = null;
+		dummy = undefined;
+		dummyStyle = undefined;
+		atEndKeyFrames = undefined;
+		options = undefined;
 
 		return self;
 	}
@@ -622,7 +625,7 @@
 				frame.props[prop] = {
 					value: value.value,
 					step: value.step,
-					easing: self.easings[easing]
+					easing: easings[easing]
 				};
 			}
 		}
@@ -716,7 +719,7 @@
 	*/
 
 	/**
-	 * Set the css property on the given element. Sets prefixed properties as well.
+	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
 	var setStyle = function(el, prop, val) {
 		var style = el.style;
@@ -745,13 +748,13 @@
 		prop = prop.substr(0,1).toUpperCase() + prop.substr(1);
 
 		//TODO maybe find some better way of doing this
-		for(var i = 0, arr = ['O', 'Moz', 'webkit', 'ms']; i < arr.length; i++) {
-			style[arr[i] + prop] = val;
+		for(var i = 0; i < prefixes.length; i++) {
+			style[prefixes[i] + prop] = val;
 		}
 	};
 
 	/**
-	 * Adds a css class.
+	 * Adds a CSS class.
 	 */
 	var addClass = function(el, name) {
 		if(untrim(el.className).indexOf(untrim(name)) === -1) {
@@ -760,7 +763,7 @@
 	};
 
 	/**
-	 * Adds a css class.
+	 * Removes a CSS class.
 	 */
 	var removeClass = function(el, name) {
 		el.className = (untrim(el.className)).replace(untrim(name), '').replace(rxTrim, '$1');
