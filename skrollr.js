@@ -1,7 +1,8 @@
 (function(window, document, undefined) {
+	//Used as a dummy function for event listeners.
 	var noop = function() {};
 
-	//Minify optimizations
+	//Minify optimizations.
 	var _parseInt = parseInt;
 	var _parseFloat = parseFloat;
 	var hasProp = Object.prototype.hasOwnProperty;
@@ -18,12 +19,24 @@
 		};
 
 	var rxTrim = /^\s*(.*)\s$/;
+
+	//Find data-<number>, as well as data-end and data-end-<number>
 	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
+
 	var rxPropSplit = /:|;/g;
+
+	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z-]+)\[(\w+)\]$/;
+
 	var rxCamelCase = /-([a-z])/g;
+
+	//Numeric values with optional unit.
 	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
+
+	//Find rotate, scale, scaleX, scaleY, skew, skewX, skewY.
 	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
+
+	//rgb, rgba, hsl, hsla mixed.
 	var rxColorValue = /^((?:rgba?)|(?:hsla?))\(((?:-|\+)?\d+)\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
 
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
@@ -36,6 +49,7 @@
 		supportsCSS3Colors = false;
 	}
 
+	//Built in easing functions.
 	var easings = {
 		begin: function() {
 			return 0;
@@ -280,7 +294,7 @@
 			},
 			/**
 			 * Will turn the color value into a property string.
-			 * Return rgba values if hsla is unsupported.
+			 * Return hex values if hsla is unsupported.
 			 */
 			toString: function(val) {
 				//make ie "support" hsla and rgba by mapping it to hex
