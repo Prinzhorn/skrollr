@@ -41,14 +41,8 @@
 
 	var rxCamelCase = /-([a-z])/g;
 
-	//Numeric values with optional unit.
-	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
-
-	//Find rotate, scale, scaleX, scaleY, skew, skewX, skewY.
-	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
-
-	//rgb, rgba, hsl, hsla mixed.
-	var rxColorValue = /^((?:rgba?)|(?:hsla?))\(((?:-|\+)?\d+)\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
+	//Numeric values with optional sign.
+	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
 
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
@@ -103,229 +97,64 @@
 	};
 
 	/**
-	 * List of parser and steps for different kind of value types.
-	 * Parser: Parses a value to a specific format which a Step can handle.
-	 * Step: A function which gets the output of two Parsers and interpolates the value for a given progress.
+	 * Calculates the new values for two given values structures.
 	 */
-	var parsersAndSteps = {
-		//Simple constant values which won't be interpolated.
-		constant: {
-			/**
-			* Doesn't interpolate at all.
-			*/
-			step: function(val) {
-				return val;
-			}
-		},
-		//Simple numeric values with unit which can easily be interpolated.
-		//Not used directly, only by composedNumeric.
-		numeric: {
-			/**
-			 * Parses a single numeric value with optional unit.
-			 * @return An array with the numeric value at first position and the unit at second position.
-			 */
-			parser: function(val) {
-				rxNumericValue.lastIndex = 0;
+	var calcInterpolation = function(val1, val2, progress) {
+		//They both need to have the same length
+		if(val1.length !== val2.length) {
+			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
+		}
 
-				var match = rxNumericValue.exec(val);
+		var interpolated = [];
 
-				if(match === null) {
-					throw 'Can\'t parse "' + val + '" as numeric value.';
-				}
+		for(var i = 1; i < val1.length; i++) {
+			interpolated[i - 1] = [val1[i][0] + ((val2[i][0] - val1[i][0]) * progress)];
 
-				return [_parseFloat(match[1], 10), match[2] || ''];
-			},
-			/**
-			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
-			 * If only the first parameter is specified, it just sets the value.
-			 */
-			step: function(val1, val2, progress) {
-				if(val2 === undefined) {
-					return val1[0] + val1[1];
-				}
-
-				//Check if the units are the same
-				if(val1[1] !== val2[1]) {
-					throw 'Can\'t interpolate between "' + val[0] + val1[1] + '" and "' + val1[0] + val2[1] + '"';
-				}
-
-				return (val1[0] + ((val2[0] - val1[0]) * progress)) + val1[1];
-			}
-		},
-		//Values which are composed of multipe numeric values like "0% 0%"
-		composedNumeric: {
-			/**
-			 * Parses a value which is composed of multiple numeric values separated by a single space.
-			 * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
-			 */
-			parser: function(all) {
-				var values = [];
-
-				for(var i = 0; i < all.length; i++) {
-					//Use the simple numeric parser for the indiviual values
-					values.push(parsersAndSteps.numeric.parser(all[i]));
-				}
-
-				return values;
-			},
-			/**
-			 * Calculates the new values by interpolating between the values in val1 and val2 using the given easing.
-			 * See "numeric.step" for more info.
-			 */
-			step: function(val1, val2, progress) {
-				var stepped = [];
-
-				if(val2 === undefined) {
-					for(var i = 0; i < val1.length; i++) {
-						stepped.push(parsersAndSteps.numeric.step(val1[i]));
-					}
-				} else {
-					if(val1.length !== val2.length) {
-						throw 'Can\'t interpolate between two composed values with different number of values.';
-					}
-
-					for(var i = 0; i < val1.length; i++) {
-						stepped.push(parsersAndSteps.numeric.step(val1[i], val2[i], progress));
-					}
-				}
-
-				return stepped.join(' ');
-			}
-		},
-		//scale, roate, skew
-		transform: {
-			/**
-			 * Parses a value which is composed of multiple transform functions.
-			 * @return An array with an even number of entries. All odd entries contain the name of a transform function and all even entries contain the result of "numeric.parser"
-			 */
-			parser: function(all) {
-				var values = [];
-
-				for(var i = 0; i < all.length; i++) {
-					rxTransformValue.lastIndex = 0;
-
-					var match = rxTransformValue.exec(all[i]);
-
-					//The transform function
-					values.push(match[1]);
-
-					//Use the simple numeric parser for the indiviual values
-					values.push(parsersAndSteps.numeric.parser(match[2]));
-				}
-
-				return values;
-			},
-			/**
-			 * Interpolates between multiple transform functions by using "numeric.step" on each value.
-			 */
-			step: function(val1, val2, progress) {
-				var ret = [];
-
-				if(val2 === undefined) {
-					for(var i = 0; i < val1.length - 1; i += 2) {
-						ret.push(val1[i] + '(' + val1[i + 1].join('') + ')');
-					}
-				} else {
-					for(var i = 0; i < val1.length - 1; i += 2) {
-						ret.push(val1[i] + '(' + parsersAndSteps.numeric.step(val1[i + 1], val2[i + 1], progress) + ')');
-					}
-				}
-
-				return ret.join(' ');
-			}
-		},
-		//rgb(a) and hsl(a) colors (no #fff or #ffffff)
-		color: {
-			/**
-			 * Parses a rgba or hslv value.
-			 * @return An array where the first entry is either the string "rgba" or "hsla" and the following four entries are results of "numeric.parser" on r,g,b,h,s,l or a values.
-			 */
-			parser: function(val) {
-				//remove the first element, which is the fully matched string
-				val.shift();
-
-				//is there a alpha part?
-				if(val[4] === undefined) {
-					val[4] = 1;
-				}
-
-				//rgb or hsl without "a" at the end
-				if(val[0].length === 3) {
-					val[0] += 'a';
-				}
-
-				//turn them strings into numbers
-				val[1] = _parseInt(val[1], 10);
-				val[2] = _parseInt(val[2], 10);
-				val[3] = _parseInt(val[3], 10);
-				val[4] = _parseFloat(val[4], 10);
-
-				var unit = '';
-
-				//add percentage unit when using hsla
-				if(val[0] === 'hsla') {
-					unit = '%';
-				}
-
-				//add the unit (empty string is unit-less/no-unit)
-				val[1] = [val[1], ''];
-				val[2] = [val[2], unit];
-				val[3] = [val[3], unit];
-				val[4] = [val[4], ''];
-
-				return val;
-			},
-			/**
-			 * Interpolates between two colors. No matter if it's rgba or hsla, the interpolation is done by using "numeric.step" on any of r,g,b,h,s,l and a.
-			 * For browsers that don't support rgba, hsl and hsla (IE, I'm looking at you), we will always return hex rgb.
-			 */
-			step: function(val1, val2, progress) {
-				if(val2 === undefined) {
-					return parsersAndSteps.color.toString(val1);
-				}
-
-				//now we are going to interpolate the colors
-				//we don't care if it's rgba or hlsa, we just call it xyza
-				var res = [val1[0]];
-
-				//xyz
-				for(var i = 1; i < 4; i++) {
-					res[i] = [
-						_parseInt(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
-						val1[i][1]
-					];
-				}
-
-				//a
-				res[4] = [
-					_parseFloat(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
-					val1[4][1]
-				];
-
-				return parsersAndSteps.color.toString(res);
-			},
-			/**
-			 * Will turn the color value into a property string.
-			 * Return hex values if hsla is unsupported.
-			 */
-			toString: function(val) {
-				//Make browsers "support" hsl, hsla and rgba by mapping it to hex.
-				//Sadly, alpha is lost. But more important, you can use hsl!
-				if(!supportsCSS3Colors) {
-					return toHex[val[0]](val[1][0], val[2][0], val[3][0]);
-				}
-
-				var res = val.slice(1);
-
-				//concat values and units
-				for(var i = 0; i < 4; i++) {
-					res[i] = res[i].join('');
-				}
-
-				return val[0] + '(' + res.join(',') + ')';
+			//Floor if the <integer> flag is set
+			if(val1[i][1]) {
+				interpolated[i - 1] = interpolated[i - 1] | 0;
 			}
 		}
+
+		//Add the format string as first element.
+		interpolated.unshift(val1[0]);
+
+		return interpolated;
 	};
+
+	/**
+	 * Interpolates the numeric values into the format string.
+	 */
+	var interpolateString = function(val) {
+		var i = 1;
+
+		return val[0].replace(/\?/g, function() {
+			return val[i++][0];
+		});
+	};
+
+	/**
+	 * Will turn the color value into a property string.
+	 * Return hex values if hsla is unsupported.
+	 */
+	/*
+	toString: function(val) {
+		//Make browsers "support" hsl, hsla and rgba by mapping it to hex.
+		//Sadly, alpha is lost. But more important, you can use hsl!
+		if(!supportsCSS3Colors) {
+			return toHex[val[0]](val[1][0], val[2][0], val[3][0]);
+		}
+
+		var res = val.slice(1);
+
+		//concat values and units
+		for(var i = 0; i < 4; i++) {
+			res[i] = res[i].join('');
+		}
+
+		return val[0] + '(' + res.join(',') + ')';
+	}
+	*/
 
 
 
@@ -532,7 +361,7 @@
 
 			for(var key in last.props) {
 				if(hasProp.call(last.props, key)) {
-					value = last.props[key].step(last.props[key].value);
+					value = interpolateString(last.props[key].value);
 
 					setStyle(skrollable.element, key, value);
 				}
@@ -550,21 +379,17 @@
 
 					for(var key in left.props) {
 						if(hasProp.call(left.props, key)) {
+							var progress = (frame - left.frame) / (right.frame - left.frame);
 
-							//If the left key frame has a property which the right doesn't, we just set it without interprolating
-							if(!hasProp.call(right.props, key)) {
-								var value = left.props[key].step(left.props[key].value);
+							//Transform the current progress using the given easing function.
+							progress = left.props[key].easing(progress);
 
-								setStyle(skrollable.element, key, value);
-							} else {
-								var progress = (frame - left.frame) / (right.frame - left.frame);
+							//Interpolate between the two values
+							var value = calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
-								progress = left.props[key].easing(progress);
+							value = interpolateString(value);
 
-								var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
-
-								setStyle(skrollable.element, key, value);
-							}
+							setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -650,8 +475,7 @@
 
 				//Save the prop for this key frame with his value and easing function
 				frame.props[prop] = {
-					value: value.value,
-					step: value.step,
+					value: value,
 					easing: easings[easing]
 				};
 			}
@@ -659,42 +483,26 @@
 	};
 
 	/**
-	 * Parses a value using a parser. Tries to guess which parser to use.
+	 * Parses a value extracting numeric values and generating a format string
+	 * for later interpolation of the new values in old string.
+	 *
+	 * Returns something like ["rgba(?,?,?,?)", [100,true], [50,true], [0,true], [.7,false]]
+	 * where the first element is the format string later used and all following elements
+	 * contain the numeric value and a <integer> flag.
 	 */
 	Skrollr.prototype._parseProp = function(val) {
-		//Guess what type of value it is
-		switch(false) {
-			//Could be a transform value
-			case !(m = val.match(rxTransformValue)):
-				val = parsersAndSteps.transform.parser(m);
+		var numbers = [];
 
-				return {
-					value: val,
-					step: parsersAndSteps.transform.step
-				};
-			//Could be a color
-			case !(m = val.match(rxColorValue)):
-				val = parsersAndSteps.color.parser(m);
+		val = val.replace(rxNumericValue, function(n) {
+			//TODO: Add some logic to detect if it is a <integer>, which needs special handling in CSS
+			numbers.push([_parseFloat(n, 10), false]);
+			return '?';
+		});
 
-				return {
-					value: val,
-					step: parsersAndSteps.color.step
-				};
-			//Could be a numeric value
-			case !(m = val.match(rxNumericValue)):
-				val = parsersAndSteps.composedNumeric.parser(m);
+		//Add the formatstring as first value
+		numbers.unshift(val);
 
-				return {
-					value: val,
-					step: parsersAndSteps.composedNumeric.step
-				};
-			//Must be a constant value
-			default:
-				return {
-					value: val,
-					step: parsersAndSteps.constant.step
-				};
-		}
+		return numbers;
 	};
 
 	/**
