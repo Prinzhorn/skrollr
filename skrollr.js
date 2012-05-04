@@ -540,16 +540,20 @@
 			return;
 		}
 
-		//Unprefixed
-		style[prop] = val;
+		try {
+			//Unprefixed
+			style[prop] = val;
+		} catch(ignore) {}
 
 		//Make first letter upper case for prefixed values
 		prop = prop.slice(0,1).toUpperCase() + prop.slice(1);
 
-		//TODO maybe find some better way of doing this
-		for(var i = 0; i < prefixes.length; i++) {
-			style[prefixes[i] + prop] = val;
-		}
+		try {
+			//TODO maybe find some better way of doing this
+			for(var i = 0; i < prefixes.length; i++) {
+				style[prefixes[i] + prop] = val;
+			}
+		} catch(ignore) {}
 
 		//Plugin entry point.
 		if(plugins.setStyle) {
