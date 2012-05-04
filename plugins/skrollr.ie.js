@@ -1,6 +1,7 @@
 /*!
  * plugin for skrollr v0.3.0
- * parallax scrolling for the masses.
+ * Parallax scrolling for the masses.
+ * This plugin bring opacity and hsl colors to IE < 9.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
  *

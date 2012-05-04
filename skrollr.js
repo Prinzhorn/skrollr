@@ -1,6 +1,6 @@
 /*!
  * skrollr v0.3.0
- * parallax scrolling for the masses.
+ * Parallax scrolling for the masses.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
  *
