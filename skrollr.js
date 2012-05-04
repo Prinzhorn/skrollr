@@ -88,6 +88,9 @@
 		}
 	};
 
+	//Will contain all plugin-functions.
+	var plugins = {};
+
 	/**
 	 * Constructor.
 	 */
@@ -545,6 +548,13 @@
 		for(var i = 0; i < prefixes.length; i++) {
 			style[prefixes[i] + prop] = val;
 		}
+
+		//Plugin entry point.
+		if(plugins.setStyle) {
+			for(var i = 0; i < plugins.setStyle.length; i++) {
+				plugins.setStyle[0].call(this, el, prop, val);
+			}
+		}
 	};
 
 	/**
@@ -578,7 +588,12 @@
 		},
 		//Plugin api.
 		plugin: function(entryPoint, fn) {
-
+			//Each entry point may contain multiple plugin-functions.
+			if(plugins[entryPoint]) {
+				plugins[entryPoint].push(fn);
+			} else {
+				plugins[entryPoint] = [fn];
+			}
 		},
 		VERSION: '0.3.0'
 	};
