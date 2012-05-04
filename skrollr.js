@@ -339,13 +339,15 @@
 			//Remember in which direction are we scrolling?
 			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
 
-			//Tell the listener we are about to render.
-			var continueRendering = self.listeners.beforerender.call(self, {
+			var listenerParams = {
 				curTop: self.curTop,
 				lastTop: self.lastTop,
 				maxTop: self.maxKeyFrame,
 				direction: self.dir
-			});
+			};
+
+			//Tell the listener we are about to render.
+			var continueRendering = self.listeners.beforerender.call(self, listenerParams);
 
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
@@ -356,7 +358,7 @@
 				//Remember when we last rendered.
 				self.lastTop = self.curTop;
 
-				self.listeners.render.call(self);
+				self.listeners.render.call(self, listenerParams);
 			}
 		}
 
