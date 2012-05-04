@@ -1,5 +1,5 @@
 /*!
- * skrollr v0.2.4
+ * skrollr v0.3.0
  * parallax scrolling for the masses.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
@@ -13,9 +13,7 @@
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
 
-	//Minify optimizations.
-	var _parseInt = parseInt;
-	var _parseFloat = parseFloat;
+	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 
 	var requestAnimFrame =
@@ -44,18 +42,12 @@
 	//Numeric values with optional sign.
 	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
 
+	//Finds rgb(a) colors, which don't use the percentage notation.
+	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
+
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
-	var supportsCSS3Colors = (function(s) {
-		try {
-			s.backgroundColor = 'hsla(180,50%,50%,.5)';
-			return s.backgroundColor.indexOf('hsla') !== -1 || s.backgroundColor.indexOf('rgba') !== -1;
-		} catch(e) {
-			return false;
-		}
-	}(document.createElement('a').style));
-
-	//Built in easing functions.
+	//Built-in easing functions.
 	var easings = {
 		begin: function() {
 			return 0;
@@ -97,68 +89,6 @@
 	};
 
 	/**
-	 * Calculates the new values for two given values structures.
-	 */
-	var calcInterpolation = function(val1, val2, progress) {
-		//They both need to have the same length
-		if(val1.length !== val2.length) {
-			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
-		}
-
-		var interpolated = [];
-
-		for(var i = 1; i < val1.length; i++) {
-			interpolated[i - 1] = [val1[i][0] + ((val2[i][0] - val1[i][0]) * progress)];
-
-			//Floor if the <integer> flag is set
-			if(val1[i][1]) {
-				interpolated[i - 1] = interpolated[i - 1] | 0;
-			}
-		}
-
-		//Add the format string as first element.
-		interpolated.unshift(val1[0]);
-
-		return interpolated;
-	};
-
-	/**
-	 * Interpolates the numeric values into the format string.
-	 */
-	var interpolateString = function(val) {
-		var i = 1;
-
-		return val[0].replace(/\?/g, function() {
-			return val[i++][0];
-		});
-	};
-
-	/**
-	 * Will turn the color value into a property string.
-	 * Return hex values if hsla is unsupported.
-	 */
-	/*
-	toString: function(val) {
-		//Make browsers "support" hsl, hsla and rgba by mapping it to hex.
-		//Sadly, alpha is lost. But more important, you can use hsl!
-		if(!supportsCSS3Colors) {
-			return toHex[val[0]](val[1][0], val[2][0], val[3][0]);
-		}
-
-		var res = val.slice(1);
-
-		//concat values and units
-		for(var i = 0; i < 4; i++) {
-			res[i] = res[i].join('');
-		}
-
-		return val[0] + '(' + res.join(',') + ')';
-	}
-	*/
-
-
-
-	/**
 	 * Constructor.
 	 */
 	function Skrollr(options) {
@@ -195,8 +125,7 @@
 						frame: 100,
 						props: {
 							width: {
-								value: [100, 'px'],
-								step: <reference to step function calculating the interpolation>,
+								value: ['?px', 100],
 								easing: <reference to easing function>
 							}
 						}
@@ -205,8 +134,7 @@
 						frame: 200,
 						props: {
 							width: {
-								value: [20, 'px'],
-								step: <reference to step function calculating the interpolation>,
+								value: ['?px', 20],
 								easing: <reference to easing function>
 							}
 						}
@@ -320,18 +248,13 @@
 		self._render();
 
 		//Clean up
-		dummy = undefined;
-		dummyStyle = undefined;
-		atEndKeyFrames = undefined;
-		options = undefined;
+		dummy = dummyStyle = atEndKeyFrames = options = undefined;
 
 		return self;
 	}
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		pageYOffset = top;
-		document.body.scrollTop = top;
-		document.documentElement.scrollTop = top;
+		pageYOffset = document.body.scrollTop = document.documentElement.scrollTop = top;
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
@@ -346,6 +269,7 @@
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
 	Skrollr.prototype._calcSteps = function(skrollable, frame) {
+		var self = this;
 		var frames = skrollable.keyFrames;
 
 		//We are before the first frame, don't do anything
@@ -361,7 +285,7 @@
 
 			for(var key in last.props) {
 				if(hasProp.call(last.props, key)) {
-					value = interpolateString(last.props[key].value);
+					value = self._interpolateString(last.props[key].value);
 
 					setStyle(skrollable.element, key, value);
 				}
@@ -385,9 +309,9 @@
 							progress = left.props[key].easing(progress);
 
 							//Interpolate between the two values
-							var value = calcInterpolation(left.props[key].value, right.props[key].value, progress);
+							var value = self._calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
-							value = interpolateString(value);
+							value = self._interpolateString(value);
 
 							setStyle(skrollable.element, key, value);
 						}
@@ -486,27 +410,37 @@
 	 * Parses a value extracting numeric values and generating a format string
 	 * for later interpolation of the new values in old string.
 	 *
-	 * Returns something like ["rgba(?,?,?,?)", [100,true], [50,true], [0,true], [.7,false]]
-	 * where the first element is the format string later used and all following elements
-	 * contain the numeric value and a <integer> flag.
+	 * @param val The CSS value to be parsed.
+	 * @return Something like ["rgba(?%,?%, ?%,?)", 100, 50, 0, .7]
+	 * where the first element is the format string later used
+	 * and all following elements are the numeric value.
 	 */
 	Skrollr.prototype._parseProp = function(val) {
 		var numbers = [];
 
+		//One special case, where floats don't work.
+		//We replace all occurences of rgba colors
+		//which don't use percentage notation with the percentage notation.
+		val = val.replace(rxRGBAIntegerColor, function(rgba) {
+			return rgba.replace(rxNumericValue, function(n) {
+				return (parseInt(n, 10) / 255) * 100 + '%';
+			});
+		});
+
+		//Now parse ANY number inside this string and create a format string.
 		val = val.replace(rxNumericValue, function(n) {
-			//TODO: Add some logic to detect if it is a <integer>, which needs special handling in CSS
-			numbers.push([_parseFloat(n, 10), false]);
+			numbers.push(parseFloat(n, 10));
 			return '?';
 		});
 
-		//Add the formatstring as first value
+		//Add the formatstring as first value.
 		numbers.unshift(val);
 
 		return numbers;
 	};
 
 	/**
-	 * Fills the key frames with missing left hand properties.
+	 * Fills the key frames with missing left and right hand properties.
 	 * If key frame 1 has property X and key frame 2 is missing X,
 	 * but key frame 3 has X again, then we need to assign X to key frame 2 too.
 	 *
@@ -531,7 +465,6 @@
 		}
 	};
 
-
 	Skrollr.prototype._fillPropForFrame = function(frame, propList) {
 		//For each key frame iterate over all right hand properties and assign them,
 		//but only if the current key frame doesn't have the property by itself
@@ -548,9 +481,40 @@
 		}
 	};
 
+	/**
+	 * Calculates the new values for two given values array.
+	 */
+	Skrollr.prototype._calcInterpolation = function(val1, val2, progress) {
+		//They both need to have the same length
+		if(val1.length !== val2.length) {
+			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
+		}
+
+		//Add the format string as first element.
+		var interpolated = [val1[0]];
+
+		for(var i = 1; i < val1.length; i++) {
+			//That's the line where the two numbers are actually interpolated.
+			interpolated[i] = val1[i] + ((val2[i] - val1[i]) * progress);
+		}
+
+		return interpolated;
+	};
+
+	/**
+	 * Interpolates the numeric values into the format string.
+	 */
+	Skrollr.prototype._interpolateString = function(val) {
+		var i = 1;
+
+		return val[0].replace(/\?/g, function() {
+			return val[i++];
+		});
+	};
+
 
 	/*
-		Helpers
+		Helpers which don't necessarily belong to the skrollr Object.
 	*/
 
 	/**
@@ -559,22 +523,17 @@
 	var setStyle = function(el, prop, val) {
 		var style = el.style;
 
-		//IE opacity
-		if(prop === 'opacity') {
-			style.zoom = 1;
-
-			//Remove filter attribute in IE
-			if(val >= 1 && style.removeAttribute) {
-				style.removeAttribute('filter');
-			} else {
-				style.filter = 'alpha(opacity=' + val * 100 + ')';
-			}
-		}
-
-		//Camel case
+		//Camel case.
 		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
 		}).replace('-', '');
+
+		//Make sure z-index gets a <integer>.
+		if(prop === 'zIndex') {
+			//Floor
+			style[prop] = '' + (val | 0);
+			return;
+		}
 
 		//Unprefixed
 		style[prop] = val;
@@ -611,33 +570,16 @@
 		return ' ' + a + ' ';
 	};
 
-	/**
-	 * Converts rgb or hsl color to hex color.
-	 */
-	var toHex = {
-		//Credits to aemkei, jed and others
-		//Based on https://gist.github.com/1325937 and https://gist.github.com/983535
-		hsla: function(a,b,c,y){
-			a%=360;
-			a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
-
-			y = [b[~~a%6],b[(a|16)%6],b[(a|8)%6]];
-
-			return toHex.rgba(_parseInt(y[0] * 255), _parseInt(y[1] * 255), _parseInt(y[2] * 255));
-		},
-		//https://gist.github.com/983535
-		rgba: function(a,b,c){
-			return'#' + ((256+a<<8|b)<<8|c).toString(16).slice(1);
-		}
-	}
-
-
-	//Global api
+	//Global api.
 	window.skrollr = {
-		//Main entry point
+		//Main entry point.
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.2.3'
+		//Plugin api.
+		plugin: function(entryPoint, fn) {
+
+		},
+		VERSION: '0.3.0'
 	};
 }(window, document));
