@@ -1,6 +1,6 @@
 /*!
- * skrollr v0.2.4
- * parallax scrolling for the masses.
+ * skrollr v0.3.0
+ * Parallax scrolling for the masses.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
  *
@@ -13,9 +13,7 @@
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
 
-	//Minify optimizations.
-	var _parseInt = parseInt;
-	var _parseFloat = parseFloat;
+	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 
 	var requestAnimFrame =
@@ -41,27 +39,15 @@
 
 	var rxCamelCase = /-([a-z])/g;
 
-	//Numeric values with optional unit.
-	var rxNumericValue = /(?:^|\s+)((?:-|\+)?[0-9.]+)(%|px|em|ex|pt|in|cm|mm|pc|deg)?/g;
+	//Numeric values with optional sign.
+	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
 
-	//Find rotate, scale, scaleX, scaleY, skew, skewX, skewY.
-	var rxTransformValue = /((?:rotate)|(?:scale(?:X|Y)?)|(?:skew(?:X|Y)?))\((.+?)\)/g;
-
-	//rgb, rgba, hsl, hsla mixed.
-	var rxColorValue = /^((?:rgba?)|(?:hsla?))\(((?:-|\+)?\d+)\s*,\s*(\d{1,3})%?\s*,\s*(\d{1,3})%?\s*(?:,\s*([0-9.]+))?\)$/;
+	//Finds rgb(a) colors, which don't use the percentage notation.
+	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
 
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
-	var supportsCSS3Colors = (function(s) {
-		try {
-			s.backgroundColor = 'hsla(180,50%,50%,.5)';
-			return s.backgroundColor.indexOf('hsla') !== -1 || s.backgroundColor.indexOf('rgba') !== -1;
-		} catch(e) {
-			return false;
-		}
-	}(document.createElement('a').style));
-
-	//Built in easing functions.
+	//Built-in easing functions.
 	var easings = {
 		begin: function() {
 			return 0;
@@ -102,232 +88,8 @@
 		}
 	};
 
-	/**
-	 * List of parser and steps for different kind of value types.
-	 * Parser: Parses a value to a specific format which a Step can handle.
-	 * Step: A function which gets the output of two Parsers and interpolates the value for a given progress.
-	 */
-	var parsersAndSteps = {
-		//Simple constant values which won't be interpolated.
-		constant: {
-			/**
-			* Doesn't interpolate at all.
-			*/
-			step: function(val) {
-				return val;
-			}
-		},
-		//Simple numeric values with unit which can easily be interpolated.
-		//Not used directly, only by composedNumeric.
-		numeric: {
-			/**
-			 * Parses a single numeric value with optional unit.
-			 * @return An array with the numeric value at first position and the unit at second position.
-			 */
-			parser: function(val) {
-				rxNumericValue.lastIndex = 0;
-
-				var match = rxNumericValue.exec(val);
-
-				if(match === null) {
-					throw 'Can\'t parse "' + val + '" as numeric value.';
-				}
-
-				return [_parseFloat(match[1], 10), match[2] || ''];
-			},
-			/**
-			 * Calculates the new value by interpolating between val1 and val2 using the given easing.
-			 * If only the first parameter is specified, it just sets the value.
-			 */
-			step: function(val1, val2, progress) {
-				if(val2 === undefined) {
-					return val1[0] + val1[1];
-				}
-
-				//Check if the units are the same
-				if(val1[1] !== val2[1]) {
-					throw 'Can\'t interpolate between "' + val[0] + val1[1] + '" and "' + val1[0] + val2[1] + '"';
-				}
-
-				return (val1[0] + ((val2[0] - val1[0]) * progress)) + val1[1];
-			}
-		},
-		//Values which are composed of multipe numeric values like "0% 0%"
-		composedNumeric: {
-			/**
-			 * Parses a value which is composed of multiple numeric values separated by a single space.
-			 * @return An array of arrays. See "numeric.parser" for info about the individual arrays.
-			 */
-			parser: function(all) {
-				var values = [];
-
-				for(var i = 0; i < all.length; i++) {
-					//Use the simple numeric parser for the indiviual values
-					values.push(parsersAndSteps.numeric.parser(all[i]));
-				}
-
-				return values;
-			},
-			/**
-			 * Calculates the new values by interpolating between the values in val1 and val2 using the given easing.
-			 * See "numeric.step" for more info.
-			 */
-			step: function(val1, val2, progress) {
-				var stepped = [];
-
-				if(val2 === undefined) {
-					for(var i = 0; i < val1.length; i++) {
-						stepped.push(parsersAndSteps.numeric.step(val1[i]));
-					}
-				} else {
-					if(val1.length !== val2.length) {
-						throw 'Can\'t interpolate between two composed values with different number of values.';
-					}
-
-					for(var i = 0; i < val1.length; i++) {
-						stepped.push(parsersAndSteps.numeric.step(val1[i], val2[i], progress));
-					}
-				}
-
-				return stepped.join(' ');
-			}
-		},
-		//scale, roate, skew
-		transform: {
-			/**
-			 * Parses a value which is composed of multiple transform functions.
-			 * @return An array with an even number of entries. All odd entries contain the name of a transform function and all even entries contain the result of "numeric.parser"
-			 */
-			parser: function(all) {
-				var values = [];
-
-				for(var i = 0; i < all.length; i++) {
-					rxTransformValue.lastIndex = 0;
-
-					var match = rxTransformValue.exec(all[i]);
-
-					//The transform function
-					values.push(match[1]);
-
-					//Use the simple numeric parser for the indiviual values
-					values.push(parsersAndSteps.numeric.parser(match[2]));
-				}
-
-				return values;
-			},
-			/**
-			 * Interpolates between multiple transform functions by using "numeric.step" on each value.
-			 */
-			step: function(val1, val2, progress) {
-				var ret = [];
-
-				if(val2 === undefined) {
-					for(var i = 0; i < val1.length - 1; i += 2) {
-						ret.push(val1[i] + '(' + val1[i + 1].join('') + ')');
-					}
-				} else {
-					for(var i = 0; i < val1.length - 1; i += 2) {
-						ret.push(val1[i] + '(' + parsersAndSteps.numeric.step(val1[i + 1], val2[i + 1], progress) + ')');
-					}
-				}
-
-				return ret.join(' ');
-			}
-		},
-		//rgb(a) and hsl(a) colors (no #fff or #ffffff)
-		color: {
-			/**
-			 * Parses a rgba or hslv value.
-			 * @return An array where the first entry is either the string "rgba" or "hsla" and the following four entries are results of "numeric.parser" on r,g,b,h,s,l or a values.
-			 */
-			parser: function(val) {
-				//remove the first element, which is the fully matched string
-				val.shift();
-
-				//is there a alpha part?
-				if(val[4] === undefined) {
-					val[4] = 1;
-				}
-
-				//rgb or hsl without "a" at the end
-				if(val[0].length === 3) {
-					val[0] += 'a';
-				}
-
-				//turn them strings into numbers
-				val[1] = _parseInt(val[1], 10);
-				val[2] = _parseInt(val[2], 10);
-				val[3] = _parseInt(val[3], 10);
-				val[4] = _parseFloat(val[4], 10);
-
-				var unit = '';
-
-				//add percentage unit when using hsla
-				if(val[0] === 'hsla') {
-					unit = '%';
-				}
-
-				//add the unit (empty string is unit-less/no-unit)
-				val[1] = [val[1], ''];
-				val[2] = [val[2], unit];
-				val[3] = [val[3], unit];
-				val[4] = [val[4], ''];
-
-				return val;
-			},
-			/**
-			 * Interpolates between two colors. No matter if it's rgba or hsla, the interpolation is done by using "numeric.step" on any of r,g,b,h,s,l and a.
-			 * For browsers that don't support rgba, hsl and hsla (IE, I'm looking at you), we will always return hex rgb.
-			 */
-			step: function(val1, val2, progress) {
-				if(val2 === undefined) {
-					return parsersAndSteps.color.toString(val1);
-				}
-
-				//now we are going to interpolate the colors
-				//we don't care if it's rgba or hlsa, we just call it xyza
-				var res = [val1[0]];
-
-				//xyz
-				for(var i = 1; i < 4; i++) {
-					res[i] = [
-						_parseInt(parsersAndSteps.numeric.step(val1[i], val2[i], progress), 10),
-						val1[i][1]
-					];
-				}
-
-				//a
-				res[4] = [
-					_parseFloat(parsersAndSteps.numeric.step(val1[4], val2[4], progress), 10),
-					val1[4][1]
-				];
-
-				return parsersAndSteps.color.toString(res);
-			},
-			/**
-			 * Will turn the color value into a property string.
-			 * Return hex values if hsla is unsupported.
-			 */
-			toString: function(val) {
-				//Make browsers "support" hsl, hsla and rgba by mapping it to hex.
-				//Sadly, alpha is lost. But more important, you can use hsl!
-				if(!supportsCSS3Colors) {
-					return toHex[val[0]](val[1][0], val[2][0], val[3][0]);
-				}
-
-				var res = val.slice(1);
-
-				//concat values and units
-				for(var i = 0; i < 4; i++) {
-					res[i] = res[i].join('');
-				}
-
-				return val[0] + '(' + res.join(',') + ')';
-			}
-		}
-	};
-
-
+	//Will contain all plugin-functions.
+	var plugins = {};
 
 	/**
 	 * Constructor.
@@ -366,8 +128,7 @@
 						frame: 100,
 						props: {
 							width: {
-								value: [100, 'px'],
-								step: <reference to step function calculating the interpolation>,
+								value: ['?px', 100],
 								easing: <reference to easing function>
 							}
 						}
@@ -376,8 +137,7 @@
 						frame: 200,
 						props: {
 							width: {
-								value: [20, 'px'],
-								step: <reference to step function calculating the interpolation>,
+								value: ['?px', 20],
 								easing: <reference to easing function>
 							}
 						}
@@ -491,18 +251,13 @@
 		self._render();
 
 		//Clean up
-		dummy = undefined;
-		dummyStyle = undefined;
-		atEndKeyFrames = undefined;
-		options = undefined;
+		dummy = dummyStyle = atEndKeyFrames = options = undefined;
 
 		return self;
 	}
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		pageYOffset = top;
-		document.body.scrollTop = top;
-		document.documentElement.scrollTop = top;
+		pageYOffset = document.body.scrollTop = document.documentElement.scrollTop = top;
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
@@ -517,6 +272,7 @@
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
 	Skrollr.prototype._calcSteps = function(skrollable, frame) {
+		var self = this;
 		var frames = skrollable.keyFrames;
 
 		//We are before the first frame, don't do anything
@@ -532,9 +288,9 @@
 
 			for(var key in last.props) {
 				if(hasProp.call(last.props, key)) {
-					value = last.props[key].step(last.props[key].value);
+					value = self._interpolateString(last.props[key].value);
 
-					setStyle(skrollable.element, key, value);
+					self._setStyle(skrollable.element, key, value);
 				}
 			}
 		}
@@ -550,21 +306,17 @@
 
 					for(var key in left.props) {
 						if(hasProp.call(left.props, key)) {
+							var progress = (frame - left.frame) / (right.frame - left.frame);
 
-							//If the left key frame has a property which the right doesn't, we just set it without interprolating
-							if(!hasProp.call(right.props, key)) {
-								var value = left.props[key].step(left.props[key].value);
+							//Transform the current progress using the given easing function.
+							progress = left.props[key].easing(progress);
 
-								setStyle(skrollable.element, key, value);
-							} else {
-								var progress = (frame - left.frame) / (right.frame - left.frame);
+							//Interpolate between the two values
+							var value = self._calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
-								progress = left.props[key].easing(progress);
+							value = self._interpolateString(value);
 
-								var value = left.props[key].step(left.props[key].value, right.props[key].value, progress);
-
-								setStyle(skrollable.element, key, value);
-							}
+							self._setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -587,13 +339,15 @@
 			//Remember in which direction are we scrolling?
 			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
 
-			//Tell the listener we are about to render.
-			var continueRendering = self.listeners.beforerender.call(self, {
+			var listenerParams = {
 				curTop: self.curTop,
 				lastTop: self.lastTop,
 				maxTop: self.maxKeyFrame,
 				direction: self.dir
-			});
+			};
+
+			//Tell the listener we are about to render.
+			var continueRendering = self.listeners.beforerender.call(self, listenerParams);
 
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
@@ -604,7 +358,7 @@
 				//Remember when we last rendered.
 				self.lastTop = self.curTop;
 
-				self.listeners.render.call(self);
+				self.listeners.render.call(self, listenerParams);
 			}
 		}
 
@@ -650,8 +404,7 @@
 
 				//Save the prop for this key frame with his value and easing function
 				frame.props[prop] = {
-					value: value.value,
-					step: value.step,
+					value: value,
 					easing: easings[easing]
 				};
 			}
@@ -659,46 +412,40 @@
 	};
 
 	/**
-	 * Parses a value using a parser. Tries to guess which parser to use.
+	 * Parses a value extracting numeric values and generating a format string
+	 * for later interpolation of the new values in old string.
+	 *
+	 * @param val The CSS value to be parsed.
+	 * @return Something like ["rgba(?%,?%, ?%,?)", 100, 50, 0, .7]
+	 * where the first element is the format string later used
+	 * and all following elements are the numeric value.
 	 */
 	Skrollr.prototype._parseProp = function(val) {
-		//Guess what type of value it is
-		switch(false) {
-			//Could be a transform value
-			case !(m = val.match(rxTransformValue)):
-				val = parsersAndSteps.transform.parser(m);
+		var numbers = [];
 
-				return {
-					value: val,
-					step: parsersAndSteps.transform.step
-				};
-			//Could be a color
-			case !(m = val.match(rxColorValue)):
-				val = parsersAndSteps.color.parser(m);
+		//One special case, where floats don't work.
+		//We replace all occurences of rgba colors
+		//which don't use percentage notation with the percentage notation.
+		val = val.replace(rxRGBAIntegerColor, function(rgba) {
+			return rgba.replace(rxNumericValue, function(n) {
+				return (parseInt(n, 10) / 255) * 100 + '%';
+			});
+		});
 
-				return {
-					value: val,
-					step: parsersAndSteps.color.step
-				};
-			//Could be a numeric value
-			case !(m = val.match(rxNumericValue)):
-				val = parsersAndSteps.composedNumeric.parser(m);
+		//Now parse ANY number inside this string and create a format string.
+		val = val.replace(rxNumericValue, function(n) {
+			numbers.push(parseFloat(n, 10));
+			return '?';
+		});
 
-				return {
-					value: val,
-					step: parsersAndSteps.composedNumeric.step
-				};
-			//Must be a constant value
-			default:
-				return {
-					value: val,
-					step: parsersAndSteps.constant.step
-				};
-		}
+		//Add the formatstring as first value.
+		numbers.unshift(val);
+
+		return numbers;
 	};
 
 	/**
-	 * Fills the key frames with missing left hand properties.
+	 * Fills the key frames with missing left and right hand properties.
 	 * If key frame 1 has property X and key frame 2 is missing X,
 	 * but key frame 3 has X again, then we need to assign X to key frame 2 too.
 	 *
@@ -723,7 +470,6 @@
 		}
 	};
 
-
 	Skrollr.prototype._fillPropForFrame = function(frame, propList) {
 		//For each key frame iterate over all right hand properties and assign them,
 		//but only if the current key frame doesn't have the property by itself
@@ -740,45 +486,82 @@
 		}
 	};
 
+	/**
+	 * Calculates the new values for two given values array.
+	 */
+	Skrollr.prototype._calcInterpolation = function(val1, val2, progress) {
+		//They both need to have the same length
+		if(val1.length !== val2.length) {
+			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
+		}
 
-	/*
-		Helpers
-	*/
+		//Add the format string as first element.
+		var interpolated = [val1[0]];
+
+		for(var i = 1; i < val1.length; i++) {
+			//That's the line where the two numbers are actually interpolated.
+			interpolated[i] = val1[i] + ((val2[i] - val1[i]) * progress);
+		}
+
+		return interpolated;
+	};
+
+	/**
+	 * Interpolates the numeric values into the format string.
+	 */
+	Skrollr.prototype._interpolateString = function(val) {
+		var i = 1;
+
+		return val[0].replace(/\?/g, function() {
+			return val[i++];
+		});
+	};
 
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	var setStyle = function(el, prop, val) {
+	Skrollr.prototype._setStyle = function(el, prop, val) {
 		var style = el.style;
 
-		//IE opacity
-		if(prop === 'opacity') {
-			style.zoom = 1;
-
-			//Remove filter attribute in IE
-			if(val >= 1 && style.removeAttribute) {
-				style.removeAttribute('filter');
-			} else {
-				style.filter = 'alpha(opacity=' + val * 100 + ')';
-			}
-		}
-
-		//Camel case
+		//Camel case.
 		prop = prop.replace(rxCamelCase, function(str, p1) {
 			return p1.toUpperCase();
 		}).replace('-', '');
 
-		//Unprefixed
-		style[prop] = val;
+		//Make sure z-index gets a <integer>.
+		if(prop === 'zIndex') {
+			//Floor
+			style[prop] = '' + (val | 0);
+			return;
+		}
+
+		try {
+			//Unprefixed
+			style[prop] = val;
+		} catch(ignore) {}
 
 		//Make first letter upper case for prefixed values
-		prop = prop.slice(0,1).toUpperCase() + prop.slice(1);
+		var upperProp = prop.slice(0,1).toUpperCase() + prop.slice(1);
 
-		//TODO maybe find some better way of doing this
-		for(var i = 0; i < prefixes.length; i++) {
-			style[prefixes[i] + prop] = val;
+		try {
+			//TODO maybe find some better way of doing this
+			for(var i = 0; i < prefixes.length; i++) {
+				style[prefixes[i] + upperProp] = val;
+			}
+		} catch(ignore) {}
+
+		//Plugin entry point.
+		if(plugins.setStyle) {
+			for(var i = 0; i < plugins.setStyle.length; i++) {
+				plugins.setStyle[0].call(this, el, prop, val);
+			}
 		}
 	};
+
+
+	/*
+		Helpers which don't necessarily belong to the skrollr Object.
+	*/
 
 	/**
 	 * Adds a CSS class.
@@ -803,33 +586,21 @@
 		return ' ' + a + ' ';
 	};
 
-	/**
-	 * Converts rgb or hsl color to hex color.
-	 */
-	var toHex = {
-		//Credits to aemkei, jed and others
-		//Based on https://gist.github.com/1325937 and https://gist.github.com/983535
-		hsla: function(a,b,c,y){
-			a%=360;
-			a/=60;c/=100;b=[c+=b*=(c<.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
-
-			y = [b[~~a%6],b[(a|16)%6],b[(a|8)%6]];
-
-			return toHex.rgba(_parseInt(y[0] * 255), _parseInt(y[1] * 255), _parseInt(y[2] * 255));
-		},
-		//https://gist.github.com/983535
-		rgba: function(a,b,c){
-			return'#' + ((256+a<<8|b)<<8|c).toString(16).slice(1);
-		}
-	}
-
-
-	//Global api
+	//Global api.
 	window.skrollr = {
-		//Main entry point
+		//Main entry point.
 		init: function(options) {
 			return new Skrollr(options);
 		},
-		VERSION: '0.2.3'
+		//Plugin api.
+		plugin: function(entryPoint, fn) {
+			//Each entry point may contain multiple plugin-functions.
+			if(plugins[entryPoint]) {
+				plugins[entryPoint].push(fn);
+			} else {
+				plugins[entryPoint] = [fn];
+			}
+		},
+		VERSION: '0.3.0'
 	};
 }(window, document));
