@@ -59,6 +59,11 @@
 	<script type="text/javascript" src="skrollr.js"></script>
 	<!--[if lt IE 9]>
 	<script type="text/javascript" src="plugins/skrollr.ie.js"></script>
+	<script type="text/javascript">
+	if(location.search === '?debug') {
+		document.write('<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"><' + '/script>');
+	}
+	</script>
 	<![endif]-->
 	<script type="text/javascript">
 	var s = skrollr.init({
