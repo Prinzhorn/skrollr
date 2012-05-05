@@ -1,4 +1,4 @@
-/*
+/*!
  * skrollr v0.3.0
  * Parallax scrolling for the masses.
  *
