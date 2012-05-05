@@ -1,7 +1,7 @@
-skrollr (v 0.2.4)
+skrollr (v 0.3.0)
 ======
 
-**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.5k minified** (3k gzipped). No JavaScript skills needed.
+**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **5.2k minified** (2.2k gzipped). No JavaScript skills needed.
 
 \**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
@@ -37,6 +37,9 @@ HTML Markup
 	<!-- Your elements go here -->
 
 	<script type="text/javascript" src="skrollr.js"></script>
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="plugins/skrollr.ie.js"></script>
+	<![endif]-->
 	<script type="text/javascript">
 	skrollr.init();
 
@@ -143,11 +146,11 @@ skrollr automatically **sets the prefixed properties for you**. You not just don
 
 Now that we just talked about CSS transforms, there are some limitations of skrollr you should be aware of.
 
-* All numeric values have to have the same unit. It's not possible to animate from "0%" to "100px".
+* All numeric values have to have the same unit. It's not possible to animate from "0%" to "100px". skrollr won't complain, but results are undefined.
 * Animations between values which are composed of multiple numeric values like "margin:0 0 0 0;" are only possible for the same number of values. "margin:0px 0px 0px 0px;" to "margin:0px 100px 50px 3px;" is fine, but not "margin:10px;" to "margin:5px 10px;".
-* "matrix()" is not supported for CSS transforms.
+* "matrix()" is not *really* supported for CSS transforms. skrollr will just interpolate all the numbers, no matter if it makes sense. May result in some funny effects :-D
 * Animations between CSS transforms only work when they use the same functions in same order. From "rotate(0deg) scale(1)" to "roate(1000deg) scale(5)" is fine.
-* Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use "rgb", "rgba", "hsl" and "hsla". Don't worry, skrollr includes a polyfill for "hsl" (without "a"!) for IE < 9.
+* Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use "rgb", "rgba", "hsl" and "hsla". Don't worry, there's a skrollr plugin for IE < 9 to support "hsl" (without "a"!) and to fall rgba back to rgb.
 * Color animations only work for same color functions. "hsl" to "hsl" or "hsla" is fine, but not "rgb" to "hsl". Which makes sense, because animating from the same colors in rgb space and in hsl space results in different animations (hsl gives you the nice rainbow stuff).
 
 But feel free to send in a pull request to fix any of them. Just keep in mind that keeping skrollr as lightweight as possible has high priority.
@@ -155,7 +158,7 @@ But feel free to send in a pull request to fix any of them. Just keep in mind th
 JavaScript
 ------
 
-On the JavaScript part there's not much to do (you can, if you want to). So if you only know CSS and HTML, perfect.
+On the JavaScript part there's not much to do (you can, if you want to!). So if you only know CSS and HTML, perfect.
 
 All there is to do is to call ```skrollr.init([options]);```.
 
@@ -182,7 +185,9 @@ A listener function getting called each time right before we render everything. 
 
 Returning ```false``` will prevent rendering.
 
-**Note:** the event fires as often as the native event does, but rendering is async using requestAnimationFrame in order to guarantee smooth transitions.
+#### render
+
+A listener function getting called right after before we finished rendering everything. The function will be passed the same parameters as ```beforerender```
 
 #### easing
 
@@ -203,6 +208,10 @@ skrollr.init({
 ```
 
 You can now use the easing functions like any other.
+
+### plugins
+
+Currently there's only a simple api for plugins. Just call ```window.skrollr.plugin('setStyle', /* your function */)``` to hook into the setStyle method. Your function will get three parameters: The DOM element, the CSS property (camel cased) and the value. If you need more plugin hooks, just add them and submit them with your pull request for the plugin itself.
 
 Contributors
 ------
