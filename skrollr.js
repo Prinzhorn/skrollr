@@ -541,12 +541,12 @@
 		} catch(ignore) {}
 
 		//Make first letter upper case for prefixed values
-		prop = prop.slice(0,1).toUpperCase() + prop.slice(1);
+		var upperProp = prop.slice(0,1).toUpperCase() + prop.slice(1);
 
 		try {
 			//TODO maybe find some better way of doing this
 			for(var i = 0; i < prefixes.length; i++) {
-				style[prefixes[i] + prop] = val;
+				style[prefixes[i] + upperProp] = val;
 			}
 		} catch(ignore) {}
 
