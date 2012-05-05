@@ -1,4 +1,4 @@
-/*!
+/*
  * skrollr v0.3.0
  * Parallax scrolling for the masses.
  *
@@ -290,7 +290,7 @@
 				if(hasProp.call(last.props, key)) {
 					value = self._interpolateString(last.props[key].value);
 
-					setStyle(skrollable.element, key, value);
+					self._setStyle(skrollable.element, key, value);
 				}
 			}
 		}
@@ -316,7 +316,7 @@
 
 							value = self._interpolateString(value);
 
-							setStyle(skrollable.element, key, value);
+							self._setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -517,15 +517,10 @@
 		});
 	};
 
-
-	/*
-		Helpers which don't necessarily belong to the skrollr Object.
-	*/
-
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	var setStyle = function(el, prop, val) {
+	Skrollr.prototype._setStyle = function(el, prop, val) {
 		var style = el.style;
 
 		//Camel case.
@@ -562,6 +557,11 @@
 			}
 		}
 	};
+
+
+	/*
+		Helpers which don't necessarily belong to the skrollr Object.
+	*/
 
 	/**
 	 * Adds a CSS class.

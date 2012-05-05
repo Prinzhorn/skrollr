@@ -10,15 +10,11 @@
  * Demo: http://prinzhorn.github.com/skrollr/
  * Source: https://github.com/Prinzhorn/skrollr
 */
-(function(window) {
-	if(!window.skrollr) {
-		return;
-	}
-
+(function(skrollr) {
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;
 	var rxRGBAColor = /rgba?\(\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?).*?\)/g;
 
-	window.skrollr.plugin('setStyle', function(el, prop, val) {
+	skrollr.plugin('setStyle', function(el, prop, val) {
 		var style = el.style;
 
 		//IE opacity
@@ -31,12 +27,14 @@
 			} else {
 				style.filter = 'alpha(opacity=' + val * 100 + ')';
 			}
-		}
 
-		var matched = false;
+			return;
+		}
 
 		//Fast pre check
 		if(val.indexOf('hsl') > -1) {
+			var matched = false;
+
 			//Replace hsl(a) with hex if needed (ignoring alpha).
 			val = val.replace(rxHSLAColor, function(x, h, s, l) {
 				matched = true;
@@ -53,6 +51,8 @@
 
 		//Fast pre check
 		if(val.indexOf('rgb') > -1) {
+			var matched = false;
+
 			//Replace rgba with hex if needed (ignoring alpha).
 			val = val.replace(rxRGBAColor, function(s, r, g, b) {
 				matched = true;
@@ -100,4 +100,4 @@
 		}
 	}
 
-}(window));
+}(window.skrollr));
