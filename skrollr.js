@@ -15,6 +15,10 @@
 
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
+	var documentElement = document.documentElement;
+	var body = document.body;
+
+	var HIDDEN_CLASS = 'hidden';
 
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
@@ -196,7 +200,7 @@
 						atEndKeyFrames.push(kf);
 					}
 
-					if(frame > this.maxKeyFrame) {
+					if(frame > self.maxKeyFrame) {
 						self.maxKeyFrame = frame;
 					}
 				}
@@ -241,11 +245,11 @@
 		var dummyStyle = dummy.style;
 
 		dummyStyle.width = '1px';
-		dummyStyle.height = (self.maxKeyFrame + document.documentElement.clientHeight) + 'px';
+		dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
 
-		document.getElementsByTagName('body')[0].appendChild(dummy);
+		body.appendChild(dummy);
 
 		//Let's go
 		self._render();
@@ -257,7 +261,7 @@
 	}
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		pageYOffset = document.body.scrollTop = document.documentElement.scrollTop = top;
+		pageYOffset = body.scrollTop = documentElement.scrollTop = top;
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
@@ -277,11 +281,11 @@
 
 		//We are before the first frame, don't do anything
 		if(frame < frames[0].frame) {
-			addClass(skrollable.element, 'hidden');
+			addClass(skrollable.element, HIDDEN_CLASS);
 		}
 		//We are after the last frame, the element gets all props from last key frame
 		else if(frame > frames[frames.length - 1].frame) {
-			removeClass(skrollable.element, 'hidden');
+			removeClass(skrollable.element, HIDDEN_CLASS);
 
 			var last = frames[frames.length - 1];
 			var value;
@@ -296,7 +300,7 @@
 		}
 		//We are between two frames
 		else {
-			removeClass(skrollable.element, 'hidden');
+			removeClass(skrollable.element, HIDDEN_CLASS);
 
 			//Find out between which two key frames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
@@ -332,7 +336,7 @@
 	Skrollr.prototype._render = function() {
 		var self = this;
 
-		self.curTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		//Does the scroll position event change?
 		if(self.lastTop !== self.curTop) {
@@ -428,13 +432,13 @@
 		//which don't use percentage notation with the percentage notation.
 		val = val.replace(rxRGBAIntegerColor, function(rgba) {
 			return rgba.replace(rxNumericValue, function(n) {
-				return (parseInt(n, 10) / 255) * 100 + '%';
+				return n / 255 * 100 + '%';
 			});
 		});
 
 		//Now parse ANY number inside this string and create a format string.
 		val = val.replace(rxNumericValue, function(n) {
-			numbers.push(parseFloat(n, 10));
+			numbers.push(+n);
 			return '?';
 		});
 
@@ -454,10 +458,11 @@
 	Skrollr.prototype._fillProps = function(sk) {
 		//Will collect the properties key frame by key frame
 		var propList = {};
+		var self = this;
 
 		//Iterate over all key frames from left to right
 		for(var i = 0; i < sk.keyFrames.length; i++) {
-			this._fillPropForFrame(sk.keyFrames[i], propList);
+			self._fillPropForFrame(sk.keyFrames[i], propList);
 		}
 
 		//Now do the same from right to fill the last gaps
@@ -466,7 +471,7 @@
 
 		//Iterate over all key frames from right to left
 		for(var i = sk.keyFrames.length - 1; i >= 0; i--) {
-			this._fillPropForFrame(sk.keyFrames[i], propList);
+			self._fillPropForFrame(sk.keyFrames[i], propList);
 		}
 	};
 
