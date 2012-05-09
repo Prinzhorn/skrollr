@@ -1,5 +1,5 @@
 /*!
- * skrollr v0.3.0
+ * skrollr v0.3.1
  * Parallax scrolling for the masses.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
@@ -19,6 +19,9 @@
 	var body = document.body;
 
 	var HIDDEN_CLASS = 'hidden';
+
+	var allCSSProperties = document.createElement('div').style;
+	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
@@ -48,8 +51,6 @@
 
 	//Finds rgb(a) colors, which don't use the percentage notation.
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
-
-	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
 
 	//Built-in easing functions.
 	var easings = {
@@ -534,31 +535,37 @@
 		}).replace('-', '');
 
 		//Make sure z-index gets a <integer>.
+		//This is the only <integer> case we need to handle.
 		if(prop === 'zIndex') {
 			//Floor
 			style[prop] = '' + (val | 0);
-			return;
 		}
-
-		try {
-			//Unprefixed
-			style[prop] = val;
-		} catch(ignore) {}
-
-		//Make first letter upper case for prefixed values
-		var upperProp = prop.slice(0,1).toUpperCase() + prop.slice(1);
-
-		try {
-			//TODO maybe find some better way of doing this
-			for(var i = 0; i < prefixes.length; i++) {
-				style[prefixes[i] + upperProp] = val;
+		else {
+			//Is the unprefixed property supported?
+			if(prop in allCSSProperties) {
+				//Need try-catch for IE.
+				try {
+					//Set unprefixed.
+					style[prop] = val;
+				} catch(ignore) {}
 			}
-		} catch(ignore) {}
+			else {
+				//Make first letter upper case for prefixed values.
+				var upperProp = prop.slice(0,1).toUpperCase() + prop.slice(1);
 
-		//Plugin entry point.
-		if(plugins.setStyle) {
-			for(var i = 0; i < plugins.setStyle.length; i++) {
-				plugins.setStyle[0].call(this, el, prop, val);
+				try {
+					//Set all prefixed properties, browsers will ignore unknown.
+					for(var i = 0; i < prefixes.length; i++) {
+						style[prefixes[i] + upperProp] = val;
+					}
+				} catch(ignore) {}
+			}
+
+			//Plugin entry point.
+			if(plugins.setStyle) {
+				for(var i = 0; i < plugins.setStyle.length; i++) {
+					plugins.setStyle[0].call(this, el, prop, val);
+				}
 			}
 		}
 	};
@@ -606,6 +613,6 @@
 				plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.0'
+		VERSION: '0.3.1'
 	};
 }(window, document));
