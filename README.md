@@ -187,7 +187,7 @@ Returning ```false``` will prevent rendering.
 
 #### render
 
-A listener function getting called right after before we finished rendering everything. The function will be passed the same parameters as ```beforerender```
+A listener function getting called right after we finished rendering everything. The function will be passed the same parameters as ```beforerender```
 
 #### easing
 
