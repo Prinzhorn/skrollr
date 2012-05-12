@@ -193,6 +193,8 @@ A listener function getting called right after we finished rendering everything.
 
 An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1 (the percentage of how much of the animation is done). The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 is just fine.
 
+An easing function basically transforms the timeline for an animation. When the animation should be 50% done, you can transform it to be 90% done or whatever your function does.
+
 Example:
 
 ```js
@@ -208,6 +210,17 @@ skrollr.init({
 ```
 
 You can now use the easing functions like any other.
+
+skrollr ships with some built in functions:
+
+* linear: The default. Doesn't need to be specified.
+* quadratic: Multiplies the value with itself. So 50% looks like 25%.
+* cubic: Like quadratic but multiplied again. So 50% looks like 6.25%
+* begin/end: They always return 0 or 1 respectively. No animation.
+* swing: Slow at the beginning and accelerates at the end. So 25% -> 14.6%, 50% -> 50%, 75% -> 85.3%
+* bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
+
+**Note**: Your easing functions should return 1 for input of 1. After the keyframe is passed, skrollr sets the values to the values of this keyframe. So if you function returns .8 for input of 1, your elements will jump at the end. But you can also use this on purpose, like the "inverted" function in the above example. The element will do everything in reverse, but at end the jumps to the end position.
 
 ### plugins
 
