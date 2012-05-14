@@ -96,12 +96,6 @@
 	//Will contain all plugin-functions.
 	var plugins = {};
 
-
-    // store the maxKeyFrame & clientHeight
-    var maxKeyFrame = 0,
-        clientHeight = 0;
-
-
 	/**
 	 * Constructor.
 	 */
@@ -159,10 +153,7 @@
 		self.skrollables = [];
 
 		//Will contain the max key frame value available.
-        maxKeyFrame = self.maxKeyFrame = options.maxKeyFrame || 0;
-
-        // document clientHeight
-        clientHeight = documentElement.clientHeight;
+        self.maxKeyFrame = options.maxKeyFrame || 0;
 
 		//Current direction (up/down).
 		self.dir = 'down';
@@ -211,7 +202,7 @@
 					}
 
 					if(frame > self.maxKeyFrame) {
-                        maxKeyFrame = self.maxKeyFrame = frame;
+                        self.maxKeyFrame = frame;
 					}
 				}
 			}
@@ -258,15 +249,19 @@
 		dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
-        	if (options.className) {
-            		dummy.className = options.className;
-        	}
-		dummy.id = 'dummy-element';
 
 		body.appendChild(dummy);
 
 		//Let's go
 		self._render();
+
+        	// store reference to dummy element to resize in case window.resize occurs
+		self.dummyElement = dummy;
+
+	        // update height of dummy div when window size is changed
+	        window.onresize = function() {
+	            self.dummyElement.style.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
+	        };
 
 		//Clean up
 		dummy = dummyStyle = atEndKeyFrames = options = undefined;
@@ -353,7 +348,9 @@
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
-        self.curTop = (self.curTop < 0) ? 0 : self.curTop;
+	        if (self.curTop < 0)  {
+	            self.curTop = 0;
+	        }
 
 		//Does the scroll position event change?
 		if(self.lastTop !== self.curTop) {
@@ -382,12 +379,6 @@
 				self.listeners.render.call(self, listenerParams);
 			}
 		}
-
-	        // update height of dummy div when window size is changed
-	        if (documentElement.clientHeight !== clientHeight) {
-	            clientHeight = documentElement.clientHeight;
-	            document.getElementById('dummy-element').style.height = (maxKeyFrame + documentElement.clientHeight) + 'px';
-	        }
 
 		requestAnimFrame(function() {
 			self._render();
