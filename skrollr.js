@@ -1,5 +1,5 @@
 /*!
- * skrollr v0.3.1
+ * skrollr v0.3.2
  * Parallax scrolling for the masses.
  *
  * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
@@ -96,6 +96,12 @@
 	//Will contain all plugin-functions.
 	var plugins = {};
 
+
+    // store the maxKeyFrame & clientHeight
+    var maxKeyFrame = 0,
+        clientHeight = 0;
+
+
 	/**
 	 * Constructor.
 	 */
@@ -153,7 +159,10 @@
 		self.skrollables = [];
 
 		//Will contain the max key frame value available.
-		self.maxKeyFrame = options.maxKeyFrame || 0;
+        maxKeyFrame = self.maxKeyFrame = options.maxKeyFrame || 0;
+
+        // document clientHeight
+        clientHeight = documentElement.clientHeight;
 
 		//Current direction (up/down).
 		self.dir = 'down';
@@ -202,7 +211,7 @@
 					}
 
 					if(frame > self.maxKeyFrame) {
-						self.maxKeyFrame = frame;
+                        maxKeyFrame = self.maxKeyFrame = frame;
 					}
 				}
 			}
@@ -249,6 +258,10 @@
 		dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
+        	if (options.className) {
+            		dummy.className = options.className;
+        	}
+		dummy.id = 'dummy-element';
 
 		body.appendChild(dummy);
 
@@ -340,7 +353,7 @@
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
-		self.curTop = (self.curTop < 0) ? 0 : self.curTop;
+        self.curTop = (self.curTop < 0) ? 0 : self.curTop;
 
 		//Does the scroll position event change?
 		if(self.lastTop !== self.curTop) {
@@ -369,6 +382,12 @@
 				self.listeners.render.call(self, listenerParams);
 			}
 		}
+
+	        // update height of dummy div when window size is changed
+	        if (documentElement.clientHeight !== clientHeight) {
+	            clientHeight = documentElement.clientHeight;
+	            document.getElementById('dummy-element').style.height = (maxKeyFrame + documentElement.clientHeight) + 'px';
+	        }
 
 		requestAnimFrame(function() {
 			self._render();
