@@ -342,7 +342,7 @@
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
-		if (self.curTop < 0)  {
+		if(self.curTop < 0) {
 			self.curTop = 0;
 		}
 
