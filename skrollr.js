@@ -246,7 +246,7 @@
 			dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		};
 
-		if (window.addEventListener) {
+		if(window.addEventListener) {
 			window.addEventListener('resize', onResize, false);
 		} else {
 			window.attachEvent('onresize', onResize);
