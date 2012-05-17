@@ -1,14 +1,4 @@
-/*!
- * skrollr v0.3.2
- * Parallax scrolling for the masses.
- *
- * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
- *
- * skrollr can be used by everyone under the terms of the MIT license.
- *
- * Demo: http://prinzhorn.github.com/skrollr/
- * Source: https://github.com/Prinzhorn/skrollr
-*/
+/*! skrollr v0.3.2 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
