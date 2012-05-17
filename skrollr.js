@@ -567,12 +567,12 @@
 					}
 				} catch(ignore) {}
 			}
+		}
 
-			//Plugin entry point.
-			if(plugins.setStyle) {
-				for(var i = 0; i < plugins.setStyle.length; i++) {
-					plugins.setStyle[0].call(this, el, prop, val);
-				}
+		//Plugin entry point.
+		if(plugins.setStyle) {
+			for(var i = 0; i < plugins.setStyle.length; i++) {
+				plugins.setStyle[0].call(this, el, prop, val);
 			}
 		}
 	};
