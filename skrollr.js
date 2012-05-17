@@ -255,16 +255,19 @@
 		//Let's go
 		self._render();
 
-        	// store reference to dummy element to resize in case window.resize occurs
-		self.dummyElement = dummy;
+        // update height of dummy div when window size is changed
+		var onResize = function() {
+		   dummy.style.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
+		};
 
-	        // update height of dummy div when window size is changed
-	        window.onresize = function() {
-	            self.dummyElement.style.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
-	        };
+		if (window.addEventListener) {
+		   window.addEventListener('resize', onResize, false);
+		} else {
+		   window.attachEvent('onresize', onResize);
+		}
 
 		//Clean up
-		dummy = dummyStyle = atEndKeyFrames = options = undefined;
+		dummyStyle = atEndKeyFrames = options = undefined;
 
 		return self;
 	}
@@ -348,9 +351,9 @@
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
-	        if (self.curTop < 0)  {
-	            self.curTop = 0;
-	        }
+        if (self.curTop < 0)  {
+            self.curTop = 0;
+        }
 
 		//Does the scroll position event change?
 		if(self.lastTop !== self.curTop) {
