@@ -153,7 +153,7 @@
 		self.skrollables = [];
 
 		//Will contain the max key frame value available.
-        self.maxKeyFrame = options.maxKeyFrame || 0;
+		self.maxKeyFrame = options.maxKeyFrame || 0;
 
 		//Current direction (up/down).
 		self.dir = 'down';
@@ -202,7 +202,7 @@
 					}
 
 					if(frame > self.maxKeyFrame) {
-                        self.maxKeyFrame = frame;
+						self.maxKeyFrame = frame;
 					}
 				}
 			}
@@ -246,28 +246,29 @@
 		var dummyStyle = dummy.style;
 
 		dummyStyle.width = '1px';
-		dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		dummyStyle.position = 'absolute';
 		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
 
 		body.appendChild(dummy);
 
-		//Let's go
-		self._render();
-
-        // update height of dummy div when window size is changed
+		//Update height of dummy div when window size is changed.
 		var onResize = function() {
-		   dummy.style.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
+			dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
 		};
 
 		if (window.addEventListener) {
-		   window.addEventListener('resize', onResize, false);
+			window.addEventListener('resize', onResize, false);
 		} else {
-		   window.attachEvent('onresize', onResize);
+			window.attachEvent('onresize', onResize);
 		}
 
+		onResize();
+
+		//Let's go
+		self._render();
+
 		//Clean up
-		dummyStyle = atEndKeyFrames = options = undefined;
+		dummy = atEndKeyFrames = options = undefined;
 
 		return self;
 	}
@@ -351,9 +352,9 @@
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
 		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
-        if (self.curTop < 0)  {
-            self.curTop = 0;
-        }
+		if (self.curTop < 0)  {
+			self.curTop = 0;
+		}
 
 		//Does the scroll position event change?
 		if(self.lastTop !== self.curTop) {
