@@ -41,6 +41,9 @@
 	//Finds rgb(a) colors, which don't use the percentage notation.
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
 
+	//Finds all gradients.
+	var rxGradient = /[a-z-]+-gradient/g;
+
 	//Only relevant prefixes. May be extended.
 	//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
 	var rxPrefixes = /^O|Moz|webkit|ms/;
@@ -460,11 +463,20 @@
 		//One special case, where floats don't work.
 		//We replace all occurences of rgba colors
 		//which don't use percentage notation with the percentage notation.
+		rxRGBAIntegerColor.lastIndex = 0;
 		val = val.replace(rxRGBAIntegerColor, function(rgba) {
 			return rgba.replace(rxNumericValue, function(n) {
 				return n / 255 * 100 + '%';
 			});
 		});
+
+		//Handle prefixing of "gradient" values.
+		//For now only the prefixed value will be set. Unprefixed isn't supported anyway.
+		rxGradient.lastIndex = 0;
+		val = val.replace(rxGradient, function(s) {
+			return theDashedCSSPrefix + s;
+		});
+
 
 		//Now parse ANY number inside this string and create a format string.
 		val = val.replace(rxNumericValue, function(n) {
