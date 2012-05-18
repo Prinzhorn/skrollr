@@ -12,9 +12,6 @@
 	var SKROLLABLE_CLASS = 'skrollable';
 	var DEFAULT_EASING = 'linear';
 
-	var allCSSProperties = document.createElement('div').style;
-	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
-
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
 		window.webkitRequestAnimationFrame ||
@@ -43,6 +40,30 @@
 
 	//Finds rgb(a) colors, which don't use the percentage notation.
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
+
+	//Only relevant prefixes. May be extended.
+	//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
+	var rxPrefixes = /^O|Moz|webkit|ms/;
+
+	var theCSSPrefix;
+	var theDashedCSSPrefix;
+
+	//Detect prefix for current browser by finding the first property using a prefix.
+	for(var k in body.style) {
+		//Yes, this is meant to be an assignment.
+		if(theCSSPrefix = k.match(rxPrefixes)) {
+			break;
+		}
+	}
+
+	//Empty string if no prefix detected
+	theCSSPrefix = (theCSSPrefix || [''])[0];
+
+	//Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
+	theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
+
+	//Cleanup.
+	rxPrefixes = undefined;
 
 	//Built-in easing functions.
 	var easings = {
@@ -549,25 +570,14 @@
 			style[prop] = '' + (val | 0);
 		}
 		else {
-			//Is the unprefixed property supported?
-			if(prop in allCSSProperties) {
-				//Need try-catch for IE.
-				try {
-					//Set unprefixed.
-					style[prop] = val;
-				} catch(ignore) {}
-			}
-			else {
-				//Make first letter upper case for prefixed values.
-				var upperProp = prop.slice(0,1).toUpperCase() + prop.slice(1);
+			//Need try-catch for old IE.
+			try {
+				//Set prefixed property.
+				style[theCSSPrefix + prop.slice(0,1).toUpperCase() + prop.slice(1)] = val;
 
-				try {
-					//Set all prefixed properties, browsers will ignore unknown.
-					for(var i = 0; i < prefixes.length; i++) {
-						style[prefixes[i] + upperProp] = val;
-					}
-				} catch(ignore) {}
-			}
+				//Set unprefixed.
+				style[prop] = val;
+			} catch(ignore) {}
 		}
 
 		//Plugin entry point.
