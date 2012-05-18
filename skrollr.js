@@ -9,6 +9,7 @@
 	var body = document.body;
 
 	var HIDDEN_CLASS = 'hidden';
+	var DEFAULT_EASING = 'linear';
 
 	var allCSSProperties = document.createElement('div').style;
 	var prefixes = ['O', 'Moz', 'webkit', 'ms'];
@@ -230,7 +231,6 @@
 			self._fillProps(sk);
 		}
 
-
 		//Add a dummy element in order to get a large enough scrollbar
 		var dummy = document.createElement('div');
 		var dummyStyle = dummy.style;
@@ -409,7 +409,7 @@
 					prop = easing[1];
 					easing = easing[2];
 				} else {
-					easing = 'linear';
+					easing = DEFAULT_EASING;
 				}
 
 				value = self._parseProp(value);
