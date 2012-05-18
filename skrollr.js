@@ -9,6 +9,7 @@
 	var body = document.body;
 
 	var HIDDEN_CLASS = 'hidden';
+	var SKROLLABLE_CLASS = 'skrollable';
 	var DEFAULT_EASING = 'linear';
 
 	var allCSSProperties = document.createElement('div').style;
@@ -205,7 +206,7 @@
 					keyFrames: keyFrames
 				});
 
-				addClass(el, 'skrollable');
+				addClass(el, SKROLLABLE_CLASS);
 			}
 		}
 
