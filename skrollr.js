@@ -341,12 +341,12 @@
 
 		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 
-		// in OSX it's possible to have a negative scrolltop, so, we set it to zero
+		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
 		if(self.curTop < 0) {
 			self.curTop = 0;
 		}
 
-		//Does the scroll position event change?
+		//Did the scroll position even change?
 		if(self.lastTop !== self.curTop) {
 			//Remember in which direction are we scrolling?
 			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
