@@ -1,4 +1,4 @@
-/*! skrollr v0.3.2 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.3 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
@@ -643,6 +643,6 @@
 				plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.2'
+		VERSION: '0.3.3'
 	};
 }(window, document));
