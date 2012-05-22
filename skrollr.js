@@ -618,7 +618,7 @@
 	 * Removes a CSS class.
 	 */
 	var removeClass = function(el, name) {
-		el.className = (untrim(el.className)).replace(untrim(name), '').replace(rxTrim, '$1');
+		el.className = (untrim(el.className)).replace(untrim(name), ' ').replace(rxTrim, '$1');
 	};
 
 	/**
