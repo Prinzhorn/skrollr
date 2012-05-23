@@ -57,7 +57,12 @@ You can read more about the init-function below (JavaScript-section).
 
 ### let's get serious
 
-Any markup you are about to see now must be inside the ```<body>```.
+Other libraries require you to write JavaScript in order to define your animations. This introduces two main problems:
+
+* Animation and element are not at one place. In order to find out if any animations are defined for a given element, you have to scroll through many (sometimes thousands) of lines of JavaScript.
+* You have to learn a new syntax which is often very verbose and limited at the same time.
+
+With skrollr, you put the definition of your key frames right where they belong (to the element) using a syntax you already know (plain CSS).
 
 Simple animation of one property
 
