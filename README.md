@@ -212,5 +212,6 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 Contributors
 ------
 
-* [Alexander Prinzhorn](https://github.com/Prinzhorn)
+* [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
 * [Ali Karbassi](https://github.com/karbassi)
+* [Tri Nguyen](https://github.com/idlesysop)
