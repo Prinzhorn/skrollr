@@ -14,48 +14,7 @@ Documentation
 Abstract
 ------
 
-skrollr allows you to animate any CSS property of any element depending on the horizontal scrollbar position.
-
-All you need to do is define key frames for each element at certain points in top offset. Each key frame consists of one or multiple CSS properties and values.
-
-
-HTML Markup
-------
-
-### Quick start shim
-
-```html
-<!DOCTYPE html>
-<html>
-<head>
-	<title>Your title</title>
-
-	<link href="skrollr.css" rel="stylesheet" type="text/css" />
-</head>
-
-<body>
-	<!-- Your elements go here -->
-
-	<script type="text/javascript" src="skrollr.js"></script>
-	<!--[if lt IE 9]>
-	<script type="text/javascript" src="plugins/skrollr.ie.js"></script>
-	<![endif]-->
-	<script type="text/javascript">
-	skrollr.init();
-
-	//OR you may call the init-function at some other point. you could for example use an image preloader.
-	//window.onload = function() {
-	//	skrollr.init();
-	//};
-	</script>
-</body>
-
-</html>
-```
-
-You can read more about the init-function below (JavaScript-section).
-
-### let's get serious
+skrollr allows you to animate any CSS property of any element depending on the horizontal scrollbar position. All you need to do is define key frames for each element at certain points in top offset.
 
 Other libraries require you to write JavaScript in order to define your animations. This introduces two main problems:
 
@@ -63,6 +22,9 @@ Other libraries require you to write JavaScript in order to define your animatio
 * You have to learn a new syntax which is often very verbose and limited at the same time.
 
 With skrollr, you put the definition of your key frames right where they belong (to the element) using a syntax you already know (plain CSS).
+
+Let's get serious
+------
 
 Simple animation of one property
 
@@ -74,16 +36,16 @@ That was easy, right?
 
 We are using the HTML5 data attributes to attach key frames to DOM elements. The numbers represent the key frame position (the top scroll offset in pixel). The highest key frame found in the document will be used to set the the max top scroll offset.
 
-You can set multiple properties.
+You can set multiple properties, just like with the ```style``` attribute.
 
 ```html
 <div data-0="padding:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
 ```
 
-And you can specify easing functions for each property using square brackets.
+And you can specify easing functions for each property using square brackets. That is an extension to the default CSS syntax.
 
 ```html
-<div data-0="padding[cubic]:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+<div data-0="padding[bounce]:0px;color[cubic]:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
 ```
 
 ### more details
@@ -226,6 +188,22 @@ skrollr ships with some built in functions:
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
 **Note**: Your easing functions should return 1 for input of 1. After the keyframe is passed, skrollr sets the values to the values of this keyframe. So if you function returns .8 for input of 1, your elements will jump at the end. But you can also use this on purpose, like the "inverted" function in the above example. The element will do everything in reverse, but at end the jumps to the end position.
+
+### Public API
+
+Calling ```init()``` returns an instance of skrollr which exposes a public api.
+
+#### setScrollTop(top)
+
+Guess what this method does...
+
+#### on(name, fn)
+
+Set a listener function for one of the events described in the options section (beforerender, render).  Only one listener can be attachet at a given time. This methods overwrites the current listener.
+
+#### off(name)
+
+Removes the listener for the given event.
 
 ### plugins
 
