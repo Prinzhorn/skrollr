@@ -199,7 +199,7 @@ Guess what this method does...
 
 #### on(name, fn)
 
-Set a listener function for one of the events described in the options section (beforerender, render).  Only one listener can be attachet at a given time. This methods overwrites the current listener.
+Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attachet at a given time. This method overwrites the current listener, if any.
 
 #### off(name)
 
