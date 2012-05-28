@@ -83,7 +83,7 @@
 			return p * p;
 		},
 		cubic: function(p) {
-			return p * p * p * p;
+			return p * p * p;
 		},
 		swing: function(p) {
 			return (-Math.cos(p * Math.PI) / 2) + .5;

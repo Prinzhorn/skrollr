@@ -181,8 +181,8 @@ You can now use the easing functions like any other.
 skrollr ships with some built in functions:
 
 * linear: The default. Doesn't need to be specified.
-* quadratic: Multiplies the value with itself. So 50% looks like 25%.
-* cubic: Like quadratic but multiplied again. So 50% looks like 6.25%
+* quadratic: To the power of two. So 50% looks like 25%.
+* cubic: To the power of three. So 50% looks like 12.5%
 * begin/end: They always return 0 or 1 respectively. No animation.
 * swing: Slow at the beginning and accelerates at the end. So 25% -> 14.6%, 50% -> 50%, 75% -> 85.3%
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
