@@ -53,9 +53,12 @@
 
 	//Detect prefix for current browser by finding the first property using a prefix.
 	if(window.getComputedStyle) {
-		for(var k in window.getComputedStyle(body, null)) {
+		var style = window.getComputedStyle(body, null);
+
+		for(var k in style) {
 			//Yes, this is meant to be an assignment.
-			if(theCSSPrefix = k.match(rxPrefixes)) {
+			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
+			if(theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)))) {
 				break;
 			}
 		}
