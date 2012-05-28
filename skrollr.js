@@ -1,4 +1,4 @@
-/*! skrollr v0.3.4 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.5 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
@@ -52,10 +52,12 @@
 	var theDashedCSSPrefix;
 
 	//Detect prefix for current browser by finding the first property using a prefix.
-	for(var k in body.style) {
-		//Yes, this is meant to be an assignment.
-		if(theCSSPrefix = k.match(rxPrefixes)) {
-			break;
+	if(window.getComputedStyle) {
+		for(var k in window.getComputedStyle(body, null)) {
+			//Yes, this is meant to be an assignment.
+			if(theCSSPrefix = k.match(rxPrefixes)) {
+				break;
+			}
 		}
 	}
 
@@ -643,6 +645,6 @@
 				plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.4'
+		VERSION: '0.3.5'
 	};
 }(window, document));
