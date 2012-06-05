@@ -193,9 +193,9 @@ skrollr ships with some built in functions:
 
 Calling ```init()``` returns an instance of skrollr which exposes a public api.
 
-#### setScrollTop(top)
+#### setScrollTop(top) [DEPRECATED]
 
-Guess what this method does...
+DEPRECATED: Will be removed in 0.4. Use window.scroll(0, top) instead
 
 #### on(name, fn)
 
