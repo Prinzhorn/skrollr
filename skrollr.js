@@ -1,7 +1,9 @@
-/*! skrollr v0.3.7 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.8 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
+	"use strict";
+
 	//Used as a dummy function for event listeners.
-	var noop = function() {};
+	var NOOP = function() {};
 
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
@@ -11,6 +13,7 @@
 	var HIDDEN_CLASS = 'hidden';
 	var SKROLLABLE_CLASS = 'skrollable';
 	var DEFAULT_EASING = 'linear';
+	var DEFAULT_DURATION = 500;
 
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
@@ -114,14 +117,11 @@
 		}
 	};
 
-	//Will contain all plugin-functions.
-	var plugins = {};
-
 	/**
 	 * Constructor.
 	 */
 	function Skrollr(options) {
-		var self = this;
+		_instance = this;
 
 		options = options || {};
 
@@ -132,15 +132,12 @@
 			}
 		}
 
-		//Scale factor to scale key frames.
-		self.scale = options.scale || 1;
-
-		self.listeners = {
+		_listeners = {
 			//Function to be called right before rendering.
-			beforerender: options.beforerender || noop,
+			beforerender: options.beforerender || NOOP,
 
 			//Function to be called right after finishing rendering.
-			render: options.render || noop
+			render: options.render || NOOP
 		};
 
 		/*
@@ -171,19 +168,19 @@
 				]
 			};
 		*/
-		self.skrollables = [];
+		_skrollables = [];
 
 		//Will contain the max key frame value available.
-		self.maxKeyFrame = options.maxKeyFrame || 0;
+		_maxKeyFrame = options.maxKeyFrame || 0;
 
 		//Current direction (up/down).
-		self.dir = 'down';
+		_direction = 'down';
 
 		//The last top offset value. Needed to determine direction.
-		self.lastTop = -1;
+		_lastTop = -1;
 
 		//The current top offset, needed for async rendering.
-		self.curTop = 0;
+		_curTop = 0;
 
 		var allElements = document.getElementsByTagName('*');
 
@@ -208,7 +205,7 @@
 					var frame;
 					var kf;
 
-					frame = (match[2] | 0) * self.scale;
+					frame = (match[2] | 0) * (options.scale || 1);
 
 					kf = {
 						frame: frame,
@@ -222,32 +219,32 @@
 						atEndKeyFrames.push(kf);
 					}
 
-					if(frame > self.maxKeyFrame) {
-						self.maxKeyFrame = frame;
+					if(frame > _maxKeyFrame) {
+						_maxKeyFrame = frame;
 					}
 				}
 			}
 
 			//Does this element have key frames?
 			if(keyFrames.length) {
-				self.skrollables.push({
+				_skrollables.push({
 					element: el,
 					keyFrames: keyFrames
 				});
 
-				addClass(el, SKROLLABLE_CLASS);
+				_addClass(el, SKROLLABLE_CLASS);
 			}
 		}
 
 		//Set all data-end key frames to max key frame
 		for(var i = 0; i < atEndKeyFrames.length; i++) {
 			var kf = atEndKeyFrames[i];
-			kf.frame = self.maxKeyFrame - kf.frame;
+			kf.frame = _maxKeyFrame - kf.frame;
 		}
 
 		//Now that we got all key frame numbers right, actually parse the properties.
-		for(var i = 0; i < self.skrollables.length; i++) {
-			var sk = self.skrollables[i];
+		for(var i = 0; i < _skrollables.length; i++) {
+			var sk = _skrollables[i];
 
 			//Make sure they are in order
 			sk.keyFrames.sort(function(a, b) {
@@ -255,10 +252,10 @@
 			});
 
 			//Parse the property string to objects
-			self._parseProps(sk);
+			_parseProps(sk);
 
 			//Fill key frames with missing properties from left and right
-			self._fillProps(sk);
+			_fillProps(sk);
 		}
 
 		//Add a dummy element in order to get a large enough scrollbar
@@ -273,7 +270,7 @@
 
 		//Update height of dummy div when window size is changed.
 		var onResize = function() {
-			dummyStyle.height = (self.maxKeyFrame + documentElement.clientHeight) + 'px';
+			dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
 		};
 
 		if(window.addEventListener) {
@@ -285,12 +282,12 @@
 		onResize();
 
 		//Let's go
-		self._render();
+		_render();
 
 		//Clean up
 		dummy = atEndKeyFrames = options = undefined;
 
-		return self;
+		return _instance;
 	}
 
 	Skrollr.prototype.setScrollTop = function(top) {
@@ -302,42 +299,45 @@
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
-		this.listeners[name] = fn || noop;
+		_listeners[name] = fn || NOOP;
 	};
 
 	Skrollr.prototype.off = function(name) {
-		this.listeners[name] = noop;
+		_listeners[name] = NOOP;
 	};
+
+	/*
+		Private methods.
+	*/
 
 	/**
 	 * Calculate and sets the style properties for the element at the given frame
 	 */
-	Skrollr.prototype._calcSteps = function(skrollable, frame) {
-		var self = this;
+	var _calcSteps = function(skrollable, frame) {
 		var frames = skrollable.keyFrames;
 
 		//We are before the first frame, don't do anything
 		if(frame < frames[0].frame) {
-			addClass(skrollable.element, HIDDEN_CLASS);
+			_addClass(skrollable.element, HIDDEN_CLASS);
 		}
 		//We are after or at the last frame, the element gets all props from last key frame
 		else if(frame >= frames[frames.length - 1].frame) {
-			removeClass(skrollable.element, HIDDEN_CLASS);
+			_removeClass(skrollable.element, HIDDEN_CLASS);
 
 			var last = frames[frames.length - 1];
 			var value;
 
 			for(var key in last.props) {
 				if(hasProp.call(last.props, key)) {
-					value = self._interpolateString(last.props[key].value);
+					value = _interpolateString(last.props[key].value);
 
-					self._setStyle(skrollable.element, key, value);
+					_setStyle(skrollable.element, key, value);
 				}
 			}
 		}
 		//We are between two frames
 		else {
-			removeClass(skrollable.element, HIDDEN_CLASS);
+			_removeClass(skrollable.element, HIDDEN_CLASS);
 
 			//Find out between which two key frames we are right now
 			for(var i = 0; i < frames.length - 1; i++) {
@@ -353,11 +353,11 @@
 							progress = left.props[key].easing(progress);
 
 							//Interpolate between the two values
-							var value = self._calcInterpolation(left.props[key].value, right.props[key].value, progress);
+							var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
-							value = self._interpolateString(value);
+							value = _interpolateString(value);
 
-							self._setStyle(skrollable.element, key, value);
+							_setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -370,55 +370,51 @@
 	/**
 	 * Renders all elements
 	 */
-	Skrollr.prototype._render = function() {
-		var self = this;
-
-		self.curTop = self.getScrollTop();
+	var _render = function() {
+		_curTop = _instance.getScrollTop();
 
 		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
-		if(self.curTop < 0) {
-			self.curTop = 0;
+		if(_curTop < 0) {
+			_curTop = 0;
 		}
 
 		//Did the scroll position even change?
-		if(self.lastTop !== self.curTop) {
+		if(_lastTop !== _curTop) {
 			//Remember in which direction are we scrolling?
-			self.dir = (self.curTop >= self.lastTop) ? 'down' : 'up';
+			_direction = (_curTop >= _lastTop) ? 'down' : 'up';
 
 			var listenerParams = {
-				curTop: self.curTop,
-				lastTop: self.lastTop,
-				maxTop: self.maxKeyFrame,
-				direction: self.dir
+				curTop: _curTop,
+				lastTop: _lastTop,
+				maxTop: _maxKeyFrame,
+				direction: _direction
 			};
 
 			//Tell the listener we are about to render.
-			var continueRendering = self.listeners.beforerender.call(self, listenerParams);
+			var continueRendering = _listeners.beforerender.call(_instance, listenerParams);
 
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
-				for(var i = 0; i < self.skrollables.length; i++) {
-					self._calcSteps(self.skrollables[i], self.curTop);
+				for(var i = 0; i < _skrollables.length; i++) {
+					_calcSteps(_skrollables[i], _curTop);
 				}
 
 				//Remember when we last rendered.
-				self.lastTop = self.curTop;
+				_lastTop = _curTop;
 
-				self.listeners.render.call(self, listenerParams);
+				_listeners.render.call(_instance, listenerParams);
 			}
 		}
 
 		requestAnimFrame(function() {
-			self._render();
+			_render();
 		});
 	};
 
 	/**
 	 * Parses the properties for each key frame of the given skrollable.
 	 */
-	Skrollr.prototype._parseProps = function(skrollable) {
-		var self = this;
-
+	var _parseProps = function(skrollable) {
 		//Iterate over all key frames
 		for(var i = 0; i < skrollable.keyFrames.length; i++) {
 			var frame = skrollable.keyFrames[i];
@@ -451,7 +447,7 @@
 				}
 
 				//Exclamation point at first position forces the value to be taken literal.
-				value = value.indexOf('!') ? self._parseProp(value) : [value.slice(1)];
+				value = value.indexOf('!') ? _parseProp(value) : [value.slice(1)];
 
 				//Save the prop for this key frame with his value and easing function
 				frame.props[prop] = {
@@ -471,7 +467,7 @@
 	 * where the first element is the format string later used
 	 * and all following elements are the numeric value.
 	 */
-	Skrollr.prototype._parseProp = function(val) {
+	var _parseProp = function(val) {
 		var numbers = [];
 
 		//One special case, where floats don't work.
@@ -511,14 +507,13 @@
 	 *
 	 * @param sk A skrollable.
 	 */
-	Skrollr.prototype._fillProps = function(sk) {
+	var _fillProps = function(sk) {
 		//Will collect the properties key frame by key frame
 		var propList = {};
-		var self = this;
 
 		//Iterate over all key frames from left to right
 		for(var i = 0; i < sk.keyFrames.length; i++) {
-			self._fillPropForFrame(sk.keyFrames[i], propList);
+			_fillPropForFrame(sk.keyFrames[i], propList);
 		}
 
 		//Now do the same from right to fill the last gaps
@@ -527,11 +522,11 @@
 
 		//Iterate over all key frames from right to left
 		for(var i = sk.keyFrames.length - 1; i >= 0; i--) {
-			self._fillPropForFrame(sk.keyFrames[i], propList);
+			_fillPropForFrame(sk.keyFrames[i], propList);
 		}
 	};
 
-	Skrollr.prototype._fillPropForFrame = function(frame, propList) {
+	var _fillPropForFrame = function(frame, propList) {
 		//For each key frame iterate over all right hand properties and assign them,
 		//but only if the current key frame doesn't have the property by itself
 		for(var key in propList) {
@@ -550,7 +545,7 @@
 	/**
 	 * Calculates the new values for two given values array.
 	 */
-	Skrollr.prototype._calcInterpolation = function(val1, val2, progress) {
+	var _calcInterpolation = function(val1, val2, progress) {
 		//They both need to have the same length
 		if(val1.length !== val2.length) {
 			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
@@ -570,7 +565,7 @@
 	/**
 	 * Interpolates the numeric values into the format string.
 	 */
-	Skrollr.prototype._interpolateString = function(val) {
+	var _interpolateString = function(val) {
 		var i = 1;
 
 		return val[0].replace(/\?/g, function() {
@@ -581,7 +576,7 @@
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	Skrollr.prototype._setStyle = function(el, prop, val) {
+	var _setStyle = function(el, prop, val) {
 		var style = el.style;
 
 		//Camel case.
@@ -607,56 +602,73 @@
 		}
 
 		//Plugin entry point.
-		if(plugins.setStyle) {
+		if(_plugins.setStyle) {
 			for(var i = 0; i < plugins.setStyle.length; i++) {
-				plugins.setStyle[0].call(this, el, prop, val);
+				_plugins.setStyle[0].call(this, el, prop, val);
 			}
 		}
 	};
 
-
-	/*
-		Helpers which don't necessarily belong to the skrollr Object.
-	*/
-
 	/**
 	 * Adds a CSS class.
 	 */
-	var addClass = function(el, name) {
-		if(untrim(el.className).indexOf(untrim(name)) === -1) {
-			el.className = (el.className + ' ' + name).replace(rxTrim, '$1');
+	var _addClass = function(el, name) {
+		if(_untrim(el.className).indexOf(_untrim(name)) === -1) {
+			el.className = _trim((el.className + ' ' + name));
 		}
 	};
 
 	/**
 	 * Removes a CSS class.
 	 */
-	var removeClass = function(el, name) {
-		el.className = (untrim(el.className)).replace(untrim(name), ' ').replace(rxTrim, '$1');
+	var _removeClass = function(el, name) {
+		el.className = _trim((_untrim(el.className)).replace(_untrim(name), ' '));
+	};
+
+	var _trim = function(a) {
+		return a.replace(rxTrim, '$1');
 	};
 
 	/**
 	 * Adds a space before and after the string.
 	 */
-	var untrim = function(a) {
+	var _untrim = function(a) {
 		return ' ' + a + ' ';
 	};
 
-	//Global api.
+	/*
+	 * Private variables.
+	 */
+	//Singleton
+	var _instance;
+
+	//Will contain all plugin-functions.
+	var _plugins = {};
+
+	var _listeners;
+	var _skrollables;
+	var _maxKeyFrame;
+	var _direction;
+	var _lastTop;
+	var _curTop;
+
+	/*
+	 * Global api.
+	 */
 	window.skrollr = {
 		//Main entry point.
 		init: function(options) {
-			return new Skrollr(options);
+			return _instance || new Skrollr(options);
 		},
 		//Plugin api.
 		plugin: function(entryPoint, fn) {
 			//Each entry point may contain multiple plugin-functions.
-			if(plugins[entryPoint]) {
-				plugins[entryPoint].push(fn);
+			if(_plugins[entryPoint]) {
+				_plugins[entryPoint].push(fn);
 			} else {
-				plugins[entryPoint] = [fn];
+				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.7'
+		VERSION: '0.3.8'
 	};
 }(window, document));
