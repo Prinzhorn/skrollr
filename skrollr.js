@@ -294,7 +294,11 @@
 	}
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		pageYOffset = body.scrollTop = documentElement.scrollTop = top;
+		window.scroll(0, top);
+	};
+
+	Skrollr.prototype.getScrollTop = function(top) {
+		return window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
@@ -369,7 +373,7 @@
 	Skrollr.prototype._render = function() {
 		var self = this;
 
-		self.curTop = window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
+		self.curTop = self.getScrollTop();
 
 		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
 		if(self.curTop < 0) {
