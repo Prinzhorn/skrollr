@@ -1,4 +1,4 @@
-/*! skrollr v0.3.6 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.7 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	//Used as a dummy function for event listeners.
 	var noop = function() {};
@@ -316,8 +316,8 @@
 		if(frame < frames[0].frame) {
 			addClass(skrollable.element, HIDDEN_CLASS);
 		}
-		//We are after the last frame, the element gets all props from last key frame
-		else if(frame > frames[frames.length - 1].frame) {
+		//We are after or at the last frame, the element gets all props from last key frame
+		else if(frame >= frames[frames.length - 1].frame) {
 			removeClass(skrollable.element, HIDDEN_CLASS);
 
 			var last = frames[frames.length - 1];
@@ -442,7 +442,12 @@
 					easing = DEFAULT_EASING;
 				}
 
-				value = self._parseProp(value);
+				if(!value.indexOf('!')) {
+					console.log(value.slice(1));
+				}
+
+				//Exclamation point at first position forces the value to be taken literal.
+				value = value.indexOf('!') ? self._parseProp(value) : [value.slice(1)];
 
 				//Save the prop for this key frame with his value and easing function
 				frame.props[prop] = {
@@ -648,6 +653,6 @@
 				plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.6'
+		VERSION: '0.3.7'
 	};
 }(window, document));
