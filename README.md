@@ -97,6 +97,21 @@ Even better, you can use both notations on the same element
 
 **heads up:** In the above example ```data-end-100``` is equal to ```data-900```, because there's no other element on the page. data-end is the **global** max key frame, not for the element it is on. If there would be another element with ```data-5000```, when ```data-end-100``` would equal ```data-4900```.
 
+### peventing interpolation
+
+The reason why skrollr is so lightweight and powerfull is because it literally interpolates **any** numbers it can find. If you want to prevent some side effect, you can supress interpolation for a specific value by prepending an exclamation point.
+
+Example:
+```html
+<!-- This will get your image url f***** up because there's no "kitten0.4561799.jpg" and the like -->
+<div data-0="background-image:url(kitten1.jpg);" data-100="background-image:url(kitten2.jpg)"></div>
+
+<!-- Better -->
+<div data-0="background-image:!url(kitten1.jpg);" data-100="background-image:!url(kitten2.jpg)"></div>
+```
+
+**Note:** The values for both keyframes need to be prefixed if you want to avoid skrollr throwing an exception at you!
+
 ### skrollr.css
 
 skrollr comes with a file called ```skrollr.css```. This file contains a small set of CSS rules to get you started with skrollr. Every element with a "data-[number]" attribute will automatically get the "skrollable" class. This file is by no means complete or even mandatory. The default rules do make sense for desktop development, where it's not a problem to position elements "fixed". If you just want to do some lightweight stuff, maybe just scroll the background at a different speed then the rest of your page, just throw ```skrollr.css``` away an add your data- attributes to the body element.
