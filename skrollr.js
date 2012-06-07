@@ -1,4 +1,4 @@
-/*! skrollr v0.3.8 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.9 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	"use strict";
 
@@ -13,7 +13,7 @@
 	var HIDDEN_CLASS = 'hidden';
 	var SKROLLABLE_CLASS = 'skrollable';
 	var DEFAULT_EASING = 'linear';
-	var DEFAULT_DURATION = 500;
+	var DEFAULT_DURATION = 1000;
 
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
@@ -290,6 +290,33 @@
 		return _instance;
 	}
 
+	/**
+	 * Animates scroll top to new position.
+	 */
+	Skrollr.prototype.animateTo = function(top, options) {
+		options = options || {};
+
+		var now = _now();
+
+		//Setting this to a new value will automatically prevent the current animation to stop, if any.
+		_scrollAnimation = {
+			startTop: _instance.getScrollTop(),
+			topDiff: top - _instance.getScrollTop(),
+			targetTop: top,
+			duration: options.duration || DEFAULT_DURATION,
+			startTime: now,
+			endTime: now + (options.duration || DEFAULT_DURATION),
+			easing: easings[options.easing || DEFAULT_EASING],
+			done: options.done || NOOP
+		};
+
+		//Don't queue the animation if there's nothing to animate.
+		if(!_scrollAnimation.topDiff) {
+			_scrollAnimation.done.call(_instance);
+			_scrollAnimation = undefined;
+		}
+	};
+
 	Skrollr.prototype.setScrollTop = function(top) {
 		window.scroll(0, top);
 	};
@@ -371,6 +398,26 @@
 	 * Renders all elements
 	 */
 	var _render = function() {
+		//If there's an animation, which ends in current render call, call the callback after rendering;
+		var afterAnimationCallback = NOOP;
+
+		//Before actually rendering handle the scroll animation, if any.
+		if(_scrollAnimation) {
+			var now = _now();
+
+			//It's over
+			if(now >= _scrollAnimation.endTime) {
+				_instance.setScrollTop(_scrollAnimation.targetTop);
+				afterAnimationCallback = _scrollAnimation.done;
+				_scrollAnimation = undefined;
+			} else {
+				//Map the current progress to the new progress using given easing function.
+				var progress = _scrollAnimation.easing((now - _scrollAnimation.startTime) / _scrollAnimation.duration);
+
+				_instance.setScrollTop((_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0);
+			}
+		}
+
 		_curTop = _instance.getScrollTop();
 
 		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
@@ -404,6 +451,8 @@
 
 				_listeners.render.call(_instance, listenerParams);
 			}
+
+			afterAnimationCallback.call(_instance);
 		}
 
 		requestAnimFrame(function() {
@@ -636,6 +685,10 @@
 		return ' ' + a + ' ';
 	};
 
+	var _now = function() {
+		return +new Date();
+	};
+
 	/*
 	 * Private variables.
 	 */
@@ -651,6 +704,9 @@
 	var _direction;
 	var _lastTop;
 	var _curTop;
+
+	//Will contain data about a running scrollbar animation, if any.
+	var _scrollAnimation;
 
 	/*
 	 * Global api.
@@ -669,6 +725,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.8'
+		VERSION: '0.3.9'
 	};
 }(window, document));

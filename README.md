@@ -1,7 +1,7 @@
-skrollr (v 0.3.8)
+skrollr (v 0.3.9)
 ======
 
-**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **4.8k minified** (2.3k gzipped). No JavaScript skills needed.
+**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **5.3k minified** (2.5k gzipped). No JavaScript skills needed.
 
 \**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
@@ -211,6 +211,22 @@ Calling ```init()``` returns an instance of skrollr which exposes a public api.
 #### setScrollTop(top)
 
 Sets the top offset using window.scroll(0, top)
+
+#### animateTo(top[, options])
+
+Animates the scroll position from current position to ```top```. Possible Options include
+
+##### duration
+
+How long the animation should run in milliseconds. The default is ```1000``` or one second.
+
+##### easing
+
+The name of an easing function. The same functions can be used as for property animations. Default is ```linear``` .
+
+##### done
+
+A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately.
 
 #### on(name, fn)
 
