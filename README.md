@@ -156,7 +156,8 @@ When ```forceHeight``` is set to false, ```scale``` is ignored.
 
 ####forceHeight=true
 
-```true```: Make sure the document is heigh enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px.
+```true```: Make sure the document is high enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px.
+
 ```false```: Don't manipulate the document and just keep the natural scrollbar.
 
 #### beforerender
