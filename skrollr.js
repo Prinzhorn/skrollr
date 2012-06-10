@@ -277,11 +277,16 @@
 
 		onResize();
 
+		//Stop scroll animation when scrolling.
+		_addEvent('scroll', function() {
+			_scrollAnimation = undefined;
+		});
+
 		//Let's go
 		_render();
 
 		//Clean up
-		dummy = atEndKeyFrames = options = undefined;
+		onResize = dummy = atEndKeyFrames = options = undefined;
 
 		return _instance;
 	}
