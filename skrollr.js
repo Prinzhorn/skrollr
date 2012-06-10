@@ -201,7 +201,6 @@
 			for(var i = 0; i < _dataEndKeyFrames.length; i++) {
 				var kf = _dataEndKeyFrames[i];
 				kf.frame = _maxKeyFrame - kf.dataEnd;
-				console.log(kf.dataEnd);
 			}
 		};
 
@@ -465,10 +464,6 @@
 					easing = easing[2];
 				} else {
 					easing = DEFAULT_EASING;
-				}
-
-				if(!value.indexOf('!')) {
-					console.log(value.slice(1));
 				}
 
 				//Exclamation point at first position forces the value to be taken literal.
