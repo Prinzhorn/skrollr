@@ -273,11 +273,7 @@
 			dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
 		};
 
-		if(window.addEventListener) {
-			window.addEventListener('resize', onResize, false);
-		} else {
-			window.attachEvent('onresize', onResize);
-		}
+		_addEvent('resize', onResize);
 
 		onResize();
 
@@ -664,6 +660,17 @@
 	var _addClass = function(el, name) {
 		if(_untrim(el.className).indexOf(_untrim(name)) === -1) {
 			el.className = _trim((el.className + ' ' + name));
+		}
+	};
+
+	/**
+	 * Cross browser event handling.
+	 */
+	var _addEvent = function(name, fn) {
+		if(window.addEventListener) {
+			window.addEventListener(name, fn, false);
+		} else {
+			window.attachEvent('on' + name, fn);
 		}
 	};
 
