@@ -1,6 +1,6 @@
-/*! skrollr v0.3.9 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.10 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
-	"use strict";
+	'use strict';
 
 	//Used as a dummy function for event listeners.
 	var NOOP = function() {};
@@ -140,52 +140,14 @@
 			render: options.render || NOOP
 		};
 
-		/*
-			A list of all elements which should be animated associated with their the metadata.
-			Exmaple skrollable with two key frames animating from 100px width to 20px:
+		//true is default, thus undefined is true as well.
+		_forceHeight = options.forceHeight !== false;
 
-			skrollable = {
-				element: <the DOM element>,
-				keyFrames: [
-					{
-						frame: 100,
-						props: {
-							width: {
-								value: ['?px', 100],
-								easing: <reference to easing function>
-							}
-						}
-					},
-					{
-						frame: 200,
-						props: {
-							width: {
-								value: ['?px', 20],
-								easing: <reference to easing function>
-							}
-						}
-					}
-				]
-			};
-		*/
-		_skrollables = [];
-
-		//Will contain the max key frame value available.
-		_maxKeyFrame = options.maxKeyFrame || 0;
-
-		//Current direction (up/down).
-		_direction = 'down';
-
-		//The last top offset value. Needed to determine direction.
-		_lastTop = -1;
-
-		//The current top offset, needed for async rendering.
-		_curTop = 0;
+		if(_forceHeight) {
+			_scale = options.scale || 1;
+		}
 
 		var allElements = document.getElementsByTagName('*');
-
-		//Will contain references to all "data-end" key frames.
-		var atEndKeyFrames = [];
 
 		//Iterate over all elements in document.
 		for(var i = 0; i < allElements.length; i++) {
@@ -202,21 +164,19 @@
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
-					var frame;
-					var kf;
+					var frame = (match[2] | 0) * _scale;
 
-					frame = (match[2] | 0) * (options.scale || 1);
-
-					kf = {
+					var kf = {
 						frame: frame,
 						props: attr.value
 					};
 
 					keyFrames.push(kf);
 
-					//special handling for data-end
+					//special handling for data-end.
 					if(match[1] === '-end') {
-						atEndKeyFrames.push(kf);
+						kf.dataEnd = kf.frame;
+						_dataEndKeyFrames.push(kf);
 					}
 
 					if(frame > _maxKeyFrame) {
@@ -236,11 +196,43 @@
 			}
 		}
 
-		//Set all data-end key frames to max key frame
-		for(var i = 0; i < atEndKeyFrames.length; i++) {
-			var kf = atEndKeyFrames[i];
-			kf.frame = _maxKeyFrame - kf.frame;
+		var updateDataEnd = function() {
+			//Set all data-end key frames to max key frame
+			for(var i = 0; i < _dataEndKeyFrames.length; i++) {
+				var kf = _dataEndKeyFrames[i];
+				kf.frame = _maxKeyFrame - kf.dataEnd;
+				console.log(kf.dataEnd);
+			}
+		};
+
+		var onResize;
+
+		if(_forceHeight) {
+			//Add a dummy element in order to get a large enough scrollbar.
+			var dummy = document.createElement('div');
+			var dummyStyle = dummy.style;
+
+			dummyStyle.width = '1px';
+			dummyStyle.position = 'absolute';
+			dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
+
+			body.appendChild(dummy);
+
+			//Update height of dummy div when window size is changed.
+			onResize = function() {
+				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+				updateDataEnd();
+			};
+		} else {
+			onResize = function() {
+				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
+				updateDataEnd();
+				_forceRender = true;
+			};
 		}
+
+		_addEvent('resize', onResize);
+		onResize();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
 		for(var i = 0; i < _skrollables.length; i++) {
@@ -258,35 +250,16 @@
 			_fillProps(sk);
 		}
 
-		//Add a dummy element in order to get a large enough scrollbar
-		var dummy = document.createElement('div');
-		var dummyStyle = dummy.style;
-
-		dummyStyle.width = '1px';
-		dummyStyle.position = 'absolute';
-		dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
-
-		body.appendChild(dummy);
-
-		//Update height of dummy div when window size is changed.
-		var onResize = function() {
-			dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-		};
-
-		_addEvent('resize', onResize);
-
-		onResize();
-
-		//Stop scroll animation when scrolling.
+		//Stop scroll animation when user scrolls.
 		_addEvent('scroll', function() {
 			_scrollAnimation = undefined;
 		});
 
+		//Clean up
+		allElements = options = undefined;
+
 		//Let's go
 		_render();
-
-		//Clean up
-		onResize = dummy = atEndKeyFrames = options = undefined;
 
 		return _instance;
 	}
@@ -427,9 +400,11 @@
 		}
 
 		//Did the scroll position even change?
-		if(_lastTop !== _curTop) {
+		if(_forceRender || _lastTop !== _curTop) {
 			//Remember in which direction are we scrolling?
 			_direction = (_curTop >= _lastTop) ? 'down' : 'up';
+
+			_forceRender = false;
 
 			var listenerParams = {
 				curTop: _curTop,
@@ -710,15 +685,59 @@
 	//Will contain all plugin-functions.
 	var _plugins = {};
 
+	/*
+		A list of all elements which should be animated associated with their the metadata.
+		Exmaple skrollable with two key frames animating from 100px width to 20px:
+
+		skrollable = {
+			element: <the DOM element>,
+			keyFrames: [
+				{
+					frame: 100,
+					props: {
+						width: {
+							value: ['?px', 100],
+							easing: <reference to easing function>
+						}
+					}
+				},
+				{
+					frame: 200,
+					props: {
+						width: {
+							value: ['?px', 20],
+							easing: <reference to easing function>
+						}
+					}
+				}
+			]
+		};
+	*/
+	var _skrollables = [];
+
+	//Will contain references to all "data-end" key frames.
+	var _dataEndKeyFrames = [];
+
 	var _listeners;
-	var _skrollables;
-	var _maxKeyFrame;
-	var _direction;
-	var _lastTop;
-	var _curTop;
+	var _forceHeight;
+	var _maxKeyFrame = 0;
+
+	var _scale = 1;
+
+	//Current direction (up/down).
+	var _direction = 'down';
+
+	//The last top offset value. Needed to determine direction.
+	var _lastTop = -1;
+
+	//The current top offset, needed for async rendering.
+	var _curTop = 0;
 
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
+
+	//Can be set by any operation/event to force rendering even if the scrollbar didn't move.
+	var _forceRender;
 
 	/*
 	 * Global api.
@@ -737,6 +756,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.9'
+		VERSION: '0.3.10'
 	};
 }(window, document));

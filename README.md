@@ -1,7 +1,7 @@
-skrollr (v 0.3.9)
+skrollr (v 0.3.10)
 ======
 
-**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **5.3k minified** (2.5k gzipped). No JavaScript skills needed.
+**Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **5.5k minified** (2.6k gzipped). No JavaScript skills needed.
 
 \**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
@@ -151,6 +151,13 @@ Possible options include
 #### scale=1
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
+
+When ```forceHeight``` is set to false, ```scale``` is ignored.
+
+####forceHeight=true
+
+```true```: Make sure the document is heigh enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px.
+```false```: Don't manipulate the document and just keep the natural scrollbar.
 
 #### beforerender
 
