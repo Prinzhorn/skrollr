@@ -249,15 +249,6 @@
 			_fillProps(sk);
 		}
 
-		//Stop scroll animation when user scrolls.
-		_addEvent('scroll', function() {
-			if(_userScroll) {
-				_scrollAnimation = undefined;
-			}
-
-			_userScroll = true;
-		});
-
 		//Clean up
 		allElements = options = undefined;
 
@@ -393,8 +384,6 @@
 
 				_instance.setScrollTop((_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0);
 			}
-
-			_userScroll = false;
 		}
 
 		_curTop = _instance.getScrollTop();
@@ -736,9 +725,6 @@
 
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
-
-	//Keep track of who trigger the scrolling.
-	var _userScroll;
 
 	//Can be set by any operation/event to force rendering even if the scrollbar didn't move.
 	var _forceRender;
