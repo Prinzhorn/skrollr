@@ -158,7 +158,7 @@ When ```forceHeight``` is set to false, ```scale``` is ignored.
 
 ```true```: Make sure the document is high enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px.
 
-```false```: Don't manipulate the document and just keep the natural scrollbar.
+```false```: Don't manipulate the document and just keep the natural scrollbar. Tip: Use ```data-end``` to create nice effects on usual content-driven websites.
 
 #### beforerender
 
