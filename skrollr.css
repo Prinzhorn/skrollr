@@ -18,16 +18,13 @@ html, body {
 	z-index:100;
 
 	/*
-	 * Uncomment the transition part if you want.
-	 * For example Firefox 13 added smooth scrolling and you don't need transitions.
+	 * Use with caution
 	 */
-	/*
 			transition: all .3s;
-	     -o-transition: all .3s;
+	   /*-o-transition: all .3s;*/
 		-ms-transition: all .3s;
 	   -moz-transition: all .3s;
 	-webkit-transition: all .3s;
-	*/
 }
 
 .skrollable.notransition, .notransition .skrollable {
