@@ -17,6 +17,9 @@ html, body {
 	 */
 	z-index:100;
 
+	/*
+	 * Use with caution
+	 */
 			transition: all .3s;
 	   /*-o-transition: all .3s;*/
 		-ms-transition: all .3s;
