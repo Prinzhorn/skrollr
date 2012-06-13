@@ -248,6 +248,12 @@ Removes the listener for the given event.
 
 Currently there's only a simple api for plugins. Just call ```window.skrollr.plugin('setStyle', /* your function */)``` to hook into the setStyle method. Your function will get three parameters: The DOM element, the CSS property (camel cased) and the value. If you need more plugin hooks, just add them and submit them with your pull request for the plugin itself.
 
+In the wild
+------
+
+* http://www.futuremylove.com/
+* http://jonnyacevedo.com/
+
 Contributors
 ------
 
