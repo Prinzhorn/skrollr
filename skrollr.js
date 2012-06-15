@@ -1,4 +1,4 @@
-/*! skrollr v0.3.10 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.3.11 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	'use strict';
 
@@ -23,7 +23,7 @@
 		window.msRequestAnimationFrame ||
 		function(fn) {
 			//Just 30 fps, because that's enough for those legacy browsers
-			setTimeout(fn, 1000 / 30);
+			window.setTimeout(fn, 1000 / 30);
 		};
 
 	var rxTrim = /^\s*(.*)\s$/;
@@ -34,7 +34,7 @@
 	var rxPropSplit = /:|;/g;
 
 	//Easing function names follow the property in square brackets.
-	var rxPropEasing = /^([a-z-]+)\[(\w+)\]$/;
+	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
 
 	var rxCamelCase = /-([a-z])/g;
 
@@ -45,7 +45,7 @@
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
 
 	//Finds all gradients.
-	var rxGradient = /[a-z-]+-gradient/g;
+	var rxGradient = /[a-z\-]+-gradient/g;
 
 	//Only relevant prefixes. May be extended.
 	//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
@@ -59,9 +59,10 @@
 		var style = window.getComputedStyle(body, null);
 
 		for(var k in style) {
-			//Yes, this is meant to be an assignment.
 			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
-			if(theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)))) {
+			theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
+
+			if(theCSSPrefix) {
 				break;
 			}
 		}
@@ -94,20 +95,20 @@
 			return p * p * p;
 		},
 		swing: function(p) {
-			return (-Math.cos(p * Math.PI) / 2) + .5;
+			return (-Math.cos(p * Math.PI) / 2) + 0.5;
 		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p) {
 			var a;
 
 			switch(true) {
-				case (p <= .5083):
+				case (p <= 0.5083):
 					a = 3; break;
-				case (p <= .8489):
+				case (p <= 0.8489):
 					a = 9; break;
-				case (p <= .96208):
+				case (p <= 0.96208):
 					a = 27; break;
-				case (p <= .99981):
+				case (p <= 0.99981):
 					a = 91; break;
 				default:
 					return 1;
@@ -238,9 +239,7 @@
 			var sk = _skrollables[i];
 
 			//Make sure they are in order
-			sk.keyFrames.sort(function(a, b) {
-				return a.frame - b.frame;
-			});
+			sk.keyFrames.sort(_keyFrameComparator);
 
 			//Parse the property string to objects
 			_parseProps(sk);
@@ -618,7 +617,7 @@
 
 		//Plugin entry point.
 		if(_plugins.setStyle) {
-			for(var i = 0; i < plugins.setStyle.length; i++) {
+			for(var i = 0; i < _plugins.setStyle.length; i++) {
 				_plugins.setStyle[0].call(this, el, prop, val);
 			}
 		}
@@ -664,6 +663,10 @@
 
 	var _now = function() {
 		return +new Date();
+	};
+
+	var _keyFrameComparator = function(a, b) {
+		return a.frame - b.frame;
 	};
 
 	/*
@@ -746,6 +749,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.10'
+		VERSION: '0.3.11'
 	};
 }(window, document));
