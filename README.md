@@ -1,4 +1,4 @@
-skrollr (v 0.3.10)
+skrollr (v 0.3.11)
 ======
 
 **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **5.5k minified** (2.6k gzipped). No JavaScript skills needed.
