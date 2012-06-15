@@ -120,7 +120,7 @@
 
 	/**
 	 * Constructor.
-	 **/
+	 */
 	function Skrollr(options) {
 		_instance = this;
 
