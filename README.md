@@ -131,7 +131,7 @@ Now that we just talked about CSS transforms, there are some limitations of skro
 * All numeric values have to have the same unit. It's not possible to animate from "0%" to "100px". skrollr won't complain, but results are undefined.
 * Animations between values which are composed of multiple numeric values like "margin:0 0 0 0;" are only possible for the same number of values. "margin:0px 0px 0px 0px;" to "margin:0px 100px 50px 3px;" is fine, but not "margin:10px;" to "margin:5px 10px;".
 * "matrix()" is not *really* supported for CSS transforms. skrollr will just interpolate all the numbers, no matter if it makes sense. May result in some funny effects :-D
-* Animations between CSS transforms only work when they use the same functions in same order. From "rotate(0deg) scale(1)" to "roate(1000deg) scale(5)" is fine.
+* Animations between CSS transforms only work when they use the same functions in same order. From "rotate(0deg) scale(1)" to "rotate(1000deg) scale(5)" is fine.
 * Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use "rgb", "rgba", "hsl" and "hsla". Don't worry, there's a skrollr plugin for IE < 9 to support "hsl" (without "a"!) and to fall rgba back to rgb.
 * Color animations only work for same color functions. "hsl" to "hsl" or "hsla" is fine, but not "rgb" to "hsl". Which makes sense, because animating from the same colors in rgb space and in hsl space results in different animations (hsl gives you the nice rainbow stuff).
 
