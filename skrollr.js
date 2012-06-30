@@ -28,8 +28,8 @@
 
 	var rxTrim = /^\s*(.*)\s$/;
 
-	//Find data-<number>, as well as data-end and data-end-<number>
-	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
+	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
+	var rxKeyframeAttribute = /^data(?:-(-?\d+))(?:-?([a-z]+))(?:-?([a-z]+))$/;
 
 	var rxPropSplit = /:|;/g;
 
