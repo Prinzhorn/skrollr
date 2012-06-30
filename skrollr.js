@@ -1,4 +1,4 @@
-/*! skrollr v0.3.11 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.0 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	'use strict';
 
@@ -10,10 +10,16 @@
 	var documentElement = document.documentElement;
 	var body = document.body;
 
-	var HIDDEN_CLASS = 'hidden';
+	var UNRENDERED_CLASS = 'unrendered';
+	var RENDERED_CLASS = 'rendered';
 	var SKROLLABLE_CLASS = 'skrollable';
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
+	var ANCHOR_START = 'start';
+	var ANCHOR_END = 'end';
+	var ANCHOR_TOP = 'top';
+	var ANCHOR_CENTER = 'center';
+	var ANCHOR_BOTTOM = 'bottom';
 
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
@@ -29,7 +35,7 @@
 	var rxTrim = /^\s*(.*)\s$/;
 
 	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
-	var rxKeyframeAttribute = /^data(?:-(-?\d+))(?:-?([a-z]+))(?:-?([a-z]+))$/;
+	var rxKeyframeAttribute = /^data-(-?\d+)?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
 	var rxPropSplit = /:|;/g;
 
@@ -165,23 +171,40 @@
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
-					var frame = (match[2] | 0) * _scale;
+					//Parse key frame offset. If undefined will be casted to 0.
+					var offset = (match[1] | 0) * _scale;
+					var anchor1 = match[2];
+					//If second anchor is not set, the first will be taken for both.
+					var anchor2 = match[3] || anchor1;
 
 					var kf = {
-						frame: frame,
-						props: attr.value
+						offset: offset,
+						props: attr.value,
+						//Point back to the element as well.
+						element: el
 					};
 
 					keyFrames.push(kf);
 
-					//special handling for data-end.
-					if(match[1] === '-end') {
-						kf.dataEnd = kf.frame;
-						_dataEndKeyFrames.push(kf);
-					}
+					//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
+					if(anchor1 === undefined || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
+						//data-end needs to be calculated after all key frames are know.
+						if(anchor1 === ANCHOR_END) {
+							_endKeyFrames.push(kf);
+						} else {
+							//For data-start we can already set the key frame w/o calculations.
+							kf.frame = offset;
+							delete kf.offset;
 
-					if(frame > _maxKeyFrame) {
-						_maxKeyFrame = frame;
+							if(offset > _maxKeyFrame) {
+								_maxKeyFrame = offset;
+							}
+						}
+					}
+					//"relative" mode, where numbers are relative to anchors.
+					else {
+						kf.anchors = [anchor1, anchor2];
+						_relativeKeyFrames.push(kf);
 					}
 				}
 			}
@@ -197,11 +220,19 @@
 			}
 		}
 
-		var updateDataEnd = function() {
+		var updateDependentKeyFrames = function() {
+			var i;
+
 			//Set all data-end key frames to max key frame
-			for(var i = 0; i < _dataEndKeyFrames.length; i++) {
-				var kf = _dataEndKeyFrames[i];
-				kf.frame = _maxKeyFrame - kf.dataEnd;
+			for(i = 0; i < _endKeyFrames.length; i++) {
+				var kf = _endKeyFrames[i];
+				kf.frame = _maxKeyFrame - kf.offset;
+			}
+
+			//Calculate relative key frames.
+			for(i = 0; i < _relativeKeyFrames.length; i++) {
+				var kf = _relativeKeyFrames[i];
+				kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
 			}
 		};
 
@@ -221,12 +252,12 @@
 			//Update height of dummy div when window size is changed.
 			onResize = function() {
 				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-				updateDataEnd();
+				updateDependentKeyFrames();
 			};
 		} else {
 			onResize = function() {
 				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
-				updateDataEnd();
+				updateDependentKeyFrames();
 				_forceRender = true;
 			};
 		}
@@ -305,58 +336,92 @@
 	*/
 
 	/**
-	 * Calculate and sets the style properties for the element at the given frame
+	 * Transform "relative" mode to "absolute" mode.
+	 * That is, calculate anchor position and offset of element.
+	 */
+	var _relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
+		var viewportHeight = documentElement.clientHeight;
+		var box = element.getBoundingClientRect();
+		var absolute = (box.top + 0.5) | 0;
+
+		if(viewportAnchor === ANCHOR_TOP) {
+			absolute -= viewportHeight;
+		} else if(viewportAnchor === ANCHOR_CENTER) {
+			absolute -= (viewportHeight / 2 + 0.5) | 0;
+		}
+
+		if(elementAnchor === ANCHOR_TOP) {
+			absolute += box.height;
+		} else if(elementAnchor === ANCHOR_CENTER) {
+			absolute += (box.height / 2 + 0.5) | 0;
+		}
+
+		//Compensate scrolling since getBoundingClientRect is relative to viewport.
+		absolute += _instance.getScrollTop();
+
+		return absolute;
+	};
+
+	/**
+	 * Calculates and sets the style properties for the element at the given frame.
 	 */
 	var _calcSteps = function(skrollable, frame) {
 		var frames = skrollable.keyFrames;
+		var firstFrame = frames[0].frame;
+		var lastFrame = frames[frames.length - 1].frame;
+		var atFirst = frame <= firstFrame;
+		var atLast = frame >= lastFrame;
 
-		//We are before the first frame, don't do anything
-		if(frame < frames[0].frame) {
-			_addClass(skrollable.element, HIDDEN_CLASS);
-		}
-		//We are after or at the last frame, the element gets all props from last key frame
-		else if(frame >= frames[frames.length - 1].frame) {
-			_removeClass(skrollable.element, HIDDEN_CLASS);
+		//We are before/after or exactly at the first/last frame. The element gets all props from this key frame.
+		if(atFirst || atLast) {
+			var props = frames[atFirst ? 0 : frames.length - 1].props;
 
-			var last = frames[frames.length - 1];
-			var value;
-
-			for(var key in last.props) {
-				if(hasProp.call(last.props, key)) {
-					value = _interpolateString(last.props[key].value);
+			for(var key in props) {
+				if(hasProp.call(props, key)) {
+					var value = _interpolateString(props[key].value);
 
 					_setStyle(skrollable.element, key, value);
 				}
 			}
+
+			//Add the unrendered class when exactly at first/last frame.
+			if(skrollable.hasRenderedClass && frame < firstFrame || frame > lastFrame) {
+				_removeClass(skrollable.element, RENDERED_CLASS);
+				_addClass(skrollable.element, UNRENDERED_CLASS);
+			}
+
+			return;
 		}
-		//We are between two frames
-		else {
-			_removeClass(skrollable.element, HIDDEN_CLASS);
 
-			//Find out between which two key frames we are right now
-			for(var i = 0; i < frames.length - 1; i++) {
-				if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
-					var left = frames[i];
-					var right = frames[i + 1];
+		//We are between two frames.
+		if(!skrollable.hasRenderedClass) {
+			_removeClass(skrollable.element, UNRENDERED_CLASS);
+			_addClass(skrollable.element, RENDERED_CLASS);
+		}
 
-					for(var key in left.props) {
-						if(hasProp.call(left.props, key)) {
-							var progress = (frame - left.frame) / (right.frame - left.frame);
+		//Find out between which two key frames we are right now.
+		for(var i = 0; i < frames.length - 1; i++) {
+			if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
+				var left = frames[i];
+				var right = frames[i + 1];
 
-							//Transform the current progress using the given easing function.
-							progress = left.props[key].easing(progress);
+				for(var key in left.props) {
+					if(hasProp.call(left.props, key)) {
+						var progress = (frame - left.frame) / (right.frame - left.frame);
 
-							//Interpolate between the two values
-							var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
+						//Transform the current progress using the given easing function.
+						progress = left.props[key].easing(progress);
 
-							value = _interpolateString(value);
+						//Interpolate between the two values
+						var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
-							_setStyle(skrollable.element, key, value);
-						}
+						value = _interpolateString(value);
+
+						_setStyle(skrollable.element, key, value);
 					}
-
-					break;
 				}
+
+				break;
 			}
 		}
 	};
@@ -591,6 +656,11 @@
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
 	var _setStyle = function(el, prop, val) {
+		if(el.id == "bacon") {
+			console.log(prop);
+			console.log(val);
+		}
+
 		var style = el.style;
 
 		//Camel case.
@@ -709,7 +779,10 @@
 	var _skrollables = [];
 
 	//Will contain references to all "data-end" key frames.
-	var _dataEndKeyFrames = [];
+	var _endKeyFrames = [];
+
+	//Will contains references to all relative key frames.
+	var _relativeKeyFrames = [];
 
 	var _listeners;
 	var _forceHeight;
@@ -749,6 +822,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.3.11'
+		VERSION: '0.4.0'
 	};
 }(window, document));

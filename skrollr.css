@@ -35,9 +35,11 @@ html, body {
 	-webkit-transition: none;
 }
 
-.skrollable.hidden {
+/*
+.skrollable.unrendered {
 	display:none !important;
 }
+*/
 
 .skrollable .skrollable {
 	/*

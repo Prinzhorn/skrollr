@@ -72,7 +72,7 @@ module('basic stuff');
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 8, 'not enough or too many .skrollable elements');
+	ok(x === 7, 'not enough or too many .skrollable elements');
 });
 
 scrollTests(500, [
@@ -119,10 +119,6 @@ scrollTests(500, [
 
 scrollTests(0, [
 	{
-		element: $('#visible-from-100'),
-		selector: '.hidden'
-	},
-	{
 		element: $('#simple-numeric'),
 		styles: {
 			left: '0px'
@@ -164,10 +160,6 @@ scrollTests(0, [
 ]);
 
 scrollTests(250, [
-	{
-		element: $('#visible-from-100'),
-		selector: ':not(.hidden)'
-	},
 	{
 		element: $('#simple-numeric'),
 		styles: {
