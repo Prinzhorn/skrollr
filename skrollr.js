@@ -362,63 +362,66 @@
 	/**
 	 * Calculates and sets the style properties for the element at the given frame.
 	 */
-	var _calcSteps = function(skrollable, frame) {
-		var frames = skrollable.keyFrames;
-		var firstFrame = frames[0].frame;
-		var lastFrame = frames[frames.length - 1].frame;
-		var atFirst = frame <= firstFrame;
-		var atLast = frame >= lastFrame;
+	var _calcSteps = function(frame) {
+		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+			var skrollable = _skrollables[skrollableIndex];
+			var frames = skrollable.keyFrames;
+			var firstFrame = frames[0].frame;
+			var lastFrame = frames[frames.length - 1].frame;
+			var atFirst = frame <= firstFrame;
+			var atLast = frame >= lastFrame;
 
-		//We are before/after or exactly at the first/last frame. The element gets all props from this key frame.
-		if(atFirst || atLast) {
-			var props = frames[atFirst ? 0 : frames.length - 1].props;
+			//If we are before/after or exactly at the first/last frame, the element gets all props from this key frame.
+			if(atFirst || atLast) {
+				var props = frames[atFirst ? 0 : frames.length - 1].props;
 
-			for(var key in props) {
-				if(hasProp.call(props, key)) {
-					var value = _interpolateString(props[key].value);
-
-					_setStyle(skrollable.element, key, value);
-				}
-			}
-
-			//Add the unrendered class when exactly at first/last frame.
-			if(skrollable.hasRenderedClass && frame < firstFrame || frame > lastFrame) {
-				_removeClass(skrollable.element, RENDERED_CLASS);
-				_addClass(skrollable.element, UNRENDERED_CLASS);
-			}
-
-			return;
-		}
-
-		//We are between two frames.
-		if(!skrollable.hasRenderedClass) {
-			_removeClass(skrollable.element, UNRENDERED_CLASS);
-			_addClass(skrollable.element, RENDERED_CLASS);
-		}
-
-		//Find out between which two key frames we are right now.
-		for(var i = 0; i < frames.length - 1; i++) {
-			if(frame >= frames[i].frame && frame <= frames[i + 1].frame) {
-				var left = frames[i];
-				var right = frames[i + 1];
-
-				for(var key in left.props) {
-					if(hasProp.call(left.props, key)) {
-						var progress = (frame - left.frame) / (right.frame - left.frame);
-
-						//Transform the current progress using the given easing function.
-						progress = left.props[key].easing(progress);
-
-						//Interpolate between the two values
-						var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
-
-						value = _interpolateString(value);
+				for(var key in props) {
+					if(hasProp.call(props, key)) {
+						var value = _interpolateString(props[key].value);
 
 						_setStyle(skrollable.element, key, value);
 					}
 				}
 
-				break;
+				//Add the unrendered class when exactly at first/last frame.
+				if(skrollable.hasRenderedClass && frame < firstFrame || frame > lastFrame) {
+					_removeClass(skrollable.element, RENDERED_CLASS);
+					_addClass(skrollable.element, UNRENDERED_CLASS);
+				}
+
+				continue;
+			}
+
+			//We are between two frames.
+			if(!skrollable.hasRenderedClass) {
+				_removeClass(skrollable.element, UNRENDERED_CLASS);
+				_addClass(skrollable.element, RENDERED_CLASS);
+			}
+
+			//Find out between which two key frames we are right now.
+			for(var keyFrameIndex = 0; keyFrameIndex < frames.length - 1; keyFrameIndex++) {
+				if(frame >= frames[keyFrameIndex].frame && frame <= frames[keyFrameIndex + 1].frame) {
+					var left = frames[keyFrameIndex];
+					var right = frames[keyFrameIndex + 1];
+
+					for(var key in left.props) {
+						if(hasProp.call(left.props, key)) {
+							var progress = (frame - left.frame) / (right.frame - left.frame);
+
+							//Transform the current progress using the given easing function.
+							progress = left.props[key].easing(progress);
+
+							//Interpolate between the two values
+							var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
+
+							value = _interpolateString(value);
+
+							_setStyle(skrollable.element, key, value);
+						}
+					}
+
+					break;
+				}
 			}
 		}
 	};
@@ -473,9 +476,8 @@
 
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
-				for(var i = 0; i < _skrollables.length; i++) {
-					_calcSteps(_skrollables[i], _curTop);
-				}
+				//Now actually interpolate all the styles.
+				_calcSteps(_curTop);
 
 				//Remember when we last rendered.
 				_lastTop = _curTop;
