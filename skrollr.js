@@ -2,9 +2,6 @@
 (function(window, document, undefined) {
 	'use strict';
 
-	//Used as a dummy function for event listeners.
-	var NOOP = function() {};
-
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 	var documentElement = document.documentElement;
@@ -141,10 +138,10 @@
 
 		_listeners = {
 			//Function to be called right before rendering.
-			beforerender: options.beforerender || NOOP,
+			beforerender: options.beforerender,
 
 			//Function to be called right after finishing rendering.
-			render: options.render || NOOP
+			render: options.render
 		};
 
 		//true is default, thus undefined is true as well.
@@ -305,12 +302,12 @@
 			startTime: now,
 			endTime: now + (options.duration || DEFAULT_DURATION),
 			easing: easings[options.easing || DEFAULT_EASING],
-			done: options.done || NOOP
+			done: options.done
 		};
 
 		//Don't queue the animation if there's nothing to animate.
 		if(!_scrollAnimation.topDiff) {
-			_scrollAnimation.done.call(_instance);
+			_scrollAnimation.done && _scrollAnimation.done.call(_instance);
 			_scrollAnimation = undefined;
 		}
 	};
@@ -324,11 +321,11 @@
 	};
 
 	Skrollr.prototype.on = function(name, fn) {
-		_listeners[name] = fn || NOOP;
+		_listeners[name] = fn;
 	};
 
 	Skrollr.prototype.off = function(name) {
-		_listeners[name] = NOOP;
+		delete _listeners[name];
 	};
 
 	/*
@@ -431,7 +428,7 @@
 	 */
 	var _render = function() {
 		//If there's an animation, which ends in current render call, call the callback after rendering;
-		var afterAnimationCallback = NOOP;
+		var afterAnimationCallback;
 
 		//Before actually rendering handle the scroll animation, if any.
 		if(_scrollAnimation) {
@@ -472,7 +469,7 @@
 			};
 
 			//Tell the listener we are about to render.
-			var continueRendering = _listeners.beforerender.call(_instance, listenerParams);
+			var continueRendering = _listeners.beforerender && _listeners.beforerender.call(_instance, listenerParams);
 
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
@@ -483,10 +480,10 @@
 				//Remember when we last rendered.
 				_lastTop = _curTop;
 
-				_listeners.render.call(_instance, listenerParams);
+				_listeners.render && _listeners.render.call(_instance, listenerParams);
 			}
 
-			afterAnimationCallback.call(_instance);
+			afterAnimationCallback && afterAnimationCallback.call(_instance);
 		}
 
 		requestAnimFrame(function() {
