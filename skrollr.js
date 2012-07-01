@@ -40,6 +40,9 @@
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
 
 	var rxCamelCase = /-([a-z])/g;
+	var rxCamelCaseFn = function(str, letter) {
+		return letter.toUpperCase();
+	}
 
 	//Numeric values with optional sign.
 	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
@@ -363,6 +366,7 @@
 	 * Calculates and sets the style properties for the element at the given frame.
 	 */
 	var _calcSteps = function(frame) {
+		//Iterate over all skrollables.
 		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
 			var skrollable = _skrollables[skrollableIndex];
 			var frames = skrollable.keyFrames;
@@ -655,17 +659,10 @@
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
 	var _setStyle = function(el, prop, val) {
-		if(el.id == "bacon") {
-			console.log(prop);
-			console.log(val);
-		}
-
 		var style = el.style;
 
 		//Camel case.
-		prop = prop.replace(rxCamelCase, function(str, p1) {
-			return p1.toUpperCase();
-		}).replace('-', '');
+		prop = prop.replace(rxCamelCase, rxCamelCaseFn).replace('-', '');
 
 		//Make sure z-index gets a <integer>.
 		//This is the only <integer> case we need to handle.
@@ -687,7 +684,7 @@
 		//Plugin entry point.
 		if(_plugins.setStyle) {
 			for(var i = 0; i < _plugins.setStyle.length; i++) {
-				_plugins.setStyle[0].call(this, el, prop, val);
+				_plugins.setStyle[0].call(_instance, el, prop, val);
 			}
 		}
 	};
