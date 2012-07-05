@@ -29,7 +29,7 @@
 			window.setTimeout(fn, 1000 / 30);
 		};
 
-	var rxTrim = /^\s*(.*)\s$/;
+	var rxTrim = /^\s*(.+)\s*$/m;
 
 	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data-(-?\d+)?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
@@ -216,7 +216,7 @@
 					keyFrames: keyFrames
 				});
 
-				_addClass(el, SKROLLABLE_CLASS);
+				_updateClass(el, [SKROLLABLE_CLASS, UNRENDERED_CLASS], []);
 			}
 		}
 
@@ -287,6 +287,13 @@
 
 		return _instance;
 	}
+
+	/**
+	 * Reparses some or all elements.
+	 */
+	Skrollr.prototype.refresh = function(elements) {
+		//TODO: problem: all data-end elements may be affected...
+	};
 
 	/**
 	 * Animates scroll top to new position.
@@ -388,18 +395,21 @@
 				}
 
 				//Add the unrendered class when exactly at first/last frame.
-				if(skrollable.hasRenderedClass && frame < firstFrame || frame > lastFrame) {
-					_removeClass(skrollable.element, RENDERED_CLASS);
-					_addClass(skrollable.element, UNRENDERED_CLASS);
+				if(skrollable._renderClass && (frame < firstFrame || frame > lastFrame)) {
+					_updateClass(skrollable.element, [UNRENDERED_CLASS], [RENDERED_CLASS]);
+
+					//_renderClass does a faster job than sth. like hasClass('string')
+					skrollable._renderClass = false;
 				}
 
 				continue;
 			}
 
 			//We are between two frames.
-			if(!skrollable.hasRenderedClass) {
-				_removeClass(skrollable.element, UNRENDERED_CLASS);
-				_addClass(skrollable.element, RENDERED_CLASS);
+			if(!skrollable._renderClass) {
+				_updateClass(skrollable.element, [RENDERED_CLASS], [UNRENDERED_CLASS]);
+
+				skrollable._renderClass = true;
 			}
 
 			//Find out between which two key frames we are right now.
@@ -690,15 +700,6 @@
 	};
 
 	/**
-	 * Adds a CSS class.
-	 */
-	var _addClass = function(el, name) {
-		if(_untrim(el.className).indexOf(_untrim(name)) === -1) {
-			el.className = _trim((el.className + ' ' + name));
-		}
-	};
-
-	/**
 	 * Cross browser event handling.
 	 */
 	var _addEvent = function(name, fn) {
@@ -710,11 +711,42 @@
 	};
 
 	/**
-	 * Removes a CSS class.
+	 * Adds and removes a CSS classes.
+	 * Works with SVG as well.
 	 */
-	var _removeClass = function(el, name) {
-		el.className = _trim((_untrim(el.className)).replace(_untrim(name), ' '));
+	var _updateClass = function(el, add, remove) {
+		var prop = 'className';
+
+		//SVG support by using className.baseVal instead of just className
+		if(window.SVGElement && el instanceof window.SVGElement) {
+			el = el[prop];
+			prop = 'baseVal';
+		}
+
+		//Cache current classes. We will work on a string before passing back to DOM.
+		var val = el[prop];
+
+		var i;
+
+		//All classes to be added.
+		for(i = 0; i < add.length; i++) {
+			//Only add if el not already has class.
+			if(_untrim(val).indexOf(_untrim(add[i])) === -1) {
+				val += ' ' + add[i];
+			}
+		}
+
+		//All classes to be removed.
+		for(i = 0; i < remove.length; i++) {
+			val = _untrim(val).replace(_untrim(remove[i]), ' ');
+		}
+
+		el[prop] = _trim(val);
 	};
+
+	/**
+	 * Updates the CSS class of the element.
+	 */
 
 	var _trim = function(a) {
 		return a.replace(rxTrim, '$1');
