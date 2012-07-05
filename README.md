@@ -79,7 +79,7 @@ Absolute mode is what you already know about. The syntax is ```data-[offset]-[an
 
 #### relative mode
 
-Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the document, we are able to define them depending on the position of the element in relation to the viewport. The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can one of ```top``` (default), ```center``` or ```bottom```. If ```element-anchor``` is ommitted, it will take the value of ```viewport-anchor``` (just like with background-position). Here are some examples of key frames and their meaning.
+Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the document, we are able to define them depending on the position of the element in relation to the viewport. The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can be one of ```top```, ```center``` or ```bottom```. If ```element-anchor``` is ommitted, the value of ```viewport-anchor``` will be taken (just like with background-position). Here are some examples of key frames and their meaning.
 
 * ```data-top``` = ```data-0-top``` = ```data-top-top``` = ```data-0-top-top```: When the element's top is aligned with the top of the viewport.
 * ```data-100-top``` = ```data-100-top-top```: When the element's top is 100px above the top of the viewport.
