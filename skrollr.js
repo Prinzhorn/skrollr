@@ -34,7 +34,7 @@
 	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data-(-?\d+)?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
-	var rxPropSplit = /:|;/g;
+	var rxPropSplit = /:|;/gm;
 
 	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
@@ -526,8 +526,8 @@
 
 			//Iterate over all props and values (+2 because [prop,value,prop,value,...])
 			for(var k = 0; k < allProps.length - 1; k += 2) {
-				prop = allProps[k];
-				value = allProps[k + 1];
+				prop = _trim(allProps[k]);
+				value = _trim(allProps[k + 1]);
 				easing = prop.match(rxPropEasing);
 
 				//Is there an easing specified for this prop?
