@@ -34,7 +34,7 @@
 	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data-(-?\d+)?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
-	var rxPropSplit = /:|;/gm;
+	var rxPropSplit = /:|;/g;
 
 	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
