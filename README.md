@@ -68,9 +68,9 @@ Now it gets really exciting. Being only able to define key frames in absolute va
 
 **Note**: You probably don't want to mix both modes on the same element.
 
-#### absolute mode
+#### absolute mode (or document mode)
 
-Absolute mode is what you already know about. The syntax is ```data-[offset]-[anchor]```, where ```offset``` can be any integer (0 is default) and ```anchor``` can be either ```start``` (default) or ```end```. Either ```offset``` or ```anchor``` can be ommited in some situations. Here are some examples of key frames and their meaning.
+Absolute mode is what you already know about. The key frame are in absolute values, so how much the **document** has been scrolled. The syntax is ```data-[offset]-[anchor]```, where ```offset``` can be any integer (0 is default) and ```anchor``` can be either ```start``` (default) or ```end```. Either ```offset``` or ```anchor``` can be ommited in some situations. Here are some examples of key frames and their meaning.
 
 * ```data-0``` = ```data-start``` = ```data-0-start```: When the scroll top is 0.
 * ```data-100``` = ```data-100-start```: When the scroll top is 100.
@@ -79,9 +79,9 @@ Absolute mode is what you already know about. The syntax is ```data-[offset]-[an
 * ```data-100-end```: 100px before we reach the bottom.
 * ```data--100-end```: 100px after we reach the bottom (again, it's up to you whether you need it).
 
-#### relative mode
+#### relative mode (or viewport mode)
 
-Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the document, we are able to define them depending on the position of the element in relation to the viewport. The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can be one of ```top```, ```center``` or ```bottom```. If ```element-anchor``` is ommitted, the value of ```viewport-anchor``` will be taken (just like with background-position). Here are some examples of key frames and their meaning.
+Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the **document**, we are able to define them depending on the position of the element in relation to the **viewport**. The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can be one of ```top```, ```center``` or ```bottom```. If ```element-anchor``` is ommitted, the value of ```viewport-anchor``` will be taken (just like with background-position). Here are some examples of key frames and their meaning.
 
 * ```data-top``` = ```data-0-top``` = ```data-top-top``` = ```data-0-top-top```: When the element's top is aligned with the top of the viewport.
 * ```data-100-top``` = ```data-100-top-top```: When the element's top is 100px above the top of the viewport.
@@ -108,7 +108,7 @@ One could expect ```left``` to have a value of ```25%``` at keyframe ```200```. 
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
 
-### peventing interpolation
+### Preventing interpolation
 
 The reason why skrollr is so lightweight and powerfull is because it literally interpolates **any** numbers it can find. If you want to prevent some side effect, you can supress interpolation for a specific value by prepending an exclamation point.
 
@@ -127,7 +127,7 @@ Example:
 
 skrollr comes with a file called ```skrollr.css```. This file contains a small set of CSS rules to get you started with skrollr. Every element with a "data-[number]" attribute will automatically get the "skrollable" class. This file is by no means complete or even mandatory. The default rules do make sense for desktop development, where it's not a problem to position elements "fixed". If you just want to do some lightweight stuff, maybe just scroll the background at a different speed then the rest of your page, just throw ```skrollr.css``` away an add your data- attributes to the body element.
 
-### limitations
+### Limitations
 
 Now that we just talked about CSS transforms, there are some limitations of skrollr you should be aware of.
 
