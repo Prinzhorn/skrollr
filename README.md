@@ -289,3 +289,4 @@ Contributors
 * [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
 * [Ali Karbassi](https://github.com/karbassi)
 * [Tri Nguyen](https://github.com/idlesysop)
+* [Oscar Otero](https://github.com/oscarotero)
