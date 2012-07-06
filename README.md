@@ -289,4 +289,6 @@ Contributors
 * [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
 * [Ali Karbassi](https://github.com/karbassi)
 * [Tri Nguyen](https://github.com/idlesysop)
+* [Charles J Hardy](https://github.com/ChuckJHardy)
 * [Oscar Otero](https://github.com/oscarotero)
+* Everyone giving feedback on Twitter and through other channels.
