@@ -122,6 +122,21 @@ I will move right 500 then left 200
 </div>
 ```
 
+What if I want to offset something by the same amount on one element, the DOM doesn't support duplicate attributes!
+```html
+<!-- BAD CODE -->
+<div data-200="left:0px" data-next-100="left:500px" data-next-100="left:300px">
+<!-- Duplicate attribute -->
+```
+
+No worries just make each tag unique by adding a number after next
+```html
+<!-- The number is arbitrary -->
+<div data-200="left:0px" data-next-100="left:500px" data-next1-100="left:300px">
+<!-- This also works -->
+<div data-200="left:0px" data-next9123123-100="left:500px" data-next0001-100="left:300px">
+```
+
 This time you only had to change one setting, Much better!
 
 ### peventing interpolation
