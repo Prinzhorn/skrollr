@@ -262,6 +262,17 @@ Removes the listener for the given event.
 
 Currently there's only a simple api for plugins. Just call ```window.skrollr.plugin('setStyle', /* your function */)``` to hook into the setStyle method. Your function will get three parameters: The DOM element, the CSS property (camel cased) and the value. If you need more plugin hooks, just add them and submit them with your pull request for the plugin itself.
 
+Release notes
+------
+
+### 0.4.0
+
+* *breaking* the ```data-end-[offset]``` syntax changed. It's now ```data-[offset]-end```.
+* Fixed a bug where white spaces between style declarations were not ignored.
+* Added support for anchors. Animations can now be specified relative to the elements position within the viewport.
+* Added support for SVG elements.
+* Added new method ```refresh()```.
+
 In the wild
 ------
 
