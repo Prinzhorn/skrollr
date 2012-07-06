@@ -97,6 +97,33 @@ Even better, you can use both notations on the same element
 
 **heads up:** In the above example ```data-end-100``` is equal to ```data-900```, because there's no other element on the page. data-end is the **global** max key frame, not for the element it is on. If there would be another element with ```data-5000```, when ```data-end-100``` would equal ```data-4900```.
 
+### data-next-[offeset], grouping elements
+
+What happens if you want to shift a set of animations back 100.
+```html
+<div data-100="left:0px" data-200="left:500px" data-500="left:300px">
+I will move right 500 then left 200
+</div>
+<!-- becomes -->
+<div data-200="left:0px" data-300="left:500px" data-600="left:300px">
+I will move right 500 then left 200
+</div>
+```
+Surely no one wants to change all this elements everytime they tweak something.
+
+That's why it's possible to refer to previous frames
+```html
+<div data-100="left:0px" data-next-100="left:500px" data-next-200="left:300px">
+I will move right 500 then left 200
+</div>
+<!-- becomes -->
+<div data-200="left:0px" data-next-100="left:500px" data-next-200="left:300px">
+I will move right 500 then left 200
+</div>
+```
+
+This time you only had to change one setting, Much better!
+
 ### peventing interpolation
 
 The reason why skrollr is so lightweight and powerfull is because it literally interpolates **any** numbers it can find. If you want to prevent some side effect, you can supress interpolation for a specific value by prepending an exclamation point.
