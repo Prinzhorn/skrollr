@@ -1,4 +1,4 @@
-skrollr (v 0.4.0)
+skrollr (v 0.4.0-alpha)
 ======
 
 Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **6.2k minified** (2.9k gzipped).
@@ -65,6 +65,8 @@ In addition we add the ```rendered``` **or** ```unrendered``` class, depending o
 ### Using anchors
 
 Now it gets really exciting. Being only able to define key frames in absolute values is simply insufficient for some cases. For example if you don't know where an element will exactly be in the document. That's why there are two modes for key frames, namely ```absolute``` and ```relative``` move.
+
+**Note**: You probably don't want to mix both modes on the same element.
 
 #### absolute mode
 

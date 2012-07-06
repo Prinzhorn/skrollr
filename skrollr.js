@@ -1,4 +1,4 @@
-/*! skrollr v0.4.0 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.0-alpha https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 (function(window, document, undefined) {
 	'use strict';
 
@@ -196,8 +196,8 @@
 							kf.frame = offset;
 							delete kf.offset;
 
-							if(offset > _maxKeyFrame) {
-								_maxKeyFrame = offset;
+							if(kf.frame > _maxKeyFrame) {
+								_maxKeyFrame = kf.frame;
 							}
 						}
 					}
@@ -220,19 +220,23 @@
 			}
 		}
 
+		/**
+		 * Updates key frames which depend on others.
+		 * That is "end" in "absolute" mode and all key frames in "relative" mode.
+		 */
 		var updateDependentKeyFrames = function() {
 			var i;
-
-			//Set all data-end key frames to max key frame
-			for(i = 0; i < _endKeyFrames.length; i++) {
-				var kf = _endKeyFrames[i];
-				kf.frame = _maxKeyFrame - kf.offset;
-			}
 
 			//Calculate relative key frames.
 			for(i = 0; i < _relativeKeyFrames.length; i++) {
 				var kf = _relativeKeyFrames[i];
 				kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
+			}
+
+			//Set all data-end key frames to max key frame
+			for(i = 0; i < _endKeyFrames.length; i++) {
+				var kf = _endKeyFrames[i];
+				kf.frame = _maxKeyFrame - kf.offset;
 			}
 		};
 
@@ -349,24 +353,24 @@
 	var _relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
 		var viewportHeight = documentElement.clientHeight;
 		var box = element.getBoundingClientRect();
-		var absolute = (box.top + 0.5) | 0;
+		var absolute = box.top;
 
-		if(viewportAnchor === ANCHOR_TOP) {
+		if(viewportAnchor === ANCHOR_BOTTOM) {
 			absolute -= viewportHeight;
 		} else if(viewportAnchor === ANCHOR_CENTER) {
-			absolute -= (viewportHeight / 2 + 0.5) | 0;
+			absolute -= viewportHeight / 2;
 		}
 
-		if(elementAnchor === ANCHOR_TOP) {
+		if(elementAnchor === ANCHOR_BOTTOM) {
 			absolute += box.height;
 		} else if(elementAnchor === ANCHOR_CENTER) {
-			absolute += (box.height / 2 + 0.5) | 0;
+			absolute += box.height / 2;
 		}
 
 		//Compensate scrolling since getBoundingClientRect is relative to viewport.
 		absolute += _instance.getScrollTop();
 
-		return absolute;
+		return (absolute + 0.5) | 0;
 	};
 
 	/**
@@ -850,6 +854,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.0'
+		VERSION: '0.4.0-alpha'
 	};
 }(window, document));

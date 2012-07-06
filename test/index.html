@@ -6,7 +6,6 @@
 	<title>skrollr test suite</title>
 
 	<link rel="stylesheet" type="text/css" href="qunit.css" />
-	<link rel="stylesheet" type="text/css" href="../skrollr.css" />
 
 	<style type="text/css">
 	#qunit {
@@ -18,6 +17,21 @@
 		overflow:auto;
 		z-index:101;
 	}
+
+	#anchor-1, #anchor-2 {
+		height:1000px;
+		background:#ccc;
+		position:absolute;
+		top:0;
+	}
+
+	#spacer {
+		width:1px;
+		height:10000px;
+		position:absolute;
+		top:0;
+		left:0;
+	}
 	</style>
 </head>
 <body class="notransition">
@@ -28,6 +42,10 @@
 	<div id="hsl-color" data-0="color:hsl(0,0%,0%);" data-500="color:hsl(3600,50%,50%);">TEST</div>
 	<div id="hsla-color" data-0="color:hsla(0,0%,0%,.0);" data-500="color:hsla(3600,50%,50%,.5);">TEST</div>
 	<div id="no-interpolation" data-0="right:!0px;" data-500="right:!100px;">TEST</div>
+	<div id="anchor-1" data-top-bottom="right:100px;" data-top="right:0px;">TEST</div>
+	<div id="anchor-2" data-top="right:0px;" data-top-center="right:200px;">TEST</div>
+
+	<div id="spacer"></div>
 
 	<div id="qunit"></div>
 

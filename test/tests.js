@@ -36,7 +36,7 @@ var scrollTests = function(offset, tests) {
 		expect(countAssertions(tests));
 
 		//Scroll to offset, which will cause rendering (sooner or later)
-		window.scroll(0, offset);
+		s.setScrollTop(offset);
 
 		s.on('render', function() {
 			//Prevent another render event. Only need one for test.
@@ -72,7 +72,7 @@ module('basic stuff');
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 7, 'not enough or too many .skrollable elements');
+	ok(x === 9, 'not enough or too many .skrollable elements');
 });
 
 scrollTests(500, [
@@ -114,6 +114,12 @@ scrollTests(500, [
 		element: $('#no-interpolation'),
 		styles: {
 			right: '100px'
+		}
+	},
+	{
+		element: $('#anchor-2'),
+		styles: {
+			right: '200px'
 		}
 	}
 ]);
@@ -200,6 +206,21 @@ scrollTests(250, [
 		element: $('#no-interpolation'),
 		styles: {
 			right: '0px'
+		}
+	},
+	{
+		element: $('#anchor-2'),
+		styles: {
+			right: '100px'
+		}
+	}
+]);
+
+scrollTests(1000, [
+	{
+		element: $('#anchor-1'),
+		styles: {
+			right: '100px'
 		}
 	}
 ]);
