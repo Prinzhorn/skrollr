@@ -29,7 +29,7 @@
 	var rxTrim = /^\s*(.*)\s$/;
 
 	//Find data-<number>, as well as data-end and data-end-<number>
-	var rxKeyframeAttribute = /^data(-end)?-?(\d+)?$/;
+	var rxKeyframeAttribute = /^data-(?:(next|end)\d*)?-?(\d+)?$/;
 
 	var rxPropSplit = /:|;/g;
 
@@ -159,13 +159,27 @@
 				continue;
 			}
 
+         var previousValue = null;
 			//Iterate over all attributes and search for key frame attributes.
 			for (var k = 0; k < el.attributes.length; k++) {
 				var attr = el.attributes[k];
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
-					var frame = (match[2] | 0) * _scale;
+               var frameValue = (match[2] | 0);
+
+               //special handling for -next
+               if(match[1] == 'next') {
+                  if(previousValue == null) {
+                     throw 'Must have a previous value for next to work';
+                  }
+                  else {
+                     //set position relation to last frame
+                     frameValue = previousValue + frameValue; 
+                  }
+               }
+
+					var frame = frameValue * _scale;
 
 					var kf = {
 						frame: frame,
@@ -175,7 +189,7 @@
 					keyFrames.push(kf);
 
 					//special handling for data-end.
-					if(match[1] === '-end') {
+					if(match[1] === 'end') {
 						kf.dataEnd = kf.frame;
 						_dataEndKeyFrames.push(kf);
 					}
@@ -183,6 +197,8 @@
 					if(frame > _maxKeyFrame) {
 						_maxKeyFrame = frame;
 					}
+
+               previousValue = frameValue;
 				}
 			}
 
