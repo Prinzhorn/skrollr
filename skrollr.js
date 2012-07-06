@@ -108,17 +108,16 @@
 		bounce: function(p) {
 			var a;
 
-			switch(true) {
-				case (p <= 0.5083):
-					a = 3; break;
-				case (p <= 0.8489):
-					a = 9; break;
-				case (p <= 0.96208):
-					a = 27; break;
-				case (p <= 0.99981):
-					a = 91; break;
-				default:
-					return 1;
+			if(p <= 0.5083) {
+				a = 3;
+			} else if(p <= 0.8489) {
+				a = 9;
+			} else if(p <= 0.96208) {
+				a = 27;
+			} else if(p <= 0.99981) {
+				a = 91;
+			} else {
+				return 1;
 			}
 
 			return 1 - Math.abs(3 * Math.cos(p * a * 1.028) / a);
@@ -156,9 +155,10 @@
 		}
 
 		var allElements = document.getElementsByTagName('*');
+		var i;
 
 		//Iterate over all elements in document.
-		for(var i = 0; i < allElements.length; i++) {
+		for(i = 0; i < allElements.length; i++) {
 			var el = allElements[i];
 			var keyFrames = [];
 
@@ -272,7 +272,7 @@
 		onResize();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
-		for(var i = 0; i < _skrollables.length; i++) {
+		for(i = 0; i < _skrollables.length; i++) {
 			var sk = _skrollables[i];
 
 			//Make sure they are in order
@@ -323,7 +323,10 @@
 
 		//Don't queue the animation if there's nothing to animate.
 		if(!_scrollAnimation.topDiff) {
-			_scrollAnimation.done && _scrollAnimation.done.call(_instance);
+			if(_scrollAnimation.done) {
+				_scrollAnimation.done.call(_instance);
+			}
+
 			_scrollAnimation = undefined;
 		}
 	};
@@ -387,14 +390,16 @@
 			var lastFrame = frames[frames.length - 1].frame;
 			var atFirst = frame <= firstFrame;
 			var atLast = frame >= lastFrame;
+			var key;
+			var value;
 
 			//If we are before/after or exactly at the first/last frame, the element gets all props from this key frame.
 			if(atFirst || atLast) {
 				var props = frames[atFirst ? 0 : frames.length - 1].props;
 
-				for(var key in props) {
+				for(key in props) {
 					if(hasProp.call(props, key)) {
-						var value = _interpolateString(props[key].value);
+						value = _interpolateString(props[key].value);
 
 						_setStyle(skrollable.element, key, value);
 					}
@@ -424,7 +429,7 @@
 					var left = frames[keyFrameIndex];
 					var right = frames[keyFrameIndex + 1];
 
-					for(var key in left.props) {
+					for(key in left.props) {
 						if(hasProp.call(left.props, key)) {
 							var progress = (frame - left.frame) / (right.frame - left.frame);
 
@@ -432,7 +437,7 @@
 							progress = left.props[key].easing(progress);
 
 							//Interpolate between the two values
-							var value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
+							value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
 
 							value = _interpolateString(value);
 
@@ -502,10 +507,14 @@
 				//Remember when we last rendered.
 				_lastTop = _curTop;
 
-				_listeners.render && _listeners.render.call(_instance, listenerParams);
+				if(_listeners.render) {
+					_listeners.render.call(_instance, listenerParams);
+				}
 			}
 
-			afterAnimationCallback && afterAnimationCallback.call(_instance);
+			if(afterAnimationCallback) {
+				afterAnimationCallback.call(_instance);
+			}
 		}
 
 		requestAnimFrame(function() {
@@ -608,9 +617,10 @@
 	var _fillProps = function(sk) {
 		//Will collect the properties key frame by key frame
 		var propList = {};
+		var i;
 
 		//Iterate over all key frames from left to right
-		for(var i = 0; i < sk.keyFrames.length; i++) {
+		for(i = 0; i < sk.keyFrames.length; i++) {
 			_fillPropForFrame(sk.keyFrames[i], propList);
 		}
 
@@ -619,15 +629,17 @@
 		propList = {};
 
 		//Iterate over all key frames from right to left
-		for(var i = sk.keyFrames.length - 1; i >= 0; i--) {
+		for(i = sk.keyFrames.length - 1; i >= 0; i--) {
 			_fillPropForFrame(sk.keyFrames[i], propList);
 		}
 	};
 
 	var _fillPropForFrame = function(frame, propList) {
+		var key;
+
 		//For each key frame iterate over all right hand properties and assign them,
 		//but only if the current key frame doesn't have the property by itself
-		for(var key in propList) {
+		for(key in propList) {
 			//The current frame misses this property, so assign it.
 			if(!hasProp.call(frame.props, key)) {
 				frame.props[key] = propList[key];
@@ -635,7 +647,7 @@
 		}
 
 		//Iterate over all props of the current frame and collect them
-		for(var key in frame.props) {
+		for(key in frame.props) {
 			propList[key] = frame.props[key];
 		}
 	};
