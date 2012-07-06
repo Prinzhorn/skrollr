@@ -1,4 +1,5 @@
 /*! skrollr v0.4.0-alpha https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
 
@@ -42,7 +43,7 @@
 	var rxCamelCase = /-([a-z])/g;
 	var rxCamelCaseFn = function(str, letter) {
 		return letter.toUpperCase();
-	}
+	};
 
 	//Numeric values with optional sign.
 	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
@@ -226,16 +227,17 @@
 		 */
 		var updateDependentKeyFrames = function() {
 			var i;
+			var kf;
 
 			//Calculate relative key frames.
 			for(i = 0; i < _relativeKeyFrames.length; i++) {
-				var kf = _relativeKeyFrames[i];
+				kf = _relativeKeyFrames[i];
 				kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
 			}
 
 			//Set all data-end key frames to max key frame
 			for(i = 0; i < _endKeyFrames.length; i++) {
-				var kf = _endKeyFrames[i];
+				kf = _endKeyFrames[i];
 				kf.frame = _maxKeyFrame - kf.offset;
 			}
 		};
