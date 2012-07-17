@@ -1,3 +1,10 @@
+Fork
+====
+This a fork created to add a relative mode which is described lower in this document.
+NOTE: This feature has been hacked on top and relies on attribute order which is not guaranteed, but has held up in my testing.  Use with caution.
+
+The original is by [Prinzhorn](https://github.com/Prinzhorn/skrollr)
+
 skrollr (v 0.3.11)
 ======
 
@@ -96,6 +103,48 @@ Even better, you can use both notations on the same element
 ```
 
 **heads up:** In the above example ```data-end-100``` is equal to ```data-900```, because there's no other element on the page. data-end is the **global** max key frame, not for the element it is on. If there would be another element with ```data-5000```, when ```data-end-100``` would equal ```data-4900```.
+
+### data-next-[offeset], grouping elements
+
+What happens if you want to shift a set of animations back 100.
+```html
+<div data-100="left:0px" data-200="left:500px" data-500="left:300px">
+I will move right 500 then left 200
+</div>
+<!-- becomes -->
+<div data-200="left:0px" data-300="left:500px" data-600="left:300px">
+I will move right 500 then left 200
+</div>
+```
+Surely no one wants to change all this elements everytime they tweak something.
+
+That's why it's possible to refer to previous frames
+```html
+<div data-100="left:0px" data-next-100="left:500px" data-next-200="left:300px">
+I will move right 500 then left 200
+</div>
+<!-- becomes -->
+<div data-200="left:0px" data-next-100="left:500px" data-next-200="left:300px">
+I will move right 500 then left 200
+</div>
+```
+
+What if I want to offset something by the same amount on one element, the DOM doesn't support duplicate attributes!
+```html
+<!-- BAD CODE -->
+<div data-200="left:0px" data-next-100="left:500px" data-next-100="left:300px">
+<!-- Duplicate attribute -->
+```
+
+No worries just make each tag unique by adding a number after next
+```html
+<!-- The number is arbitrary -->
+<div data-200="left:0px" data-next-100="left:500px" data-next1-100="left:300px">
+<!-- This also works -->
+<div data-200="left:0px" data-next9123123-100="left:500px" data-next0001-100="left:300px">
+```
+
+This time you only had to change one setting, Much better!
 
 ### peventing interpolation
 
