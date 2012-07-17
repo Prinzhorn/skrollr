@@ -1,3 +1,8 @@
+Fork
+====
+This a fork created to add a relative mode which is described lower in this document.
+NOTE: This feature has been hacked on top and relies on attribute order which is not guaranteed, but has held up in my testing.  Use with caution.
+
 skrollr (v 0.3.11)
 ======
 
