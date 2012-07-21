@@ -48,7 +48,7 @@ var scrollTests = function(offset, tests) {
 				if(curTest.styles) {
 					for(var k in curTest.styles) {
 						if(Object.prototype.hasOwnProperty.call(curTest.styles, k)) {
-							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], 'element\'s "' + k + '" CSS property is correct')
+							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct')
 						}
 					}
 				}
@@ -67,12 +67,16 @@ var scrollTests = function(offset, tests) {
 // Now the actual tests.
 //
 
+//Add one element dynamically
+var newElement = $('<div id="dynamic" data-0="bottom:0px;" data-250="bottom:100px;">TEST</div>').appendTo('body');
+s.refresh(newElement[0]);
+
 module('basic stuff');
 
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 9, 'not enough or too many .skrollable elements');
+	ok(x === 11, 'not enough or too many .skrollable elements');
 });
 
 scrollTests(500, [
@@ -121,6 +125,12 @@ scrollTests(500, [
 		styles: {
 			right: '200px'
 		}
+	},
+	{
+		element: $('#end'),
+		styles: {
+			fontSize: '90px'
+		}
 	}
 ]);
 
@@ -163,6 +173,18 @@ scrollTests(0, [
 		element: $('#no-interpolation'),
 		styles: {
 			right: '0px'
+		}
+	},
+	{
+		element: $('#end'),
+		styles: {
+			fontSize: '10px'
+		}
+	},
+	{
+		element: newElement,
+		styles: {
+			bottom: '0px'
 		}
 	}
 ]);
@@ -212,6 +234,18 @@ scrollTests(250, [
 		element: $('#anchor-2'),
 		styles: {
 			right: '100px'
+		}
+	},
+	{
+		element: $('#end'),
+		styles: {
+			fontSize: '50px'
+		}
+	},
+	{
+		element: newElement,
+		styles: {
+			bottom: '100px'
 		}
 	}
 ]);

@@ -19,6 +19,9 @@
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
 
+	//The property which will be added to the DOM element to hold the ID of the skrollable.
+	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
+
 	var requestAnimFrame =
 		window.requestAnimationFrame ||
 		window.webkitRequestAnimationFrame ||
@@ -154,12 +157,61 @@
 			_scale = options.scale || 1;
 		}
 
-		var allElements = document.getElementsByTagName('*');
-		var i;
+		if(_forceHeight) {
+			//Add a dummy element in order to get a large enough scrollbar.
+			var dummy = document.createElement('div');
+			var dummyStyle = dummy.style;
 
-		//Iterate over all elements in document.
-		for(i = 0; i < allElements.length; i++) {
-			var el = allElements[i];
+			dummyStyle.width = '1px';
+			dummyStyle.position = 'absolute';
+			dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
+
+			body.appendChild(dummy);
+
+			//Update height of dummy div when window size is changed.
+			_onResize = function() {
+				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+				_updateDependentKeyFrames();
+			};
+		} else {
+			_onResize = function() {
+				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
+				_updateDependentKeyFrames();
+				_forceRender = true;
+			};
+		}
+
+		_instance.refresh();
+
+		_addEvent('resize', _onResize);
+
+		//Let's go
+		_render();
+
+		return _instance;
+	}
+
+	/**
+	 * (Re)parses some or all elements.
+	 */
+	Skrollr.prototype.refresh = function(elements) {
+		var elementIndex;
+		var ignoreID = false;
+
+		//Completely reparse anything without argument.
+		if(elements === undefined) {
+			//Ignore that some elements may already have a skrollable ID.
+			ignoreID = true;
+			_skrollables = [];
+			_skrollableIdCounter = 0;
+			elements = document.getElementsByTagName('*');
+		} else {
+			//We accept a single element or an array of elements.
+			elements = [].concat(elements);
+		}
+
+		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
+			var el = elements[elementIndex];
 			var keyFrames = [];
 
 			if(!el.attributes) {
@@ -167,8 +219,8 @@
 			}
 
 			//Iterate over all attributes and search for key frame attributes.
-			for (var k = 0; k < el.attributes.length; k++) {
-				var attr = el.attributes[k];
+			for (var attributeIndex = 0; attributeIndex < el.attributes.length; attributeIndex++) {
+				var attr = el.attributes[attributeIndex];
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
@@ -189,9 +241,11 @@
 
 					//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
 					if(anchor1 === undefined || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
+						kf.mode = 'absolute';
+
 						//data-end needs to be calculated after all key frames are know.
 						if(anchor1 === ANCHOR_END) {
-							_endKeyFrames.push(kf);
+							kf.isEnd = true;
 						} else {
 							//For data-start we can already set the key frame w/o calculations.
 							kf.frame = offset;
@@ -204,76 +258,40 @@
 					}
 					//"relative" mode, where numbers are relative to anchors.
 					else {
+						kf.mode = 'relative';
 						kf.anchors = [anchor1, anchor2];
-						_relativeKeyFrames.push(kf);
 					}
 				}
 			}
 
 			//Does this element have key frames?
 			if(keyFrames.length) {
-				_skrollables.push({
+				var id;
+
+				if(!ignoreID && SKROLLABLE_ID_DOM_PROPERTY in el) {
+					id = el[SKROLLABLE_ID_DOM_PROPERTY];
+				} else {
+					id = (el[SKROLLABLE_ID_DOM_PROPERTY] = _skrollableIdCounter++);
+				}
+
+				_skrollables[id] = {
 					element: el,
 					keyFrames: keyFrames
-				});
+				};
 
-				_updateClass(el, [SKROLLABLE_CLASS, UNRENDERED_CLASS], []);
+				_updateClass(el, [SKROLLABLE_CLASS, UNRENDERED_CLASS], [RENDERED_CLASS]);
 			}
 		}
 
-		/**
-		 * Updates key frames which depend on others.
-		 * That is "end" in "absolute" mode and all key frames in "relative" mode.
-		 */
-		var updateDependentKeyFrames = function() {
-			var i;
-			var kf;
-
-			//Calculate relative key frames.
-			for(i = 0; i < _relativeKeyFrames.length; i++) {
-				kf = _relativeKeyFrames[i];
-				kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
-			}
-
-			//Set all data-end key frames to max key frame
-			for(i = 0; i < _endKeyFrames.length; i++) {
-				kf = _endKeyFrames[i];
-				kf.frame = _maxKeyFrame - kf.offset;
-			}
-		};
-
-		var onResize;
-
-		if(_forceHeight) {
-			//Add a dummy element in order to get a large enough scrollbar.
-			var dummy = document.createElement('div');
-			var dummyStyle = dummy.style;
-
-			dummyStyle.width = '1px';
-			dummyStyle.position = 'absolute';
-			dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
-
-			body.appendChild(dummy);
-
-			//Update height of dummy div when window size is changed.
-			onResize = function() {
-				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-				updateDependentKeyFrames();
-			};
-		} else {
-			onResize = function() {
-				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
-				updateDependentKeyFrames();
-				_forceRender = true;
-			};
-		}
-
-		_addEvent('resize', onResize);
-		onResize();
+		_onResize();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
-		for(i = 0; i < _skrollables.length; i++) {
-			var sk = _skrollables[i];
+		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
+			var sk = _skrollables[elements[elementIndex][SKROLLABLE_ID_DOM_PROPERTY]];
+
+			if(sk === undefined) {
+				continue;
+			}
 
 			//Make sure they are in order
 			sk.keyFrames.sort(_keyFrameComparator);
@@ -284,21 +302,6 @@
 			//Fill key frames with missing properties from left and right
 			_fillProps(sk);
 		}
-
-		//Clean up
-		allElements = options = undefined;
-
-		//Let's go
-		_render();
-
-		return _instance;
-	}
-
-	/**
-	 * Reparses some or all elements.
-	 */
-	Skrollr.prototype.refresh = function(elements) {
-		//TODO: problem: all data-end elements may be affected...
 	};
 
 	/**
@@ -350,6 +353,26 @@
 	/*
 		Private methods.
 	*/
+
+	/**
+	 * Updates key frames which depend on others.
+	 * That is "end" in "absolute" mode and all key frames in "relative" mode.
+	 */
+	var _updateDependentKeyFrames = function() {
+		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+			var keyFrames = _skrollables[skrollableIndex].keyFrames;
+
+			for(var keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
+				var kf = keyFrames[keyFrameIndex];
+
+				if(kf.mode === 'relative') {
+					kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
+				} else if(kf.isEnd) {
+					kf.frame = _maxKeyFrame - kf.offset;
+				}
+			}
+		}
+	};
 
 	/**
 	 * Transform "relative" mode to "absolute" mode.
@@ -527,8 +550,8 @@
 	 */
 	var _parseProps = function(skrollable) {
 		//Iterate over all key frames
-		for(var i = 0; i < skrollable.keyFrames.length; i++) {
-			var frame = skrollable.keyFrames[i];
+		for(var keyFrameIndex = 0; keyFrameIndex < skrollable.keyFrames.length; keyFrameIndex++) {
+			var frame = skrollable.keyFrames[keyFrameIndex];
 
 			//Get all properties and values in an array
 			var allProps = frame.props.split(rxPropSplit);
@@ -540,9 +563,9 @@
 			frame.props = {};
 
 			//Iterate over all props and values (+2 because [prop,value,prop,value,...])
-			for(var k = 0; k < allProps.length - 1; k += 2) {
-				prop = _trim(allProps[k]);
-				value = _trim(allProps[k + 1]);
+			for(var propertyIndex = 0; propertyIndex < allProps.length - 1; propertyIndex += 2) {
+				prop = _trim(allProps[propertyIndex]);
+				value = _trim(allProps[propertyIndex + 1]);
 				easing = prop.match(rxPropEasing);
 
 				//Is there an easing specified for this prop?
@@ -617,11 +640,11 @@
 	var _fillProps = function(sk) {
 		//Will collect the properties key frame by key frame
 		var propList = {};
-		var i;
+		var keyFrameIndex;
 
 		//Iterate over all key frames from left to right
-		for(i = 0; i < sk.keyFrames.length; i++) {
-			_fillPropForFrame(sk.keyFrames[i], propList);
+		for(keyFrameIndex = 0; keyFrameIndex < sk.keyFrames.length; keyFrameIndex++) {
+			_fillPropForFrame(sk.keyFrames[keyFrameIndex], propList);
 		}
 
 		//Now do the same from right to fill the last gaps
@@ -629,8 +652,8 @@
 		propList = {};
 
 		//Iterate over all key frames from right to left
-		for(i = sk.keyFrames.length - 1; i >= 0; i--) {
-			_fillPropForFrame(sk.keyFrames[i], propList);
+		for(keyFrameIndex = sk.keyFrames.length - 1; keyFrameIndex >= 0; keyFrameIndex--) {
+			_fillPropForFrame(sk.keyFrames[keyFrameIndex], propList);
 		}
 	};
 
@@ -664,9 +687,9 @@
 		//Add the format string as first element.
 		var interpolated = [val1[0]];
 
-		for(var i = 1; i < val1.length; i++) {
+		for(var valueIndex = 1; valueIndex < val1.length; valueIndex++) {
 			//That's the line where the two numbers are actually interpolated.
-			interpolated[i] = val1[i] + ((val2[i] - val1[i]) * progress);
+			interpolated[valueIndex] = val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress);
 		}
 
 		return interpolated;
@@ -676,10 +699,10 @@
 	 * Interpolates the numeric values into the format string.
 	 */
 	var _interpolateString = function(val) {
-		var i = 1;
+		var valueIndex = 1;
 
 		return val[0].replace(/\?/g, function() {
-			return val[i++];
+			return val[valueIndex++];
 		});
 	};
 
@@ -711,8 +734,8 @@
 
 		//Plugin entry point.
 		if(_plugins.setStyle) {
-			for(var i = 0; i < _plugins.setStyle.length; i++) {
-				_plugins.setStyle[0].call(_instance, el, prop, val);
+			for(var pluginIndex = 0; pluginIndex < _plugins.setStyle.length; pluginIndex++) {
+				_plugins.setStyle[pluginIndex].call(_instance, el, prop, val);
 			}
 		}
 	};
@@ -744,19 +767,17 @@
 		//Cache current classes. We will work on a string before passing back to DOM.
 		var val = el[prop];
 
-		var i;
-
 		//All classes to be added.
-		for(i = 0; i < add.length; i++) {
+		for(var classAddIndex = 0; classAddIndex < add.length; classAddIndex++) {
 			//Only add if el not already has class.
-			if(_untrim(val).indexOf(_untrim(add[i])) === -1) {
-				val += ' ' + add[i];
+			if(_untrim(val).indexOf(_untrim(add[classAddIndex])) === -1) {
+				val += ' ' + add[classAddIndex];
 			}
 		}
 
 		//All classes to be removed.
-		for(i = 0; i < remove.length; i++) {
-			val = _untrim(val).replace(_untrim(remove[i]), ' ');
+		for(var classRemoveIndex = 0; classRemoveIndex < remove.length; classRemoveIndex++) {
+			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
 		el[prop] = _trim(val);
@@ -808,7 +829,8 @@
 							value: ['?px', 100],
 							easing: <reference to easing function>
 						}
-					}
+					},
+					mode: "absolute"
 				},
 				{
 					frame: 200,
@@ -817,22 +839,18 @@
 							value: ['?px', 20],
 							easing: <reference to easing function>
 						}
-					}
+					},
+					mode: "absolute"
 				}
 			]
 		};
 	*/
 	var _skrollables = [];
 
-	//Will contain references to all "data-end" key frames.
-	var _endKeyFrames = [];
-
-	//Will contains references to all relative key frames.
-	var _relativeKeyFrames = [];
-
 	var _listeners;
 	var _forceHeight;
 	var _maxKeyFrame = 0;
+	var _onResize;
 
 	var _scale = 1;
 
@@ -850,6 +868,10 @@
 
 	//Can be set by any operation/event to force rendering even if the scrollbar didn't move.
 	var _forceRender;
+
+	//Each skrollable gets an unique ID incremented for each skrollable.
+	//The ID is the index in the _skrollables array.
+	var _skrollableIdCounter = 0;
 
 	/*
 	 * Global api.
