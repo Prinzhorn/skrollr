@@ -318,11 +318,12 @@
 		options = options || {};
 
 		var now = _now();
+		var scrollTop = _instance.getScrollTop();
 
 		//Setting this to a new value will automatically prevent the current animation to stop, if any.
 		_scrollAnimation = {
-			startTop: _instance.getScrollTop(),
-			topDiff: top - _instance.getScrollTop(),
+			startTop: scrollTop,
+			topDiff: top - scrollTop,
 			targetTop: top,
 			duration: options.duration || DEFAULT_DURATION,
 			startTime: now,
