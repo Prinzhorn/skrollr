@@ -8,16 +8,20 @@
 	var documentElement = document.documentElement;
 	var body = document.body;
 
-	var UNRENDERED_CLASS = 'unrendered';
 	var RENDERED_CLASS = 'rendered';
+	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
 	var SKROLLABLE_CLASS = 'skrollable';
+
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
+
 	var ANCHOR_START = 'start';
 	var ANCHOR_END = 'end';
 	var ANCHOR_TOP = 'top';
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
+
+	var SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY = '___has_rendered_class';
 
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
@@ -440,21 +444,21 @@
 				}
 
 				//Add the unrendered class when exactly at first/last frame.
-				if(skrollable._renderClass && (frame < firstFrame || frame > lastFrame)) {
+				if(skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] && (frame < firstFrame || frame > lastFrame)) {
 					_updateClass(skrollable.element, [UNRENDERED_CLASS], [RENDERED_CLASS]);
 
-					//_renderClass does a faster job than sth. like hasClass('string')
-					skrollable._renderClass = false;
+					//Does a faster job than sth. like hasClass('string')
+					skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = false;
 				}
 
 				continue;
 			}
 
 			//We are between two frames.
-			if(!skrollable._renderClass) {
+			if(!skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY]) {
 				_updateClass(skrollable.element, [RENDERED_CLASS], [UNRENDERED_CLASS]);
 
-				skrollable._renderClass = true;
+				skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
 			}
 
 			//Find out between which two key frames we are right now.
