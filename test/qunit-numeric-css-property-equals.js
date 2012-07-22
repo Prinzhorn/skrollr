@@ -13,7 +13,7 @@ QUnit.extend(QUnit, {
 		var actualArray = actual.match(QUnit.rxNumericCSSProperty);
 		var expectedArray = expected.match(QUnit.rxNumericCSSProperty);
 
-		var passes = actualArray.length === expectedArray.length;
+		var passes = actualArray !== null && expectedArray !== null && actualArray.length === expectedArray.length;
 
 		for(var i = 0; passes && i < actualArray.length; i++) {
 			var curActual = actualArray[i];
