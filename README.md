@@ -96,7 +96,8 @@ The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```o
 
 I guess you get the point ;-)
 
-Here's an infographic for better understanding of anchors:
+Here's an infographic for better understanding of anchors (click to open PDF):
+
 [![Anchors Guide](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.png)](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.pdf)
 
 **Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you need to call ```refresh()``` (see documentation in JavaScript section below).
