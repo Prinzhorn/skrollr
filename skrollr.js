@@ -283,6 +283,7 @@
 			}
 		}
 
+		//This is kinda hacky, but it's needed to update certain values.
 		_onResize();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
@@ -302,6 +303,8 @@
 			//Fill key frames with missing properties from left and right
 			_fillProps(sk);
 		}
+
+		return _instance;
 	};
 
 	/**
@@ -332,10 +335,14 @@
 
 			_scrollAnimation = undefined;
 		}
+
+		return _instance;
 	};
 
 	Skrollr.prototype.setScrollTop = function(top) {
 		window.scroll(0, top);
+
+		return _instance;
 	};
 
 	Skrollr.prototype.getScrollTop = function(top) {
@@ -344,10 +351,14 @@
 
 	Skrollr.prototype.on = function(name, fn) {
 		_listeners[name] = fn;
+
+		return _instance;
 	};
 
 	Skrollr.prototype.off = function(name) {
 		delete _listeners[name];
+
+		return _instance;
 	};
 
 	/*
