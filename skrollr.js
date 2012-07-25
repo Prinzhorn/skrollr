@@ -1,4 +1,4 @@
-/*! skrollr v0.4.0 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.1 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 /*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
@@ -244,7 +244,7 @@
 					keyFrames.push(kf);
 
 					//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
-					if(anchor1 === undefined || anchor1 === '' || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
+					if(!anchor1 || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
 						kf.mode = 'absolute';
 
 						//data-end needs to be calculated after all key frames are know.
@@ -906,6 +906,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.0'
+		VERSION: '0.4.1'
 	};
 }(window, document));
