@@ -299,4 +299,5 @@ Contributors
 * [Tri Nguyen](https://github.com/idlesysop)
 * [Charles J Hardy](https://github.com/ChuckJHardy)
 * [Oscar Otero](https://github.com/oscarotero)
+* [Jim Osborn](https://github.com/ThinkTherefore)
 * Everyone giving feedback on Twitter and through other channels.
