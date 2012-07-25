@@ -244,7 +244,7 @@
 					keyFrames.push(kf);
 
 					//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
-					if(anchor1 === undefined || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
+					if(anchor1 === undefined || anchor1 === '' || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
 						kf.mode = 'absolute';
 
 						//data-end needs to be calculated after all key frames are know.
