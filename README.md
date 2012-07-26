@@ -273,6 +273,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 Release notes
 ------
 
+### 0.4.2
+
+* Added new feature "anchor-target" which allows elements to react to other elements leaving/entering the viewport.
+
 ### 0.4.1
 
 * Fixed a bug which broke skrollr in IE caused by wrong regular expression behavior
