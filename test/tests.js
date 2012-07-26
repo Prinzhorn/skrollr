@@ -76,7 +76,7 @@ module('basic stuff');
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 11, 'not enough or too many .skrollable elements');
+	ok(x === 12, 'not enough or too many .skrollable elements');
 });
 
 scrollTests(500, [
@@ -130,6 +130,15 @@ scrollTests(500, [
 		element: $('#end'),
 		styles: {
 			fontSize: '90px'
+		}
+	},
+	{
+		element: $('#foreign-anchor'),
+		styles: {
+			paddingTop: '100px',
+			paddingRight: '100px',
+			paddingBottom: '100px',
+			paddingLeft: '100px'
 		}
 	}
 ]);
@@ -246,6 +255,15 @@ scrollTests(250, [
 		element: newElement,
 		styles: {
 			bottom: '100px'
+		}
+	},
+	{
+		element: $('#foreign-anchor'),
+		styles: {
+			paddingTop: '150px',
+			paddingRight: '150px',
+			paddingBottom: '150px',
+			paddingLeft: '150px'
 		}
 	}
 ]);

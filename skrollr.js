@@ -1,4 +1,4 @@
-/*! skrollr v0.4.1 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.2 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 /*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
@@ -216,6 +216,7 @@
 
 		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
 			var el = elements[elementIndex];
+			var anchorTarget = el;
 			var keyFrames = [];
 
 			if(!el.attributes) {
@@ -225,6 +226,18 @@
 			//Iterate over all attributes and search for key frame attributes.
 			for (var attributeIndex = 0; attributeIndex < el.attributes.length; attributeIndex++) {
 				var attr = el.attributes[attributeIndex];
+
+				//Only non-key-frame attribute we expect
+				if(attr.name === 'data-anchor-target') {
+					anchorTarget = document.querySelector(attr.value);
+
+					if(anchorTarget === null) {
+						throw 'Unable to find anchor target "' + attr.value + '"';
+					}
+
+					continue;
+				}
+
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
@@ -280,6 +293,7 @@
 
 				_skrollables[id] = {
 					element: el,
+					anchorTarget: anchorTarget,
 					keyFrames: keyFrames
 				};
 
@@ -376,13 +390,15 @@
 	 */
 	var _updateDependentKeyFrames = function() {
 		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
-			var keyFrames = _skrollables[skrollableIndex].keyFrames;
+			var sk = _skrollables[skrollableIndex];
+			var anchorTarget = sk.anchorTarget;
+			var keyFrames = sk.keyFrames;
 
 			for(var keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
 				var kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
-					kf.frame = _relativeToAbsolute(kf.element, kf.anchors[0], kf.anchors[1]) - kf.offset;
+					kf.frame = _relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 				} else if(kf.isEnd) {
 					kf.frame = _maxKeyFrame - kf.offset;
 				}
@@ -906,6 +922,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.1'
+		VERSION: '0.4.2'
 	};
 }(window, document));

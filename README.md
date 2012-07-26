@@ -1,7 +1,7 @@
-skrollr (v 0.4.1)
+skrollr (v 0.4.2)
 ======
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **6.4k minified** (3k gzipped).
+Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **6.5k minified** (3.1k gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -83,7 +83,7 @@ The syntax is ```data-[offset]-[anchor]```, where ```offset``` can be any intege
 
 #### relative mode (or viewport mode)
 
-Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the **document**, we are able to define them depending on the position of the element in relation to the **viewport**.
+Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the **document**, we are able to define them depending on the position of any element in relation to the **viewport**.
 
 The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can be one of ```top```, ```center``` or ```bottom```. If ```element-anchor``` is ommitted, the value of ```viewport-anchor``` will be taken (just like with background-position). Here are some examples of key frames and their meaning.
 
@@ -94,13 +94,13 @@ The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```o
 * ```data-center-center``` = ```data-0-center-center```: When the element is at the center of the viewport.
 * ```data-bottom-center``` = ```data-0-bottom-center```: When the element's center is at the bottom of the viewport, thuss the upper half of the element is visible.
 
-I guess you get the point ;-)
+By default the element is the element where the key frames are defined on (self), but can be any element on the page. You can optionally specify which element you want by using the ```data-anchor-target``` and a CSS selector. The first element on the page matching the selector will be used.
 
 Here's an infographic for better understanding of anchors (click to open PDF):
 
 [![Anchors Guide](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.png)](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.pdf)
 
-**Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you need to call ```refresh()``` (see documentation in JavaScript section below).
+**Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call ```refresh()``` (see documentation in JavaScript section below).
 
 ### Filling missing values
 

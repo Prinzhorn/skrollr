@@ -25,6 +25,13 @@
 		top:0;
 	}
 
+	#foreign-anchor {
+		margin:100px;
+		padding:100px;
+		background:#ff0;
+		position:fixed;
+	}
+
 	#spacer {
 		width:1px;
 		height:10000px;
@@ -47,6 +54,7 @@
 	<div id="no-interpolation" data-0="right:!0px;" data-500="right:!100px;">TEST</div>
 	<div id="anchor-1" data-top-bottom="right:100px;" data-top="right:0px;">TEST</div>
 	<div id="anchor-2" data-top="right:0px;" data-top-center="right:200px;">TEST</div>
+	<div id="foreign-anchor" data-top="padding:200px;" data-top-center="padding:100px;" data-anchor-target="#anchor-2"></div>
 
 	<div id="spacer"></div>
 
