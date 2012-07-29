@@ -7,7 +7,7 @@ Designer friendly. No JavaScript skills needed. Just plain CSS.
 
 \**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
 
-[Examples](https://github.com/Prinzhorn/skrollr/tree/master/examples)
+[Examples - read the source ;-)](https://github.com/Prinzhorn/skrollr/tree/master/examples)
 
 
 Documentation
@@ -66,8 +66,6 @@ In addition we add the ```rendered``` **or** ```unrendered``` class, depending o
 
 Now it gets really exciting. Being only able to define key frames in absolute values is simply insufficient for some cases. For example if you don't know where an element will exactly be in the document. That's why there are two modes for key frames, namely ```absolute``` and ```relative``` move.
 
-**Note**: You probably don't want to mix both modes on the same element.
-
 #### absolute mode (or document mode)
 
 Absolute mode is what you already know about. The key frames are in absolute values, so how much the **document** has been scrolled down.
@@ -94,13 +92,15 @@ The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```o
 * ```data-center-center``` = ```data-0-center-center```: When the element is at the center of the viewport.
 * ```data-bottom-center``` = ```data-0-bottom-center```: When the element's center is at the bottom of the viewport, thuss the upper half of the element is visible.
 
-By default the element is the element where the key frames are defined on (self), but can be any element on the page. You can optionally specify which element you want by using the ```data-anchor-target``` and a CSS selector. The first element on the page matching the selector will be used.
+By default the element is the element where the key frames are defined on (self), but can be any element on the page. You can optionally specify which element you want by using the ```data-anchor-target``` and any CSS selector. The first element on the page matching the selector will be used. ```data-anchor-target``` requires IE 8 or greater.
+
+Examples: ```data-anchor-target="#foo"``` or ```data-anchor-target=".bar:not(.bacon) ~ span > a[href]"```
 
 Here's an infographic for better understanding of anchors (click to open PDF):
 
 [![Anchors Guide](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.png)](https://raw.github.com/Prinzhorn/skrollr/master/guide/anchor-position-guide.pdf)
 
-**Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call ```refresh()``` (see documentation in JavaScript section below).
+**Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call ```refresh()``` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
 ### Filling missing values
 
