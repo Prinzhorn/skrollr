@@ -102,6 +102,30 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 
 **Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call ```refresh()``` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
+### Working with constants
+
+I was lying to you. The syntax for absolute mode is not ```data-[offset]-[anchor]``` and for relative mode it's not ```data-[offset]-(viewport-anchor)-[element-anchor]```. In both cases ```offset``` can be preceeded by a constant which can be passed to the ```ìnit``` method. The name of the constant needs to be preceeded with an underscore.
+
+Example:
+
+```js
+skrollr.init({
+	constants: {
+		foobar: 1337
+	}
+});
+```
+
+```html
+<div data-_foobar="left:0%;" data-_foobar--100="left:50%;" data-_foobar-100="left:100%;"></div>
+
+<!--Equal to-->
+
+<div data-1337="left:0%;" data-1237="left:50%;" data-1437="left:100%;"></div>
+```
+
+Valid characters for a constant are ```[a-z0-9_]```.
+
 ### Filling missing values
 
 Imagine the following animation
@@ -157,6 +181,12 @@ All there is to do is to call ```skrollr.init([options]);```. Subsequent calls t
 ### options
 
 Possible options include
+
+#### constants={}
+
+An object containing integers as values. The keys can contain ```[a-z0-9_]```. They *do not* need a leading underscore.
+
+Example: ```data-_myconst-200``` and ```skrollr.init({constants: {myconst: 300}})``` result in ```data-500```.
 
 #### scale=1
 

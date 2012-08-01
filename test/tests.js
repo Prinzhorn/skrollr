@@ -2,7 +2,12 @@ $(window).on('load', function() {
 
 
 //Initialize skrollr and save the instance.
-var s = skrollr.init();
+var s = skrollr.init({
+	constants: {
+		myconst: 300,
+		my500: 500
+	}
+});
 
 //Counts how many assertions will be needed for the tests.
 var countAssertions = function(tests) {

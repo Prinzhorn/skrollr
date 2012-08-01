@@ -39,8 +39,8 @@
 
 	var rxTrim = /^\s*(.+)\s*$/m;
 
-	//Find all data-attributes. data-[offset]-[anchor]-[anchor].
-	var rxKeyframeAttribute = /^data-(-?\d+)?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
+	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
+	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
 	var rxPropSplit = /:|;/g;
 
@@ -138,6 +138,8 @@
 		_instance = this;
 
 		options = options || {};
+
+		_constants = options.constants || {};
 
 		//We allow defining custom easings or overwrite existing
 		if(options.easing) {
@@ -241,11 +243,16 @@
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match !== null) {
+					var constant = match[1];
+
+					//If there is a constant, get it's value or fall back to 0.
+					constant = constant && _constants[constant.substr(1)] || 0;
+
 					//Parse key frame offset. If undefined will be casted to 0.
-					var offset = (match[1] | 0) * _scale;
-					var anchor1 = match[2];
+					var offset = (match[2] | 0) * _scale + constant;
+					var anchor1 = match[3];
 					//If second anchor is not set, the first will be taken for both.
-					var anchor2 = match[3] || anchor1;
+					var anchor2 = match[4] || anchor1;
 
 					var kf = {
 						offset: offset,
@@ -885,6 +892,7 @@
 	var _onResize;
 
 	var _scale = 1;
+	var _constants;
 
 	//Current direction (up/down).
 	var _direction = 'down';
