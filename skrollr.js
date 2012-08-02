@@ -1,4 +1,4 @@
-/*! skrollr v0.4.2 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.3 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 /*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
@@ -930,6 +930,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.2'
+		VERSION: '0.4.3'
 	};
 }(window, document));
