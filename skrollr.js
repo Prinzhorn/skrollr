@@ -1,4 +1,4 @@
-/*! skrollr v0.4.3 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.4 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 /*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
@@ -11,6 +11,8 @@
 	var RENDERED_CLASS = 'rendered';
 	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
 	var SKROLLABLE_CLASS = 'skrollable';
+	var SKROLLR_CLASS = 'skrollr';
+	var NO_SKROLLR_CLASS = 'no-skrollr';
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
@@ -162,6 +164,8 @@
 		if(_forceHeight) {
 			_scale = options.scale || 1;
 		}
+
+		_updateClass(documentElement, [SKROLLR_CLASS], [NO_SKROLLR_CLASS]);
 
 		if(_forceHeight) {
 			//Add a dummy element in order to get a large enough scrollbar.
@@ -930,6 +934,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.3'
+		VERSION: '0.4.4'
 	};
 }(window, document));

@@ -82,6 +82,9 @@ test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
 	ok(x === 12, 'not enough or too many .skrollable elements');
+
+	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
+	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
 });
 
 scrollTests(500, [
