@@ -379,7 +379,7 @@
 
 	Skrollr.prototype.getScrollTop = function() {
 		if(_scrollerInstance) {
-			return _scrollerInstance.getValues().top;
+			return _scrollerInstance.__scrollTop;
 		} else {
 			return window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 		}
