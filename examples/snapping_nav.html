@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<title>Snapping</title>
+
+	<style>
+	html, body {
+		padding:0;
+		margin:0;
+		width:100%;
+		height:100%;
+	}
+
+	body {
+		overflow:auto;
+	}
+
+	h1 {
+		margin:0;
+		padding:0;
+		padding-top:2em;
+		font-family:sans-serif;
+		color:#fff;
+	}
+
+	div {
+		width:100%;
+		height:100%;
+		background:#09f;
+		text-align:center;
+	}
+
+	.odd {
+		background:#f90;
+	}
+
+	#nav {
+		position:fixed;
+	}
+	</style>
+</head>
+
+<body style="text-align:center;">
+	<ul id="nav">
+		<li><a href="#start">Start</a></li>
+		<li><a href="#a">A</a></li>
+		<li><a href="#b">B</a></li>
+		<li><a href="#c">C</a></li>
+		<li><a href="#d">D</a></li>
+	</ul>
+
+	<div id="start">
+		<h1>The different parts of this webpage will snap after you scroll</h1>
+	</div>
+	<div class="odd" id="a">
+		<h1>A</h1>
+	</div>
+	<div id="b">
+		<h1>B</h1>
+	</div>
+	<div class="odd" id="c">
+		<h1>C</h1>
+	</div>
+	<div id="d">
+		<h1>D</h1>
+	</div>
+
+	<script type="text/javascript" src="../skrollr.js"></script>
+	<script type="text/javascript">
+	var layers = document.getElementsByTagName('div');
+	var activeLayer = 0;
+	var animateUpSettings = {
+		duration: 200,
+		done: function() {
+			document.body.style.overflow = 'auto';
+			location.hash = '#' + layers[activeLayer].id;
+		}
+	};
+	var animateDownSettings = {
+		duration: 2000,
+		easing: 'sqrt',
+		done: animateUpSettings.done
+	};
+
+	var s = skrollr.init({
+		render: function(info) {
+			if(this.isAnimatingTo()) {
+				return;
+			}
+
+			var lastOffset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+
+			if(this.getScrollTop() === lastOffset) {
+				return;
+			}
+
+			document.body.style.overflow = 'hidden';
+
+			//Make sure to start animating at the last snap pos
+			this.setScrollTop(lastOffset);
+
+			if(info.direction === 'down') {
+				if(activeLayer + 1 < layers.length) {
+					activeLayer++;
+
+					var offset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+
+					//Move down slow with nice easing
+					this.animateTo(offset, animateDownSettings);
+				}
+			} else if(activeLayer > 0) {
+				activeLayer--;
+
+				var offset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+
+				//Move up very fast
+				this.animateTo(offset, animateUpSettings);
+			}
+		}
+	});
+
+
+
+
+	/*
+		Navigation
+	*/
+	var nav = document.getElementById('nav');
+	var links = nav.getElementsByTagName('a');
+
+	nav.onclick = function(e) {
+		e = e || window.event;
+		var target = e.target || e.srcElement;
+
+		if(target.tagName !== 'A') {
+			return;
+		}
+
+		var id = target.href.match(/#(.+)$/)[1];
+		var snapEl = document.getElementById(id);
+
+		if(!snapEl) {
+			return;
+		}
+
+		document.body.style.overflow = 'hidden';
+
+		var snapPos = s.relativeToAbsolute(snapEl, 'top', 'top');
+
+		//Down
+		if(snapPos > s.getScrollTop()) {
+			s.animateTo(snapPos, animateDownSettings);
+		}
+		//Up
+		else {
+			s.animateTo(snapPos, animateUpSettings);
+		}
+
+		//correct the index of the last layer
+		for(var i = 0; i < links.length; i++) {
+			if(target === links[i]) {
+				activeLayer = i;
+				break;
+			}
+		}
+
+		if(e.preventDefault) {
+			e.preventDefault();
+		}
+
+		e.returnValue = false;
+
+		return false;
+	};
+
+	/*
+		Deep linking
+	*/
+	if(location.hash.indexOf('#') > -1) {
+		for(var i = 0; i < layers.length; i++) {
+			if(location.hash.indexOf('#' + layers[i].id) > -1) {
+				activeLayer = i;
+				break;
+			}
+		}
+	}
+	</script>
+</body>
+
+</html>
