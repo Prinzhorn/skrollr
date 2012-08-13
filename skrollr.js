@@ -398,6 +398,13 @@
 		return _instance;
 	};
 
+	/**
+	 * Returns if an animation caused by animateTo is currently running.
+	 */
+	Skrollr.prototype.isAnimatingTo = function() {
+		return !!_scrollAnimation;
+	};
+
 	Skrollr.prototype.setScrollTop = function(top) {
 		(_scrollerInstance || window).scrollTo(0, top);
 

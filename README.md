@@ -305,6 +305,10 @@ The name of an easing function. The same functions can be used as for property a
 
 A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately.
 
+#### isAnimatingTo()
+
+Returns if an animation caused by animateTo is running.
+
 #### on(name, fn)
 
 Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attachet at a given time. This method overwrites the current listener, if any.
