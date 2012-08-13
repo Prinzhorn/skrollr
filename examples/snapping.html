@@ -13,6 +13,10 @@
 		height:100%;
 	}
 
+	body {
+		overflow:auto;
+	}
+
 	h1 {
 		margin:0;
 		padding:0;
@@ -47,10 +51,16 @@
 	<script type="text/javascript">
 	var layers = document.getElementsByTagName('div');
 	var activeLayer = 0;
-	var animateUpSettings = {duration: 200};
+	var animateUpSettings = {
+		duration: 200,
+		done: function() {
+			document.body.style.overflow = 'auto';
+		}
+	};
 	var animateDownSettings = {
 		duration: 2000,
-		easing: 'sqrt'
+		easing: 'sqrt',
+		done: animateUpSettings.done
 	};
 
 	skrollr.init({
@@ -64,6 +74,8 @@
 			if(this.getScrollTop() === lastOffset) {
 				return;
 			}
+
+			document.body.style.overflow = 'hidden';
 
 			if(info.direction === 'down') {
 				if(activeLayer + 1 < layers.length) {
