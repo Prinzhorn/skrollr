@@ -1,4 +1,4 @@
-/*! skrollr v0.4.5 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.4.6 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
 /*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
@@ -339,6 +339,33 @@
 	};
 
 	/**
+	 * Transform "relative" mode to "absolute" mode.
+	 * That is, calculate anchor position and offset of element.
+	 */
+	Skrollr.prototype.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
+		var viewportHeight = documentElement.clientHeight;
+		var box = element.getBoundingClientRect();
+		var absolute = box.top;
+
+		if(viewportAnchor === ANCHOR_BOTTOM) {
+			absolute -= viewportHeight;
+		} else if(viewportAnchor === ANCHOR_CENTER) {
+			absolute -= viewportHeight / 2;
+		}
+
+		if(elementAnchor === ANCHOR_BOTTOM) {
+			absolute += box.height;
+		} else if(elementAnchor === ANCHOR_CENTER) {
+			absolute += box.height / 2;
+		}
+
+		//Compensate scrolling since getBoundingClientRect is relative to viewport.
+		absolute += _instance.getScrollTop();
+
+		return (absolute + 0.5) | 0;
+	};
+
+	/**
 	 * Animates scroll top to new position.
 	 */
 	Skrollr.prototype.animateTo = function(top, options) {
@@ -415,39 +442,12 @@
 				var kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
-					kf.frame = _relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
+					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 				} else if(kf.isEnd) {
 					kf.frame = _maxKeyFrame - kf.offset;
 				}
 			}
 		}
-	};
-
-	/**
-	 * Transform "relative" mode to "absolute" mode.
-	 * That is, calculate anchor position and offset of element.
-	 */
-	var _relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
-		var viewportHeight = documentElement.clientHeight;
-		var box = element.getBoundingClientRect();
-		var absolute = box.top;
-
-		if(viewportAnchor === ANCHOR_BOTTOM) {
-			absolute -= viewportHeight;
-		} else if(viewportAnchor === ANCHOR_CENTER) {
-			absolute -= viewportHeight / 2;
-		}
-
-		if(elementAnchor === ANCHOR_BOTTOM) {
-			absolute += box.height;
-		} else if(elementAnchor === ANCHOR_CENTER) {
-			absolute += box.height / 2;
-		}
-
-		//Compensate scrolling since getBoundingClientRect is relative to viewport.
-		absolute += _instance.getScrollTop();
-
-		return (absolute + 0.5) | 0;
 	};
 
 	/**
@@ -943,6 +943,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.5'
+		VERSION: '0.4.6'
 	};
 }(window, document));

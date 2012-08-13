@@ -1,7 +1,7 @@
-skrollr (v 0.4.5)
+skrollr (v 0.4.6)
 ======
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **6.5k minified** (3.1k gzipped).
+Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **6.8k minified** (3.2k gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -268,6 +268,23 @@ When no elements are given, all elements under control of skrollr will be parsed
 
 Time consuming operation, should not be called on every rendering.
 
+#### relativeToAbsolute(element, viewportAnchor, elementAnchor)
+
+returns an integer which represents the absolute scroll position which correlates to the relative anchor.
+
+```element``` must be a DOM element.
+
+```viewportAnchor``` and ```elementAnchor``` must be one of ```top```, ```center``` or ```bottom```
+
+Example:
+
+```js
+var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom');
+
+//offset contains the scroll position at which #foo's top is at the bottom of the viewport.
+//if you now use window.scroll or similar to scroll to offset, #foo's top is aligned with the bottom of the viewport.
+```
+
 #### setScrollTop(top)
 
 Sets the top offset using window.scroll(0, top)
@@ -302,6 +319,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Release notes
 ------
+
+### 0.4.6
+
+* New method ```relativeToAbsolute``` which was formerly private.
 
 ### 0.4.5
 
