@@ -113,6 +113,9 @@
 		swing: function(p) {
 			return (-Math.cos(p * Math.PI) / 2) + 0.5;
 		},
+		sqrt: function(p) {
+			return Math.sqrt(p);
+		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p) {
 			var a;

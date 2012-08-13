@@ -248,6 +248,7 @@ skrollr ships with some built in functions:
 * cubic: To the power of three. So 50% looks like 12.5%
 * begin/end: They always return 0 or 1 respectively. No animation.
 * swing: Slow at the beginning and accelerates at the end. So 25% -> 14.6%, 50% -> 50%, 75% -> 85.3%
+* sqrt: Square root. Starts fast, slows down at the end.
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
 **Note**: Your easing functions should return 1 for input of 1. After the keyframe is passed, skrollr sets the values to the values of this keyframe. So if you function returns .8 for input of 1, your elements will jump at the end. But you can also use this on purpose, like the "inverted" function in the above example. The element will do everything in reverse, but at end the jumps to the end position.
