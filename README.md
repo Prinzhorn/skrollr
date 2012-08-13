@@ -327,7 +327,9 @@ Release notes
 
 ### 0.4.6
 
-* New method ```relativeToAbsolute``` which was formerly private.
+* New method ```relativeToAbsolute``` which was formerly private
+* New method ```isAnimatingTo``` to check if an animation caused by ```animateTo``` is running
+* Added ```sqrt``` easing function
 
 ### 0.4.5
 
