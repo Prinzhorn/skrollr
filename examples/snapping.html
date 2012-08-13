@@ -39,13 +39,21 @@
 </head>
 
 <body style="text-align:center;">
-	<div>
+	<div id="start">
 		<h1>The different parts of this webpage will snap after you scroll</h1>
 	</div>
-	<div class="odd"></div>
-	<div></div>
-	<div class="odd"></div>
-	<div></div>
+	<div class="odd" id="a">
+		<h1>A</h1>
+	</div>
+	<div id="b">
+		<h1>B</h1>
+	</div>
+	<div class="odd" id="c">
+		<h1>C</h1>
+	</div>
+	<div id="d">
+		<h1>D</h1>
+	</div>
 
 	<script type="text/javascript" src="../skrollr.js"></script>
 	<script type="text/javascript">
@@ -63,7 +71,7 @@
 		done: animateUpSettings.done
 	};
 
-	skrollr.init({
+	var s = skrollr.init({
 		render: function(info) {
 			if(this.isAnimatingTo()) {
 				return;
@@ -76,6 +84,9 @@
 			}
 
 			document.body.style.overflow = 'hidden';
+
+			//Make sure to start animating at the last snap pos
+			this.setScrollTop(lastOffset);
 
 			if(info.direction === 'down') {
 				if(activeLayer + 1 < layers.length) {
