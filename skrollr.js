@@ -410,7 +410,7 @@
 
 	Skrollr.prototype.setScrollTop = function(top) {
 		(_scrollerInstance || window).scrollTo(0, top);
-
+		_curTop = top;
 		return _instance;
 	};
 
@@ -540,6 +540,8 @@
 		//If there's an animation, which ends in current render call, call the callback after rendering;
 		var afterAnimationCallback;
 
+		_curTop = _instance.getScrollTop();
+
 		//Before actually rendering handle the scroll animation, if any.
 		if(_scrollAnimation) {
 			var now = _now();
@@ -552,12 +554,20 @@
 			} else {
 				//Map the current progress to the new progress using given easing function.
 				var progress = _scrollAnimation.easing((now - _scrollAnimation.startTime) / _scrollAnimation.duration);
-
-				_instance.setScrollTop((_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0);
+				var _newTop = (_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0;
+				// check if the current scroll position is within the bounds of the current animation step 
+				if (Math.floor((_curTop - _lastTop) / (_newTop - _lastTop)) === 0) { // in range [0,1)
+					_instance.setScrollTop(_newTop);
+				} else {
+					// user has scrolled manually during an animation, so restart animation from current location to avoid jumpiness
+					_scrollAnimation.duration = _scrollAnimation.endTime - now;
+					_scrollAnimation.startTime = now;
+					_scrollAnimation.topDiff += _scrollAnimation.startTop - _curTop;
+					_scrollAnimation.startTop = _curTop;
+				}
 			}
 		}
 
-		_curTop = _instance.getScrollTop();
 
 		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
 		if(_curTop < 0) {
