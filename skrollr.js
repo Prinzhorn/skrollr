@@ -1,5 +1,4 @@
 /*! skrollr v0.4.6 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
-/*jshint smarttabs:true */
 (function(window, document, undefined) {
 	'use strict';
 
