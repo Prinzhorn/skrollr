@@ -58,6 +58,8 @@ skrollr automatically **sets the prefixed properties for you**. You not just don
 
 ### CSS classes
 
+skrollr will add a ```skrollr``` class to the ```HTML``` element when calling ```init``` and will remove a ```no-skrollr``` class if present. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
+
 All elements under skrollr's control (elements with appropriate data-attributes) will get the ```skrollable``` class.
 
 In addition we add the ```rendered``` **or** ```unrendered``` class, depending on whether an element is currently being styled by skrollr, that means the current scroll offset is in between the key frames of that element, or not.
