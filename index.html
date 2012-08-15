@@ -5,8 +5,8 @@
 
 	<title>skrollr - parallax scrolling for the masses</title>
 
-	<link href="skrollr.css" rel="stylesheet" type="text/css" />
-	<link href="demo/style.css" rel="stylesheet" type="text/css" />
+	<link href="examples/fixed-positioning.css" rel="stylesheet" type="text/css" />
+	<link href="examples/main.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body class="notransition">
@@ -70,10 +70,12 @@
 	}
 	</script>
 
-	<script type="text/javascript" src="skrollr.js"></script>
+	<script type="text/javascript" src="dist/skrollr.min.js"></script>
+
 	<!--[if lt IE 9]>
-	<script type="text/javascript" src="plugins/skrollr.ie.js"></script>
+	<script type="text/javascript" src="dist/skrollr.ie.min.js"></script>
 	<![endif]-->
+
 	<script type="text/javascript">
 	var s = skrollr.init({
 		beforerender: function(data) {

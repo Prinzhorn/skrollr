@@ -1,4 +1,10 @@
-/*! skrollr v0.4.6 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*!
+ * skrollr v0.4.6
+ *
+ * https://github.com/Prinzhorn/skrollr
+ *
+ * free to use under terms of MIT license
+ */
 (function(window, document, undefined) {
 	'use strict';
 
