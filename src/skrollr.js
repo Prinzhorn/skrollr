@@ -1,5 +1,5 @@
 /*!
- * skrollr v0.4.6
+ * skrollr
  *
  * https://github.com/Prinzhorn/skrollr
  *
@@ -17,7 +17,7 @@
 	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
 	var SKROLLABLE_CLASS = 'skrollable';
 	var SKROLLR_CLASS = 'skrollr';
-	var NO_SKROLLR_CLASS = 'no-skrollr';
+	var NO_SKROLLR_CLASS = 'no-' + SKROLLR_CLASS;
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
@@ -169,12 +169,14 @@
 		//true is default, thus undefined is true as well.
 		_forceHeight = options.forceHeight !== false;
 
+		//mobile skrollr exposes the zynga/scroller instance via the global skrollrScrollerInstance property.
 		_scrollerInstance = window.skrollrScrollerInstance;
 
 		if(_forceHeight) {
 			_scale = options.scale || 1;
 		}
 
+		//Remove "no-skrollr" and add "skrollr" to the HTML element.
 		_updateClass(documentElement, [SKROLLR_CLASS], [NO_SKROLLR_CLASS]);
 
 		if(_forceHeight) {
@@ -189,12 +191,12 @@
 			body.appendChild(dummy);
 
 			//Update height of dummy div when window size is changed.
-			_onResize = function() {
+			_reflow = function() {
 				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
 				_updateDependentKeyFrames();
 			};
 		} else {
-			_onResize = function() {
+			_reflow = function() {
 				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
 				_updateDependentKeyFrames();
 				_forceRender = true;
@@ -203,7 +205,7 @@
 
 		_instance.refresh();
 
-		_addEvent('resize', _onResize);
+		_addEvent('resize', _reflow);
 
 		//Let's go
 		_render();
@@ -222,8 +224,10 @@
 		if(elements === undefined) {
 			//Ignore that some elements may already have a skrollable ID.
 			ignoreID = true;
+
 			_skrollables = [];
 			_skrollableIdCounter = 0;
+
 			elements = document.getElementsByTagName('*');
 		} else {
 			//We accept a single element or an array of elements.
@@ -243,7 +247,7 @@
 			for (var attributeIndex = 0; attributeIndex < el.attributes.length; attributeIndex++) {
 				var attr = el.attributes[attributeIndex];
 
-				//Only non-key-frame attribute we expect
+				//The only non-key-frame attribute we expect.
 				if(attr.name === 'data-anchor-target') {
 					anchorTarget = document.querySelector(attr.value);
 
@@ -322,8 +326,8 @@
 			}
 		}
 
-		//This is kinda hacky, but it's needed to update certain values.
-		_onResize();
+		//Reflow for the first time.
+		_reflow();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
 		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
@@ -914,7 +918,7 @@
 	var _listeners;
 	var _forceHeight;
 	var _maxKeyFrame = 0;
-	var _onResize;
+	var _reflow;
 
 	var _scale = 1;
 	var _constants;
