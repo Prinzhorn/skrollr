@@ -169,9 +169,6 @@
 		//true is default, thus undefined is true as well.
 		_forceHeight = options.forceHeight !== false;
 
-		//mobile skrollr exposes the zynga/scroller instance via the global skrollrScrollerInstance property.
-		_scrollerInstance = window.skrollrScrollerInstance;
-
 		if(_forceHeight) {
 			_scale = options.scale || 1;
 		}
@@ -418,14 +415,18 @@
 	};
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		(_scrollerInstance || window).scrollTo(0, top);
+		//skrollr.scrollerInstance is an instance of zynga/scroller
+		//which is available for mobile support and set by SkrollrScrollerBridge.js.
+		(window.skrollr.scrollerInstance || window).scrollTo(0, top);
 
 		return _instance;
 	};
 
 	Skrollr.prototype.getScrollTop = function() {
-		if(_scrollerInstance) {
-			return _scrollerInstance.__scrollTop;
+		//skrollr.scrollerInstance is an instance of zynga/scroller
+		//which is available for mobile support and set by SkrollrScrollerBridge.js.
+		if(window.skrollr.scrollerInstance) {
+			return window.skrollr.scrollerInstance.__scrollTop;
 		} else {
 			return window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 		}
@@ -941,9 +942,6 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
-
-	//An instance of zynga/scroller for mobile support
-	var _scrollerInstance;
 
 	/*
 	 * Global api.
