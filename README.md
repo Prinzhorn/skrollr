@@ -1,7 +1,7 @@
-skrollr (v 0.4.6)
+skrollr (v 0.4.7)
 ======
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just under **6.8k minified** (3.2k gzipped).
+Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **6.9k minified** (3.2k gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -326,6 +326,11 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Release notes
 ------
+
+### 0.4.7
+
+* Updated the requestAnimationFrame polyfill for smoother animations
+* Updated the way requestAnimationFrame is used for even smoother animations
 
 ### 0.4.6
 

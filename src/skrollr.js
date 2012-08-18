@@ -33,16 +33,34 @@
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
 
-	var requestAnimFrame =
-		window.requestAnimationFrame ||
-		window.webkitRequestAnimationFrame ||
-		window.mozRequestAnimationFrame ||
-		window.oRequestAnimationFrame ||
-		window.msRequestAnimationFrame ||
-		function(fn) {
-			//Just 30 fps, because that's enough for those legacy browsers
-			window.setTimeout(fn, 1000 / 30);
-		};
+	var requestAnimFrame = window.requestAnimationFrame;
+
+	//Request animation frame polyfill.
+	//Credits go to Erik Möller (http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating)
+	(function() {
+		var vendors = ['ms', 'moz', 'webkit', 'o'];
+		var i;
+
+		for(i = 0; i < vendors.length && !requestAnimFrame; i++) {
+			requestAnimFrame = window[vendors[i] + 'RequestAnimationFrame'];
+		}
+
+		var lastTime = 0;
+
+		if (!requestAnimFrame) {
+			requestAnimFrame = function(callback) {
+				var currTime = _now();
+				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+
+				window.setTimeout(function() {
+					callback(currTime + timeToCall);
+				}, timeToCall);
+
+				lastTime = currTime + timeToCall;
+			};
+		}
+	}());
+
 
 	var rxTrim = /^\s*(.+)\s*$/m;
 
@@ -204,8 +222,13 @@
 
 		_addEvent('resize', _reflow);
 
-		//Let's go
-		_render();
+		//Let's go.
+		(function animloop(){
+			//This is how the cool kids use requestAnimationFrame
+			//http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+			requestAnimFrame(animloop);
+			_render();
+		}());
 
 		return _instance;
 	}
@@ -608,10 +631,6 @@
 				afterAnimationCallback.call(_instance);
 			}
 		}
-
-		requestAnimFrame(function() {
-			_render();
-		});
 	};
 
 	/**
@@ -960,6 +979,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.6'
+		VERSION: '0.4.7'
 	};
 }(window, document));
