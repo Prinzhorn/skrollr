@@ -43,7 +43,12 @@ var scrollTests = function(offset, tests) {
 		//Scroll to offset, which will cause rendering (sooner or later)
 		s.setScrollTop(offset);
 
-		s.on('render', function() {
+		s.on('render', function(info) {
+			//Due to smooth scrolling we need to make sure we are where we want to be.
+			if(info.curTop !== offset) {
+				return;
+			}
+
 			//Prevent another render event. Only need one for test.
 			s.off('render');
 

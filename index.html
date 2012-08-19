@@ -59,11 +59,6 @@
 <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script></p>
 	</div>
 
-	<div style="position:fixed;right:0;top:0;padding:.5em;background:#fff;z-index:102;">
-		<input type="checkbox" name="cbTransition" id="cbTransition" />
-		<label for="cbTransition">Smooth scrolling</label>
-	</div>
-
 	<script type="text/javascript">
 	if(location.search === '?debug') {
 		document.write('<script type="text/javascript" src="https://getfirebug.com/firebug-lite.js"><' + '/script>');
@@ -91,14 +86,6 @@
 			}
 		}
 	});
-
-	document.getElementById('cbTransition').onchange = function() {
-		if(this.checked) {
-			document.body.className = '';
-		} else {
-			document.body.className = 'notransition';
-		}
-	};
 	</script>
 </body>
 

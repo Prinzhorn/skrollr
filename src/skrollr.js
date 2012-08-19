@@ -24,14 +24,6 @@
 
 	var SMOOTH_SCROLLING_DURATION = 200;
 
-	//The maximum offset to animate.
-	//If someone scrolls down very far it's pointless to animate from the original position.
-	var SMOOTH_SCROLLING_MAX_OFFSET = 100;
-
-	//The minimum offset before triggering smooth scrolling.
-	//No need to smoothen out very small scroll amounts.
-	var SMOOTH_SCROLLING_MIN_OFFSET = 100;
-
 	var ANCHOR_START = 'start';
 	var ANCHOR_END = 'end';
 	var ANCHOR_TOP = 'top';
@@ -203,8 +195,7 @@
 
 			//Dummy object. Will be overwritten in the _render method when smooth scrolling should take effect.
 			_smoothScrolling = {
-				targetTop: scrollTop,
-				lastTop: scrollTop
+				targetTop: scrollTop
 			};
 		}
 
@@ -632,32 +623,21 @@
 
 			//The user scrolled, start new smooth scrolling.
 			if(smoothScrollingDiff) {
-				//Only do smooth scrolling when the user scrolled far enough.
-				//This prevents native smooth scrolling, for example in Firefox 13+ from interfering.
-				if(Math.abs(smoothScrollingDiff) >= SMOOTH_SCROLLING_MIN_OFFSET) {
-					console.log(smoothScrollingDiff);
-
-					//TODO: SMOOTH_SCROLLING_MAX_OFFSET
-					_smoothScrolling = {
-						startTop: _smoothScrolling.lastTop,
-						topDiff: renderTop - _smoothScrolling.lastTop,
-						targetTop: renderTop,
-						startTime: now,
-						endTime: now + SMOOTH_SCROLLING_DURATION
-					};
-				} else {
-					console.log('JUNGE');
-
-					_smoothScrolling.targetTop = renderTop;
-				}
+				_smoothScrolling = {
+					startTop: _lastTop,
+					topDiff: renderTop - _lastTop,
+					targetTop: renderTop,
+					startTime: _lastRenderCall,
+					endTime: _lastRenderCall + SMOOTH_SCROLLING_DURATION
+				};
 			}
 
 			//Interpolate the internal scroll position (not the actual scrollbar).
 			if(now <= _smoothScrolling.endTime) {
 				//Map the current progress to the new progress using easing function.
-				progress = easings.linear((now - _smoothScrolling.startTime) / SMOOTH_SCROLLING_DURATION);
+				progress = easings.sqrt((now - _smoothScrolling.startTime) / SMOOTH_SCROLLING_DURATION);
 
-				renderTop = _smoothScrolling.lastTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
+				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
 			}
 		}
 
@@ -700,6 +680,8 @@
 				afterAnimationCallback.call(_instance, false);
 			}
 		}
+
+		_lastRenderCall = now;
 	};
 
 	/**
@@ -1018,6 +1000,9 @@
 	//The last top offset value. Needed to determine direction.
 	var _lastTop = -1;
 
+	//The last time we called the render method (doesn't mean we rendered!).
+	var _lastRenderCall = _now();
+
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
 
@@ -1048,6 +1033,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.8'
+		VERSION: '0.4.9'
 	};
 }(window, document));

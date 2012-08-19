@@ -1,7 +1,7 @@
-skrollr (v 0.4.8)
+skrollr (v 0.4.9)
 ======
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **6.9k minified** (3.2k gzipped).
+Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.3k minified** (3.4k gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -184,6 +184,10 @@ All there is to do is to call ```skrollr.init([options]);```. Subsequent calls t
 
 Possible options include
 
+#### smoothScrolling=true
+
+Smooth scrolling smoothens your animations. When you scroll down 50 pixel the animations will transition instead of jumping to the new position.
+
 #### constants={}
 
 An object containing integers as values. The keys can contain ```[a-z0-9_]```. They *do not* need a leading underscore.
@@ -330,6 +334,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Release notes
 ------
+
+### 0.4.9
+
+* Added experimental smooth scrolling (no more CSS transitions. WORKS IN IE.).
 
 ### 0.4.8
 

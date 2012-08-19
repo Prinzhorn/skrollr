@@ -22,23 +22,6 @@ html, body {
 	 * Skrollables by default have a z-index of 100 in order to make it easy to position elements in front/back without changing each skrollable
 	 */
 	z-index:100;
-
-	/*
-	 * Use with caution
-	 */
-			transition: all .3s;
-	   /*-o-transition: all .3s;*/
-		-ms-transition: all .3s;
-	   -moz-transition: all .3s;
-	-webkit-transition: all .3s;
-}
-
-.skrollable.notransition, .notransition .skrollable {
-			transition: none;
-		 -o-transition: none;
-		-ms-transition: none;
-	   -moz-transition: none;
-	-webkit-transition: none;
 }
 
 /*
