@@ -421,13 +421,24 @@
 		//Don't queue the animation if there's nothing to animate.
 		if(!_scrollAnimation.topDiff) {
 			if(_scrollAnimation.done) {
-				_scrollAnimation.done.call(_instance);
+				_scrollAnimation.done.call(_instance, false);
 			}
 
 			_scrollAnimation = undefined;
 		}
 
 		return _instance;
+	};
+
+	/**
+	 * Stops animateTo animation.
+	 */
+	Skrollr.prototype.stopAnimateTo = function() {
+		if(_scrollAnimation && _scrollAnimation.done) {
+			_scrollAnimation.done.call(_instance, true);
+		}
+
+		_scrollAnimation = undefined;
 	};
 
 	/**
@@ -628,7 +639,7 @@
 			}
 
 			if(afterAnimationCallback) {
-				afterAnimationCallback.call(_instance);
+				afterAnimationCallback.call(_instance, false);
 			}
 		}
 	};
@@ -979,6 +990,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.7'
+		VERSION: '0.4.8'
 	};
 }(window, document));

@@ -1,4 +1,4 @@
-skrollr (v 0.4.7)
+skrollr (v 0.4.8)
 ======
 
 Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **6.9k minified** (3.2k gzipped).
@@ -306,7 +306,11 @@ The name of an easing function. The same functions can be used as for property a
 
 ##### done
 
-A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately.
+A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately. The function get a boolean argument ```interrupted``` which indicates if the animation was iterrupted by stopAnimateTo or finished to the end.
+
+#### stopAnimateTo()
+
+Stops the animation and calls the ```done``` callback passing ```true``` as ```interrupted``` arguments.
 
 #### isAnimatingTo()
 
@@ -314,7 +318,7 @@ Returns if an animation caused by animateTo is running.
 
 #### on(name, fn)
 
-Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attachet at a given time. This method overwrites the current listener, if any.
+Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attached at a given time. This method overwrites the current listener, if any.
 
 #### off(name)
 
@@ -326,6 +330,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Release notes
 ------
+
+### 0.4.8
+
+* Added ```stopAnimateTo``` method.
 
 ### 0.4.7
 
