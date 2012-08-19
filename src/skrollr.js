@@ -646,6 +646,8 @@
 						endTime: now + SMOOTH_SCROLLING_DURATION
 					};
 				} else {
+					console.log('JUNGE');
+
 					_smoothScrolling.targetTop = renderTop;
 				}
 			}
