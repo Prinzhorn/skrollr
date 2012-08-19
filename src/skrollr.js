@@ -22,6 +22,16 @@
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
 
+	var SMOOTH_SCROLLING_DURATION = 200;
+
+	//The maximum offset to animate.
+	//If someone scrolls down very far it's pointless to animate from the original position.
+	var SMOOTH_SCROLLING_MAX_OFFSET = 100;
+
+	//The minimum offset before triggering smooth scrolling.
+	//No need to smoothen out very small scroll amounts.
+	var SMOOTH_SCROLLING_MIN_OFFSET = 100;
+
 	var ANCHOR_START = 'start';
 	var ANCHOR_END = 'end';
 	var ANCHOR_TOP = 'top';
@@ -184,8 +194,19 @@
 			render: options.render
 		};
 
-		//true is default, thus undefined is true as well.
+		//forceHeight is true by default
 		_forceHeight = options.forceHeight !== false;
+
+		//smooth scrolling is enabled by default
+		if(options.smoothScrolling !== false) {
+			var scrollTop = _instance.getScrollTop();
+
+			//Dummy object. Will be overwritten in the _render method when smooth scrolling should take effect.
+			_smoothScrolling = {
+				targetTop: scrollTop,
+				lastTop: scrollTop
+			};
+		}
 
 		if(_forceHeight) {
 			_scale = options.scale || 1;
@@ -581,42 +602,77 @@
 	 * Renders all elements
 	 */
 	var _render = function() {
-		//If there's an animation, which ends in current render call, call the callback after rendering;
+		//We may render something else than the actual scrollbar position.
+		var renderTop = _instance.getScrollTop();
+
+		//If there's an animation, which ends in current render call, call the callback after rendering.
 		var afterAnimationCallback;
+		var now = _now();
+		var progress;
 
 		//Before actually rendering handle the scroll animation, if any.
 		if(_scrollAnimation) {
-			var now = _now();
-
 			//It's over
 			if(now >= _scrollAnimation.endTime) {
-				_instance.setScrollTop(_scrollAnimation.targetTop);
+				renderTop = _scrollAnimation.targetTop;
 				afterAnimationCallback = _scrollAnimation.done;
 				_scrollAnimation = undefined;
 			} else {
 				//Map the current progress to the new progress using given easing function.
-				var progress = _scrollAnimation.easing((now - _scrollAnimation.startTime) / _scrollAnimation.duration);
+				progress = _scrollAnimation.easing((now - _scrollAnimation.startTime) / _scrollAnimation.duration);
 
-				_instance.setScrollTop((_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0);
+				renderTop = (_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0;
+			}
+
+			_instance.setScrollTop(renderTop);
+		}
+		//Smooth scrolling only if there's no animation running.
+		else if(_smoothScrolling) {
+			var smoothScrollingDiff = _smoothScrolling.targetTop - renderTop;
+
+			//The user scrolled, start new smooth scrolling.
+			if(smoothScrollingDiff) {
+				//Only do smooth scrolling when the user scrolled far enough.
+				//This prevents native smooth scrolling, for example in Firefox 13+ from interfering.
+				if(Math.abs(smoothScrollingDiff) >= SMOOTH_SCROLLING_MIN_OFFSET) {
+					console.log(smoothScrollingDiff);
+
+					//TODO: SMOOTH_SCROLLING_MAX_OFFSET
+					_smoothScrolling = {
+						startTop: _smoothScrolling.targetTop,
+						topDiff: renderTop - _smoothScrolling.targetTop,
+						targetTop: renderTop,
+						startTime: now,
+						endTime: now + SMOOTH_SCROLLING_DURATION
+					};
+				} else {
+					_smoothScrolling.startTop = renderTop;
+				}
+			}
+
+			//Interpolate the internal scroll position (not the actual scrollbar).
+			if(now <= _smoothScrolling.endTime) {
+				//Map the current progress to the new progress using easing function.
+				progress = easings.linear((now - _smoothScrolling.startTime) / SMOOTH_SCROLLING_DURATION);
+
+				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
 			}
 		}
 
-		_curTop = _instance.getScrollTop();
-
 		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
-		if(_curTop < 0) {
-			_curTop = 0;
+		if(renderTop < 0) {
+			renderTop = 0;
 		}
 
 		//Did the scroll position even change?
-		if(_forceRender || _lastTop !== _curTop) {
+		if(_forceRender || _lastTop !== renderTop) {
 			//Remember in which direction are we scrolling?
-			_direction = (_curTop >= _lastTop) ? 'down' : 'up';
+			_direction = (renderTop >= _lastTop) ? 'down' : 'up';
 
 			_forceRender = false;
 
 			var listenerParams = {
-				curTop: _curTop,
+				curTop: renderTop,
 				lastTop: _lastTop,
 				maxTop: _maxKeyFrame,
 				direction: _direction
@@ -628,10 +684,10 @@
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
 				//Now actually interpolate all the styles.
-				_calcSteps(_curTop);
+				_calcSteps(renderTop);
 
 				//Remember when we last rendered.
-				_lastTop = _curTop;
+				_lastTop = renderTop;
 
 				if(_listeners.render) {
 					_listeners.render.call(_instance, listenerParams);
@@ -960,11 +1016,11 @@
 	//The last top offset value. Needed to determine direction.
 	var _lastTop = -1;
 
-	//The current top offset, needed for async rendering.
-	var _curTop = 0;
-
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
+
+	//Will contain settins for smooth scrolling if enabled.
+	var _smoothScrolling;
 
 	//Can be set by any operation/event to force rendering even if the scrollbar didn't move.
 	var _forceRender;
