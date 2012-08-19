@@ -639,14 +639,14 @@
 
 					//TODO: SMOOTH_SCROLLING_MAX_OFFSET
 					_smoothScrolling = {
-						startTop: _smoothScrolling.targetTop,
-						topDiff: renderTop - _smoothScrolling.targetTop,
+						startTop: _smoothScrolling.lastTop,
+						topDiff: renderTop - _smoothScrolling.lastTop,
 						targetTop: renderTop,
 						startTime: now,
 						endTime: now + SMOOTH_SCROLLING_DURATION
 					};
 				} else {
-					_smoothScrolling.startTop = renderTop;
+					_smoothScrolling.targetTop = renderTop;
 				}
 			}
 
@@ -655,7 +655,7 @@
 				//Map the current progress to the new progress using easing function.
 				progress = easings.linear((now - _smoothScrolling.startTime) / SMOOTH_SCROLLING_DURATION);
 
-				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
+				renderTop = _smoothScrolling.lastTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
 			}
 		}
 
