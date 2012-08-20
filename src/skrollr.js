@@ -937,7 +937,7 @@
 		return ' ' + a + ' ';
 	};
 
-	var _now = function() {
+	var _now = Date.now || function() {
 		return +new Date();
 	};
 
