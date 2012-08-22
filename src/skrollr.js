@@ -189,15 +189,12 @@
 		//forceHeight is true by default
 		_forceHeight = options.forceHeight !== false;
 
-		//smooth scrolling is enabled by default
-		if(options.smoothScrolling !== false) {
-			var scrollTop = _instance.getScrollTop();
+		_smoothScrollingEnabled = options.smoothScrolling !== false;
 
-			//Dummy object. Will be overwritten in the _render method when smooth scrolling should take effect.
-			_smoothScrolling = {
-				targetTop: scrollTop
-			};
-		}
+		//Dummy object. Will be overwritten in the _render method when smooth scrolling is calculated.
+		_smoothScrolling = {
+			targetTop: _instance.getScrollTop()
+		};
 
 		if(_forceHeight) {
 			_scale = options.scale || 1;
@@ -271,6 +268,9 @@
 			var anchorTarget = el;
 			var keyFrames = [];
 
+			//If this particular element should be smooth scrolled.
+			var smoothScrollThis = _smoothScrollingEnabled;
+
 			if(!el.attributes) {
 				continue;
 			}
@@ -279,13 +279,19 @@
 			for (var attributeIndex = 0; attributeIndex < el.attributes.length; attributeIndex++) {
 				var attr = el.attributes[attributeIndex];
 
-				//The only non-key-frame attribute we expect.
 				if(attr.name === 'data-anchor-target') {
 					anchorTarget = document.querySelector(attr.value);
 
 					if(anchorTarget === null) {
 						throw 'Unable to find anchor target "' + attr.value + '"';
 					}
+
+					continue;
+				}
+
+				//Global smooth scrolling can be overridden by the element attribute.
+				if(attr.name === 'data-smooth-scrolling') {
+					smoothScrollThis = attr.value !== 'off';
 
 					continue;
 				}
@@ -351,7 +357,8 @@
 				_skrollables[id] = {
 					element: el,
 					anchorTarget: anchorTarget,
-					keyFrames: keyFrames
+					keyFrames: keyFrames,
+					smoothScrolling: smoothScrollThis
 				};
 
 				_updateClass(el, [SKROLLABLE_CLASS, UNRENDERED_CLASS], [RENDERED_CLASS]);
@@ -518,11 +525,14 @@
 
 	/**
 	 * Calculates and sets the style properties for the element at the given frame.
+	 * @param fakeFrame The frame to render at when smooth scrolling is enabled.
+	 * @param actualFrame The actual frame we are at.
 	 */
-	var _calcSteps = function(frame) {
+	var _calcSteps = function(fakeFrame, actualFrame) {
 		//Iterate over all skrollables.
 		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
 			var skrollable = _skrollables[skrollableIndex];
+			var frame = skrollable.smoothScrolling ? fakeFrame : actualFrame;
 			var frames = skrollable.keyFrames;
 			var firstFrame = frames[0].frame;
 			var lastFrame = frames[frames.length - 1].frame;
@@ -618,7 +628,7 @@
 			_instance.setScrollTop(renderTop);
 		}
 		//Smooth scrolling only if there's no animation running.
-		else if(_smoothScrolling) {
+		else {
 			var smoothScrollingDiff = _smoothScrolling.targetTop - renderTop;
 
 			//The user scrolled, start new smooth scrolling.
@@ -666,7 +676,7 @@
 			//The beforerender listener function is able the cancel rendering.
 			if(continueRendering !== false) {
 				//Now actually interpolate all the styles.
-				_calcSteps(renderTop);
+				_calcSteps(renderTop, _instance.getScrollTop());
 
 				//Remember when we last rendered.
 				_lastTop = renderTop;
@@ -1006,6 +1016,8 @@
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
 
+	var _smoothScrollingEnabled;
+
 	//Will contain settins for smooth scrolling if enabled.
 	var _smoothScrolling;
 
@@ -1033,6 +1045,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.9'
+		VERSION: '0.4.10'
 	};
 }(window, document));

@@ -1,4 +1,4 @@
-skrollr (v 0.4.9)
+skrollr (v 0.4.10)
 ======
 
 Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.3k minified** (3.4k gzipped).
@@ -188,6 +188,8 @@ Possible options include
 
 Smooth scrolling smoothens your animations. When you scroll down 50 pixel the animations will transition instead of jumping to the new position.
 
+The global setting can be overridden per element by setting ```data-smooth-scrolling``` to ```on``` or ```off```.
+
 #### constants={}
 
 An object containing integers as values. The keys can contain ```[a-z0-9_]```. They *do not* need a leading underscore.
@@ -334,6 +336,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Release notes
 ------
+
+### 0.4.10
+
+* Allow smooth scrolling on element level using ```data-smooth-scrolling```
 
 ### 0.4.9
 
