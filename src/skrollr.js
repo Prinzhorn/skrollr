@@ -932,10 +932,6 @@
 		el[prop] = _trim(val);
 	};
 
-	/**
-	 * Updates the CSS class of the element.
-	 */
-
 	var _trim = function(a) {
 		return a.replace(rxTrim, '$1');
 	};
