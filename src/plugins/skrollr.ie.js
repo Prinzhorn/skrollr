@@ -1,15 +1,11 @@
 /*!
- * plugin for skrollr v0.3.0
- * Parallax scrolling for the masses.
- * This plugin bring opacity and hsl colors to IE < 9.
+ * Plugin for skrollr.
+ * This plugin brings opacity and hsl colors to IE < 9.
  *
- * Copyright 2012, Alexander Prinzhorn (@Prinzhorn) and contributors.
+ * https://github.com/Prinzhorn/skrollr
  *
- * skrollr can be used by everyone under the terms of the MIT license.
- *
- * Demo: http://prinzhorn.github.com/skrollr/
- * Source: https://github.com/Prinzhorn/skrollr
-*/
+ * free to use under terms of MIT license
+ */
 (function(skrollr) {
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;
 	var rxRGBAColor = /rgba?\(\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?).*?\)/g;
