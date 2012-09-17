@@ -1045,6 +1045,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.11'
+		VERSION: '0.4.12'
 	};
 }(window, document));
