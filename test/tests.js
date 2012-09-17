@@ -86,7 +86,7 @@ module('basic stuff');
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 12, 'not enough or too many .skrollable elements');
+	ok(x === 13, 'not enough or too many .skrollable elements');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -153,6 +153,12 @@ scrollTests(500, [
 			paddingBottom: '100px',
 			paddingLeft: '100px'
 		}
+	},
+	{
+		element: $('#float'),
+		styles: {
+			float: 'left'
+		}
 	}
 ]);
 
@@ -207,6 +213,12 @@ scrollTests(0, [
 		element: newElement,
 		styles: {
 			bottom: '0px'
+		}
+	},
+	{
+		element: $('#float'),
+		styles: {
+			float: 'none'
 		}
 	}
 ]);
@@ -277,6 +289,12 @@ scrollTests(250, [
 			paddingRight: '150px',
 			paddingBottom: '150px',
 			paddingLeft: '150px'
+		}
+	},
+	{
+		element: $('#float'),
+		styles: {
+			float: 'none'
 		}
 	}
 ]);

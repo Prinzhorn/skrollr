@@ -870,6 +870,10 @@
 			//Floor
 			style[prop] = '' + (val | 0);
 		}
+		//#64: "float" can't be set across browsers. Needs to use "cssFloat" for all except IE.
+		else if(prop === 'float') {
+			style.styleFloat = style.cssFloat = val;
+		}
 		else {
 			//Need try-catch for old IE.
 			try {
