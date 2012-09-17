@@ -302,7 +302,7 @@
 					var constant = match[1];
 
 					//If there is a constant, get it's value or fall back to 0.
-					constant = constant && _constants[constant.substr(1)] || 0;
+					constant = (constant && _constants[constant.substr(1)] || 0) * _scale;
 
 					//Parse key frame offset. If undefined will be casted to 0.
 					var offset = (match[2] | 0) * _scale + constant;
