@@ -302,10 +302,10 @@
 					var constant = match[1];
 
 					//If there is a constant, get it's value or fall back to 0.
-					constant = (constant && _constants[constant.substr(1)] || 0) * _scale;
+					constant = constant && _constants[constant.substr(1)] || 0;
 
 					//Parse key frame offset. If undefined will be casted to 0.
-					var offset = (match[2] | 0) * _scale + constant;
+					var offset = (match[2] | 0) + constant;
 					var anchor1 = match[3];
 					//If second anchor is not set, the first will be taken for both.
 					var anchor2 = match[4] || anchor1;
@@ -328,7 +328,9 @@
 							kf.isEnd = true;
 						} else {
 							//For data-start we can already set the key frame w/o calculations.
-							kf.frame = offset;
+							//#59: "scale" options should only affect absolute mode.
+							kf.frame = offset * _scale;
+
 							delete kf.offset;
 
 							if(kf.frame > _maxKeyFrame) {
@@ -1045,6 +1047,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.12'
+		VERSION: '0.4.13'
 	};
 }(window, document));

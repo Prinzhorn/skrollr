@@ -1,4 +1,4 @@
-skrollr (v 0.4.12)
+skrollr (v 0.4.13)
 ======
 
 Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.3k minified** (3.4k gzipped).
@@ -201,6 +201,10 @@ Example: ```data-_myconst-200``` and ```skrollr.init({constants: {myconst: 300}}
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
 When ```forceHeight``` is set to false, ```scale``` is ignored.
+
+`scale` affects `constants` as well.
+
+`scale` does only affect key frames in absolute mode, e.g. `data-500` but not `data-top`.
 
 ####forceHeight=true
 
