@@ -216,8 +216,12 @@
 
 			//Update height of dummy div when window size is changed.
 			_reflow = function() {
-				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+				//Will be recalculated by _updateDependentKeyFrames.
+				_maxKeyFrame = 0;
+
 				_updateDependentKeyFrames();
+
+				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
 			};
 		} else {
 			_reflow = function() {
@@ -332,10 +336,6 @@
 							kf.frame = offset * _scale;
 
 							delete kf.offset;
-
-							if(kf.frame > _maxKeyFrame) {
-								_maxKeyFrame = kf.frame;
-							}
 						}
 					}
 					//"relative" mode, where numbers are relative to anchors.
@@ -508,17 +508,45 @@
 	 * That is "end" in "absolute" mode and all key frames in "relative" mode.
 	 */
 	var _updateDependentKeyFrames = function() {
-		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
-			var sk = _skrollables[skrollableIndex];
-			var anchorTarget = sk.anchorTarget;
-			var keyFrames = sk.keyFrames;
+		var sk;
+		var anchorTarget;
+		var keyFrames;
+		var kf;
+		var skrollableIndex;
+		var keyFrameIndex;
 
-			for(var keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
-				var kf = keyFrames[keyFrameIndex];
+		//First process all relative-mode elements and find the max key frame.
+		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+			sk = _skrollables[skrollableIndex];
+			anchorTarget = sk.anchorTarget;
+			keyFrames = sk.keyFrames;
+
+			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
+				kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
-				} else if(kf.isEnd) {
+				}
+
+				//Only search for max key frame when forceHeight is enabled.
+				if(_forceHeight) {
+					//Find the max key frame, but don't use one of the data-end ones for comparison.
+					if(!kf.isEnd && kf.frame > _maxKeyFrame) {
+						_maxKeyFrame = kf.frame;
+					}
+				}
+			}
+		}
+
+		//Now process all data-end keyframes.
+		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+			sk = _skrollables[skrollableIndex];
+			keyFrames = sk.keyFrames;
+
+			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
+				kf = keyFrames[keyFrameIndex];
+
+				if(kf.isEnd) {
 					kf.frame = _maxKeyFrame - kf.offset;
 				}
 			}

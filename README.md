@@ -343,7 +343,8 @@ Changelog
 
 ### 0.4.13
 
-* #59: Make scale option only affect absolute mode.
+* #58: `forceHeight` now handles relative mode like a boss.
+* #59: Make `scale` option only affect absolute mode.
 
 ### 0.4.12
 

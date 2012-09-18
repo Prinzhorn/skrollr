@@ -140,12 +140,6 @@ scrollTests(500, [
 		}
 	},
 	{
-		element: $('#end'),
-		styles: {
-			fontSize: '90px'
-		}
-	},
-	{
 		element: $('#foreign-anchor'),
 		styles: {
 			paddingTop: '100px',
@@ -271,12 +265,6 @@ scrollTests(250, [
 		}
 	},
 	{
-		element: $('#end'),
-		styles: {
-			fontSize: '50px'
-		}
-	},
-	{
 		element: newElement,
 		styles: {
 			bottom: '100px'
@@ -299,7 +287,10 @@ scrollTests(250, [
 	}
 ]);
 
-scrollTests(1000, [
+//We scroll to a ridiculous large position so that the browser cuts it at the actual position.
+var maxScrollHeight = s.setScrollTop(1e5) && s.getScrollTop();
+
+scrollTests(maxScrollHeight, [
 	{
 		element: $('#anchor-1'),
 		styles: {
