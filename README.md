@@ -208,9 +208,9 @@ When ```forceHeight``` is set to false, ```scale``` is ignored.
 
 ####forceHeight=true
 
-```true```: Make sure the document is high enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px.
+```true```: Make sure the document is high enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px. Or if you use relative mode, e.g. `data-top-bottom`, skrollr will make sure the bottom of the element can actually reach the top of the viewport.
 
-```false```: Don't manipulate the document and just keep the natural scrollbar. Tip: Use ```data-end``` to create nice effects on usual content-driven websites.
+```false```: Don't manipulate the document and just keep the natural scrollbar.
 
 #### beforerender
 
@@ -338,8 +338,20 @@ Removes the listener for the given event.
 
 Currently there's only a simple api for plugins. Just call ```window.skrollr.plugin('setStyle', /* your function */)``` to hook into the setStyle method. Your function will get three parameters: The DOM element, the CSS property (camel cased) and the value. If you need more plugin hooks, just add them and submit them with your pull request for the plugin itself.
 
-Release notes
+Changelog
 ------
+
+### 0.4.13
+
+* #59: Make scale option only affect absolute mode.
+
+### 0.4.12
+
+* #64: Setting `float` property using JavaScript didn't work across browser. Now using `styleFloat` and `cssFloat` properties.
+
+### 0.4.11
+
+* The `scale` option does not affect `constants`.
 
 ### 0.4.10
 
