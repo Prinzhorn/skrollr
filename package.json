@@ -1,0 +1,36 @@
+{
+	"name": "skrollr",
+	"title": "skrollr",
+	"description": "Stand-alone parallax scrolling library with zero dependencies.",
+	"version": "0.5.0-alpha",
+	"homepage": "https://github.com/Prinzhorn/skrollr",
+	"author": {
+		"name": "Alexander Prinzhorn",
+		"email": "alexander@prinzhorn.it",
+		"url": "http://www.prinzhorn.it/"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git://github.com/Prinzhorn/skrollr.git"
+	},
+	"bugs": {
+		"url": "git://github.com/Prinzhorn/skrollr.git"
+	},
+	"licenses": [
+		{
+			"type": "MIT",
+			"url": "https://github.com/Prinzhorn/skrollr/blob/master/LICENSE.txt"
+		}
+	],
+	"main": "dist/skrollr.min.js",
+	"engines": {
+		"node": ">=0.8"
+	},
+	"scripts": {
+		"test": "grunt travis --verbose"
+	},
+	"devDependencies": {
+		"grunt": ">=0.3.12"
+	},
+	"keywords": []
+}
