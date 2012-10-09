@@ -3,11 +3,23 @@
 <head class="no-skrollr">
 	<meta charset="utf-8">
 
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Your title</title>
 </head>
 
 <body>
-	<!-- Your elements go here -->
+
+	<!--Don't place ANYTHING before #skrollr-body-->
+
+	<div id="skrollr-body">
+	<!-- Your STATIC elements go here -->
+	</div>
+
+	<!--
+		Your FIXED elements go here to make them work on iOS < 5
+		If you don't use positon:fixed, just remove #skrollr-fixed and relax.
+	-->
 
 	<script type="text/javascript" src="dist/skrollr.min.js"></script>
 
@@ -29,13 +41,15 @@
 	<![endif]-->
 
 	<script type="text/javascript">
-	skrollr.init();
+	var s = skrollr.init();
 
 	//Or you may call the init-function at some other point. You could for example use an image preloader.
+	/*
 	window.onload = function() {
 		//Calling it twice doesn't hurt.
 		skrollr.init();
 	};
+	*/
 	</script>
 </body>
 

@@ -1,1 +1,0 @@
-/*! includes Animate.js, Scroller.js and EasyScroller.js from https://github.com/zynga/scroller released under the MIT license */

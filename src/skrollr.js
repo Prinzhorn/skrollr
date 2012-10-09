@@ -205,14 +205,19 @@
 
 		if(_forceHeight) {
 			//Add a dummy element in order to get a large enough scrollbar.
-			var dummy = document.createElement('div');
+			//On mobile and later desktop versions a #skrollr-body element takes this role.
+
+			var dummy = document.getElementById('skrollr-body') || document.createElement('div');
 			var dummyStyle = dummy.style;
 
-			dummyStyle.width = '1px';
+			dummyStyle.minWidth = '1px';
 			dummyStyle.position = 'absolute';
-			dummyStyle.right = dummyStyle.top = dummyStyle.zIndex = '0';
+			dummyStyle.top = dummyStyle.zIndex = '0';
 
-			body.appendChild(dummy);
+			//It's the dummy we just created.
+			if(!dummy.id) {
+				body.appendChild(dummy);
+			}
 
 			//Update height of dummy div when window size is changed.
 			_reflow = function() {
@@ -222,12 +227,24 @@
 				_updateDependentKeyFrames();
 
 				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+
+				if(skrollr.iscroll) {
+					window.setTimeout(function () {
+						skrollr.iscroll.refresh();
+					}, 0);
+				}
 			};
 		} else {
 			_reflow = function() {
 				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
 				_updateDependentKeyFrames();
 				_forceRender = true;
+
+				if(skrollr.iscroll) {
+					window.setTimeout(function () {
+						skrollr.iscroll.refresh();
+					}, 0);
+				}
 			};
 		}
 
@@ -470,18 +487,16 @@
 	};
 
 	Skrollr.prototype.setScrollTop = function(top) {
-		//skrollr.scrollerInstance is an instance of zynga/scroller
-		//which is available for mobile support and set by SkrollrScrollerBridge.js.
-		(window.skrollr.scrollerInstance || window).scrollTo(0, top);
+		//skrollr.iscroll is an instance of iscroll available in mobile mode
+		(skrollr.iscroll || window).scrollTo(0, top);
 
 		return _instance;
 	};
 
 	Skrollr.prototype.getScrollTop = function() {
-		//skrollr.scrollerInstance is an instance of zynga/scroller
-		//which is available for mobile support and set by SkrollrScrollerBridge.js.
-		if(window.skrollr.scrollerInstance) {
-			return window.skrollr.scrollerInstance.__scrollTop;
+		//skrollr.iscroll is an instance of iscroll available in mobile mode
+		if(skrollr.iscroll) {
+			return -skrollr.iscroll.y;
 		} else {
 			return window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 		}
@@ -1061,7 +1076,7 @@
 	/*
 	 * Global api.
 	 */
-	window.skrollr = {
+	var skrollr = window.skrollr = {
 		//Main entry point.
 		init: function(options) {
 			return _instance || new Skrollr(options);

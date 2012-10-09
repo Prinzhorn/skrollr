@@ -3,7 +3,7 @@ module.exports = function(grunt) {
 	//Project configuration.
 	grunt.initConfig({
 		lint: {
-			all: ['src/skrollr.js', 'src/plugins/skrollr.ie.js', 'src/zynga/SkrollrScrollerBridge.js']
+			all: ['src/skrollr.js', 'src/plugins/skrollr.ie.js', 'src/mobile/skrollr.mobile.js']
 		},
 		qunit: {
 			index: ['test/index.html']
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
 				dest: 'dist/skrollr.min.js'
 			},
 			mobile: {
-				src: ['src/zynga/Animate.js', 'src/zynga/Scroller.js', 'src/zynga/EasyScroller.js', 'src/zynga/SkrollrScrollerBridge.js'],
+				src: ['src/mobile/iscroll.js', 'src/mobile/skrollr.mobile.js'],
 				dest: 'dist/skrollr.mobile.min.js'
 			},
 			ie: {
@@ -29,7 +29,7 @@ module.exports = function(grunt) {
 				dest: 'dist/skrollr.min.js'
 			},
 			mobile: {
-				src: ['src/banner/zynga.txt', 'dist/skrollr.mobile.min.js'],
+				src: ['src/banner/mobile.txt', 'dist/skrollr.mobile.min.js'],
 				dest: 'dist/skrollr.mobile.min.js'
 			},
 			ie: {
