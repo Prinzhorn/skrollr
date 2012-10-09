@@ -13,7 +13,14 @@
 			});
 
 			document.documentElement.style.overflow = document.body.style.overflow = 'hidden';
-			document.body.children[0].style.cssText = 'width:100%;';
+
+			var skrollrBody = document.getElementById('skrollr-body');
+
+			if(!skrollrBody) {
+				throw "For mobile support skrollr needs a #skrollr-body element";
+			}
+
+			skrollrBody.style.cssText += 'position:absolute;width:100%;';
 
 			window.scroll(0, 0);
 		}, 200);
