@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
+
 skrollr (v 0.5.0-alpha)
 ======
 
