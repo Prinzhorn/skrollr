@@ -1,7 +1,7 @@
-skrollr (v 0.4.13)
+skrollr (v 0.5.0-alpha)
 ======
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.3k minified** (3.4k gzipped).
+Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.7k minified** (3.5k gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -340,6 +340,10 @@ Currently there's only a simple api for plugins. Just call ```window.skrollr.plu
 
 Changelog
 ------
+
+#### 0.5.0
+
+* Full mobile support using iscroll.
 
 ### 0.4.13
 
