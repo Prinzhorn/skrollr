@@ -20,7 +20,7 @@
 				throw "For mobile support skrollr needs a #skrollr-body element";
 			}
 
-			skrollrBody.style.cssText += 'position:absolute;width:100%;';
+			skrollrBody.style.cssText += 'overflow:hidden;position:absolute;width:100%;';
 
 			window.scroll(0, 0);
 		}, 200);

@@ -1077,6 +1077,9 @@
 	 * Global api.
 	 */
 	var skrollr = window.skrollr = {
+		get: function() {
+			return _instance;
+		},
 		//Main entry point.
 		init: function(options) {
 			return _instance || new Skrollr(options);
@@ -1090,6 +1093,6 @@
 				_plugins[entryPoint] = [fn];
 			}
 		},
-		VERSION: '0.4.13'
+		VERSION: '0.5.0-alpha'
 	};
 }(window, document));
