@@ -22,7 +22,7 @@
 
 			skrollrBody.style.cssText += 'overflow:hidden;position:absolute;width:100%;';
 
-			//window.scroll(0, 0);
+			window.scroll(0, 0);
 		}, 200);
 	},false);
 }(window, document));
