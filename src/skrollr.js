@@ -747,10 +747,16 @@
 		for(var keyFrameIndex = 0; keyFrameIndex < skrollable.keyFrames.length; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
 			var easing;
+			var value;
+			var prop;
 			var props = {};
 
-			//Using replace as an iterator over all properties and values.
-			frame.props.replace(rxPropValue, function(ignore, prop, value) {
+			var match;
+
+			while((match = rxPropValue.exec(frame.props)) !== null) {
+				prop = match[1];
+				value = match[2];
+
 				easing = prop.match(rxPropEasing);
 
 				//Is there an easing specified for this prop?
@@ -769,7 +775,7 @@
 					value: value,
 					easing: easings[easing]
 				};
-			});
+			}
 
 			frame.props = props;
 		}
