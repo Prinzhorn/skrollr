@@ -304,11 +304,11 @@ scrollTests(250, [
 ]);
 
 test('colons inside urls are preserved (#73)', function() {
-	strictEqual($('#colon-url').css('background-image'), 'url(http://www.example.com/1234.png)');
+	strictEqual($('#colon-url').css('background-image'), 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png)');
 });
 
 test('a single period is no number (#74)', function() {
-	strictEqual($('#period-number').css('background-image'), 'url(http://www.example.com/foo.png)');
+	strictEqual($('#period-number').css('background-image'), 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png)');
 });
 
 //We scroll to a ridiculous large position so that the browser cuts it at the actual position.
