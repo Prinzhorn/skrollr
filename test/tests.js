@@ -92,14 +92,6 @@ test('skrollables have the .skrollable class', function() {
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
 });
 
-test('colons inside urls are preserved (#73)', function() {
-	strictEqual($('#colon-url').css('background-image'), 'url("http://www.example.com:8080/1234.png")');
-});
-
-test('a single period is no number (#74)', function() {
-	strictEqual($('#period-number').css('background-image'), 'url("http://www.example.com/foo.png")');
-});
-
 scrollTests(500, [
 	{
 		element: $('#simple-numeric'),
@@ -294,6 +286,14 @@ scrollTests(250, [
 		}
 	}
 ]);
+
+test('colons inside urls are preserved (#73)', function() {
+	strictEqual($('#colon-url').css('background-image'), 'url(http://www.example.com:8080/1234.png)');
+});
+
+test('a single period is no number (#74)', function() {
+	strictEqual($('#period-number').css('background-image'), 'url(http://www.example.com/foo.png)');
+});
 
 //We scroll to a ridiculous large position so that the browser cuts it at the actual position.
 var maxScrollHeight = s.setScrollTop(1e5) && s.getScrollTop();

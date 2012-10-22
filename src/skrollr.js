@@ -80,7 +80,7 @@
 	};
 
 	//Numeric values with optional sign.
-	var rxNumericValue = /(:?\+|-)?[\d.]+/g;
+	var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 
 	//Finds rgb(a) colors, which don't use the percentage notation.
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
