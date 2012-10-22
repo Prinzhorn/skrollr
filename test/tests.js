@@ -86,10 +86,18 @@ module('basic stuff');
 test('skrollables have the .skrollable class', function() {
 	x = $('.skrollable').length;
 
-	ok(x === 13, 'not enough or too many .skrollable elements');
+	ok(x === 15, 'not enough or too many .skrollable elements');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
+});
+
+test('colons inside urls are preserved (#73)', function() {
+	strictEqual($('#colon-url').css('background-image'), 'url("http://www.example.com:8080/1234.png")');
+});
+
+test('a single period is no number (#74)', function() {
+	strictEqual($('#period-number').css('background-image'), 'url("http://www.example.com/foo.png")');
 });
 
 scrollTests(500, [

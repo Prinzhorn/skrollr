@@ -69,7 +69,7 @@
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
-	var rxPropSplit = /:|;/g;
+	var rxPropValue = /\s*([a-z\-]+)\s*:\s*(.+?)\s*;/gi;
 
 	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
@@ -746,20 +746,11 @@
 		//Iterate over all key frames
 		for(var keyFrameIndex = 0; keyFrameIndex < skrollable.keyFrames.length; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
-
-			//Get all properties and values in an array
-			var allProps = frame.props.split(rxPropSplit);
-
-			var prop;
-			var value;
 			var easing;
+			var props = {};
 
-			frame.props = {};
-
-			//Iterate over all props and values (+2 because [prop,value,prop,value,...])
-			for(var propertyIndex = 0; propertyIndex < allProps.length - 1; propertyIndex += 2) {
-				prop = _trim(allProps[propertyIndex]);
-				value = _trim(allProps[propertyIndex + 1]);
+			//Using replace as an iterator over all properties and values.
+			frame.props.replace(rxPropValue, function(ignore, prop, value) {
 				easing = prop.match(rxPropEasing);
 
 				//Is there an easing specified for this prop?
@@ -774,11 +765,13 @@
 				value = value.indexOf('!') ? _parseProp(value) : [value.slice(1)];
 
 				//Save the prop for this key frame with his value and easing function
-				frame.props[prop] = {
+				props[prop] = {
 					value: value,
 					easing: easings[easing]
 				};
-			}
+			});
+
+			frame.props = props;
 		}
 	};
 
