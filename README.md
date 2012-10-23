@@ -346,6 +346,8 @@ Changelog
 #### 0.5.0
 
 * Full mobile support using iscroll.
+* Fixed parser to not mess up colons inside URLs (#73)
+* Fixed parser to not treat single periods as decimal numbers (#74)
 
 ### 0.4.13
 
