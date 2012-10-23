@@ -30,7 +30,7 @@
 		"test": "grunt travis --verbose"
 	},
 	"devDependencies": {
-		"grunt": ">=0.3.12"
+		"grunt": ">=0.3.17"
 	},
 	"keywords": []
 }

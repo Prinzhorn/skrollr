@@ -85,7 +85,7 @@
 		//Based on https://gist.github.com/1325937 and https://gist.github.com/983535
 		hsl: function(a,b,c,y){
 			a%=360;
-			a/=60;c/=100;b=[c+=b*=(c<0.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
+			a=a/60;c=c/100;b=[c+=b*=(c<0.5?c:1-c)/100,c-a%1*b*2,c-=b*=2,c,c+a%1*b,c+b];
 
 			y = [b[~~a%6],b[(a|16)%6],b[(a|8)%6]];
 
