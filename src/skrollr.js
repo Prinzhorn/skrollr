@@ -82,6 +82,9 @@
 	//Numeric values with optional sign.
 	var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 
+	//Used to replace occurences of {?} with a number.
+	var rxInterpolateString = /\{\?\}/g;
+
 	//Finds rgb(a) colors, which don't use the percentage notation.
 	var rxRGBAIntegerColor = /rgba?\(\s*-?\d+\s*,\s*-?\d+\s*,\s*-?\d+/g;
 
@@ -819,7 +822,7 @@
 		//Now parse ANY number inside this string and create a format string.
 		val = val.replace(rxNumericValue, function(n) {
 			numbers.push(+n);
-			return '?';
+			return '{?}';
 		});
 
 		//Add the formatstring as first value.
@@ -899,7 +902,9 @@
 	var _interpolateString = function(val) {
 		var valueIndex = 1;
 
-		return val[0].replace(/\?/g, function() {
+		rxInterpolateString.lastIndex = 0;
+
+		return val[0].replace(rxInterpolateString, function() {
 			return val[valueIndex++];
 		});
 	};
@@ -1024,7 +1029,7 @@
 					frame: 100,
 					props: {
 						width: {
-							value: ['?px', 100],
+							value: ['{?}px', 100],
 							easing: <reference to easing function>
 						}
 					},
@@ -1034,7 +1039,7 @@
 					frame: 200,
 					props: {
 						width: {
-							value: ['?px', 20],
+							value: ['{?}px', 20],
 							easing: <reference to easing function>
 						}
 					},
