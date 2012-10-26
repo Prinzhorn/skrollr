@@ -58,7 +58,7 @@ var scrollTests = function(offset, tests) {
 				if(curTest.styles) {
 					for(var k in curTest.styles) {
 						if(Object.prototype.hasOwnProperty.call(curTest.styles, k)) {
-							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct')
+							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct')
 						}
 					}
 				}
@@ -91,6 +91,20 @@ test('skrollables have the .skrollable class', function() {
 });
 
 scrollTests(500, [
+	{
+		message: 'colons inside urls are preserved (#73)',
+		element: $('#colon-url'),
+		styles: {
+			backgroundImage: 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png)'
+		}
+	},
+	{
+		message: 'a single period is no number (#74)',
+		element: $('#period-number'),
+		styles: {
+			backgroundImage: 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png?1337)'
+		}
+	},
 	{
 		element: $('#simple-numeric'),
 		styles: {
@@ -302,14 +316,6 @@ scrollTests(250, [
 		}
 	}
 ]);
-
-test('colons inside urls are preserved (#73)', function() {
-	strictEqual($('#colon-url').css('background-image'), 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png)');
-});
-
-test('a single period is no number (#74)', function() {
-	strictEqual($('#period-number').css('background-image'), 'url(https://secure.travis-ci.org/Prinzhorn/skrollr.png)');
-});
 
 //We scroll to a ridiculous large position so that the browser cuts it at the actual position.
 var maxScrollHeight = s.setScrollTop(1e5) && s.getScrollTop();
