@@ -216,6 +216,11 @@
 
 			//It's the dummy we just created.
 			if(!dummy.id) {
+				//Give the dummy element a small width and move it to the right to not overlap or interfere with the content.
+				//Fixes #76.
+				dummyStyle.width = '1px';
+				dummyStyle.right = '0';
+
 				body.appendChild(dummy);
 			}
 

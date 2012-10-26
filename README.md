@@ -348,6 +348,7 @@ Changelog
 * Full mobile support using iscroll.
 * Fixed parser to not mess up colons inside URLs (#73)
 * Fixed parser to not treat single periods as decimal numbers (#74)
+* Fixed dummy element overlaping the content, even though it should be unobtrusive (#76)
 
 ### 0.4.13
 
