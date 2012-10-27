@@ -40,7 +40,9 @@
 			});
 
 			if(matched) {
-				style[prop] = val;
+				try {
+					style[prop] = val;
+				} catch(ignore) {}
 
 				return;
 			}
@@ -69,7 +71,9 @@
 			});
 
 			if(matched) {
-				style[prop] = val;
+				try {
+					style[prop] = val;
+				} catch(ignore) {}
 
 				return;
 			}
