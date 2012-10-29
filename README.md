@@ -411,6 +411,7 @@ In the wild
 ------
 
 * http://www.evanshalshaw.com/bondcars/
+* http://happy.is
 * http://www.futuremylove.com/
 * http://jonnyacevedo.com/
 
