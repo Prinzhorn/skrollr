@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.0'
+		VERSION: '0.5.1'
 	};
 
 	//Minify optimization.
@@ -510,7 +510,12 @@
 
 	Skrollr.prototype.setScrollTop = function(top) {
 		//skrollr.iscroll is an instance of iscroll available in mobile mode
-		(skrollr.iscroll || window).scrollTo(0, top);
+		if(skrollr.iscroll) {
+			//Notice the minus.
+			skrollr.iscroll.scrollTo(0, -top);
+		} else {
+			window.scrollTo(0, top);
+		}
 
 		return _instance;
 	};
