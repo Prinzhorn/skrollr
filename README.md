@@ -332,15 +332,12 @@ Set a listener function for one of the events described in the options section (
 
 Removes the listener for the given event.
 
-### plugins
-
-Currently there's only a simple api for plugins. Just call ```window.skrollr.plugin('setStyle', /* your function */)``` to hook into the setStyle method. Your function will get three parameters: The DOM element, the CSS property (camel cased) and the value. If you need more plugin hooks, just add them and submit them with your pull request for the plugin itself.
-
 Changelog
 ------
 
 #### 0.5.0
 
+* *breaking* the `plugin` api has been removed (the IE plugin has been updated to a new, hidden api).
 * Full mobile support using iscroll.
 * Fixed parser to not mess up colons inside URLs (#73)
 * Fixed parser to not treat single periods as decimal numbers (#74)

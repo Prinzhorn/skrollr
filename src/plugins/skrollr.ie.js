@@ -10,7 +10,13 @@
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;
 	var rxRGBAColor = /rgba?\(\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?).*?\)/g;
 
-	skrollr.plugin('setStyle', function(el, prop, val) {
+	var _setStyle = skrollr.setStyle;
+
+	//Monkeypatch the setStyle function.
+	skrollr.setStyle = function(el, prop, val) {
+		//Original function call.
+		_setStyle.apply(this, arguments);
+
 		var style = el.style;
 		var matched;
 
@@ -78,7 +84,7 @@
 				return;
 			}
 		}
-	});
+	};
 
 
 	/**

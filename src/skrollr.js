@@ -8,6 +8,20 @@
 (function(window, document, undefined) {
 	'use strict';
 
+	/*
+	 * Global api.
+	 */
+	var skrollr = window.skrollr = {
+		get: function() {
+			return _instance;
+		},
+		//Main entry point.
+		init: function(options) {
+			return _instance || new Skrollr(options);
+		},
+		VERSION: '0.5.0'
+	};
+
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 	var documentElement = document.documentElement;
@@ -602,7 +616,7 @@
 					if(hasProp.call(props, key)) {
 						value = _interpolateString(props[key].value);
 
-						_setStyle(skrollable.element, key, value);
+						skrollr.setStyle(skrollable.element, key, value);
 					}
 				}
 
@@ -642,7 +656,7 @@
 
 							value = _interpolateString(value);
 
-							_setStyle(skrollable.element, key, value);
+							skrollr.setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -912,7 +926,7 @@
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	var _setStyle = function(el, prop, val) {
+	skrollr.setStyle = function(el, prop, val) {
 		var style = el.style;
 
 		//Camel case.
@@ -937,13 +951,6 @@
 				//Set unprefixed.
 				style[prop] = val;
 			} catch(ignore) {}
-		}
-
-		//Plugin entry point.
-		if(_plugins.setStyle) {
-			for(var pluginIndex = 0; pluginIndex < _plugins.setStyle.length; pluginIndex++) {
-				_plugins.setStyle[pluginIndex].call(_instance, el, prop, val);
-			}
 		}
 	};
 
@@ -1012,11 +1019,9 @@
 	/*
 	 * Private variables.
 	 */
+
 	//Singleton
 	var _instance;
-
-	//Will contain all plugin-functions.
-	var _plugins = {};
 
 	/*
 		A list of all elements which should be animated associated with their the metadata.
@@ -1081,27 +1086,4 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
-
-	/*
-	 * Global api.
-	 */
-	var skrollr = window.skrollr = {
-		get: function() {
-			return _instance;
-		},
-		//Main entry point.
-		init: function(options) {
-			return _instance || new Skrollr(options);
-		},
-		//Plugin api.
-		plugin: function(entryPoint, fn) {
-			//Each entry point may contain multiple plugin-functions.
-			if(_plugins[entryPoint]) {
-				_plugins[entryPoint].push(fn);
-			} else {
-				_plugins[entryPoint] = [fn];
-			}
-		},
-		VERSION: '0.5.0'
-	};
 }(window, document));
