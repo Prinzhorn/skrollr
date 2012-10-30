@@ -178,7 +178,7 @@ scrollTests(0, [
 	{
 		element: $('#simple-numeric'),
 		styles: {
-			left: '0px',
+			left: '-100px',
 			top: '0px'
 		}
 	},
@@ -245,7 +245,7 @@ scrollTests(250, [
 	{
 		element: $('#simple-numeric'),
 		styles: {
-			left: '50px',
+			left: '0px',
 			top: '25px'
 		}
 	},
