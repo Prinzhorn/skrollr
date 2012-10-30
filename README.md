@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.1)
+skrollr (v 0.5.2)
 ======
 
 Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.7k minified** (3.5k gzipped).
@@ -335,6 +335,10 @@ Removes the listener for the given event.
 Changelog
 ------
 
+#### 0.5.2
+
+* #78: Fixed that new parser didn't allowed omitting the last semicolon in a keyframe property list.
+
 #### 0.5.1
 
 * Fixed `setScrollTop` and `animateTo` not working because iScroll uses negative offset.
@@ -343,9 +347,9 @@ Changelog
 
 * *breaking* the `plugin` api has been removed (the IE plugin has been updated to a new, hidden api).
 * Full mobile support using iscroll.
-* Fixed parser to not mess up colons inside URLs (#73)
-* Fixed parser to not treat single periods as decimal numbers (#74)
-* Fixed dummy element overlaping the content, even though it should be unobtrusive (#76)
+* #73: Fixed parser to not mess up colons inside URLs
+* #74: Fixed parser to not treat single periods as decimal numbers
+* #76: Fixed dummy element overlaping the content, even though it should be unobtrusive
 
 ### 0.4.13
 

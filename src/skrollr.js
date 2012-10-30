@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.1'
+		VERSION: '0.5.2'
 	};
 
 	//Minify optimization.
@@ -83,7 +83,7 @@
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
-	var rxPropValue = /\s*([a-z\-\[\]]+)\s*:\s*(.+?)\s*;/gi;
+	var rxPropValue = /\s*([a-z\-\[\]]+)\s*:\s*(.+?)\s*(?:;|$)/gi;
 
 	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
