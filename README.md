@@ -11,6 +11,15 @@ Designer friendly. No JavaScript skills needed. Just plain CSS.
 
 [Examples - read the source ;-)](https://github.com/Prinzhorn/skrollr/tree/master/examples)
 
+In the wild
+======
+
+* http://www.evanshalshaw.com/bondcars/
+* https://squareup.com/careers/creative
+* http://happy.is
+* http://www.futuremylove.com/
+* http://jonnyacevedo.com/
+
 
 Documentation
 ======
@@ -414,14 +423,6 @@ Changelog
 * Added support for anchors. Animations can now be specified relative to the elements position within the viewport.
 * Added support for SVG elements.
 * Added new method ```refresh()```.
-
-In the wild
-------
-
-* http://www.evanshalshaw.com/bondcars/
-* http://happy.is
-* http://www.futuremylove.com/
-* http://jonnyacevedo.com/
 
 Contributors
 ------
