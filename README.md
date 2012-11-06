@@ -285,7 +285,7 @@ Reparses all given elements. Useful when
 * data-attributes are manipulated dynamically
 * new elements are added to the DOM and should be controlled by skrollr
 
-When no elements are given, all elements under control of skrollr will be parsed again.
+When no elements are given, all elements in the document will be parsed again. In fact, when calling `skrollr.init()` skrollr uses `refresh()` without parameters internally.
 
 Time consuming operation, should not be called on every rendering.
 
