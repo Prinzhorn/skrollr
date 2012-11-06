@@ -14,6 +14,7 @@ Designer friendly. No JavaScript skills needed. Just plain CSS.
 In the wild
 ======
 
+* http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
 * http://www.evanshalshaw.com/bondcars/
 * https://squareup.com/careers/creative
 * http://happy.is
