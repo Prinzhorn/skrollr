@@ -1,18 +1,16 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
 skrollr (v 0.5.2)
-======
+=====
 
-Stand-alone **Parallax\* scrolling** lib with **zero dependencies** (seriously, you **don't** need jQuery) in just over **7.7k minified** (3.5k gzipped).
+Stand-alone **parallax scrolling** lib for **mobile (Android + iPhone) and desktop** in just over **3.4k** for desktop. And another 6.5k for **mobile support** (which is optional).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
-\**Actually, skrollr is much more. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But calling it "parallax" is part of my ongoing effort to play buzzword bingo as often as possible. By the way, skrollr leverages HTML5 and CSS3 ;-)*
-
-[Examples - read the source ;-)](https://github.com/Prinzhorn/skrollr/tree/master/examples)
+_Actually, skrollr is much more than "just" **parallax scrolling**. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But I wanted to sound hip and use some buzz-words. By the way, skrollr leverages HTML5 and CSS3 ;-)_
 
 In the wild
-======
+=====
 
 * http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
 * http://www.evanshalshaw.com/bondcars/
@@ -21,9 +19,13 @@ In the wild
 * http://www.futuremylove.com/
 * http://jonnyacevedo.com/
 
+_Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
+
 
 Documentation
-======
+=====
+
+First of all: look at the [examples and read the source ;-)](https://github.com/Prinzhorn/skrollr/tree/master/examples). This might give you a feeling of how stuff works and you can see how some patterns can be implemented.
 
 Abstract
 ------
@@ -37,52 +39,70 @@ Other libraries require you to write JavaScript in order to define your animatio
 
 With skrollr, you put the definition of your key frames right where they belong (to the element) using a syntax you already know (plain CSS).
 
+By the way you may want to keep an eye on [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
+
 Let's get serious
 ------
 
-Simple animation of one property
+If you're familiar with CSS, you already know the `style` attribute. In order to create an animation you would need several, at least two, of them. That's what skrollr does. You use the HTML5 `data-` attributes to define multiple sets of styles (we call each of them **keyframe**) and skrollr interpolates between them.
+
+#### Let's change the background-color of a `div` starting at `#00f` when the scrollbar is at the top and ending with `#f00` when the user scrolled 500 pixels down
 
 ```html
-<div data-0="padding:0px;" data-1000="padding:300px;">WOOOT</div>
+<div data-0="background-color:rgb(0,0,255);" data-500="background-color:rgb(255,0,0);">WOOOT</div>
 ```
+[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/1.html)
 
-That was easy, right?
+##### Lessons learned
 
-We are using the HTML5 data attributes to attach key frames to DOM elements. The numbers represent the key frame position (the top scroll offset in pixel). The highest key frame found in the document will be used to set the the max top scroll offset.
+* Skrollr ensures that you can actually scroll down 500 pixels or more, even if there's not enough content. You can suppress this using the `forceHeight` option
+* You can't use `#00f` or `#0000ff`. You need to use `rgb` or `hsl` and explicitly decide which color space you want because they result in different animations (HSL is much cooler most of the time). Don't worry, the IE plugin teaches IE < 9 do display `rgb` and `hsl` correctly.
 
-You can set multiple properties, just like with the ```style``` attribute.
+#### Now let's do a barrel roll at the same time
 
 ```html
-<div data-0="padding:0px;color:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+<div data-0="background-color:rgb(0,0,255);transform:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform:rotate(360deg);">WOOOT</div>
 ```
+[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/2.html)
 
-And you can specify easing functions for each property using square brackets. That is an extension to the default CSS syntax.
+##### Lessons learned
+
+* Skrollr handles all these nasty CSS prefixes for you. Just -moz-relax and get yourself a cup of -webkit-coffee
+
+#### Now let the rotation bounce like it were a hip-hop video
 
 ```html
-<div data-0="padding[bounce]:0px;color[cubic]:hsl(0,50%,50%);" data-1000="padding:300px;color:hsl(360,50%,50%);">WOOOT</div>
+<div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
+[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/3.html)
 
-skrollr automatically **sets the prefixed properties for you**. You not just don't have to use prefixed properties, it's even wrong to do so. The following will rotate an element in every browser that supports transform, no matter if they call it "-moz-transform" or "-webkit-transform".
+#### Lessons learned
+
+* Skrollr allows non-linear animations. The so called *easing functions* can be used per-property by putting them in square brakets behind the property. There's a built-in list of easing functions (see below in the [JavaScript](#javascript) section) and you can use your own functions by using the `easings` options.
+
+Now you may have noticed that using `500` as a keyframe position is kind of random and the look depends on your browser size.
+
+#### Let's have the animation end when the top of the element reaches the top of the viewport (element leaves the viewport)
 
 ```html
-<div data-0="transform:rotate(0deg);" data-1000="transform:rotate(180deg);">Look ma, I'm rotating!</div>
+<div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-top="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
+[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/4.html)
 
-### CSS classes
+##### Lessons learned
 
-skrollr will add a ```skrollr``` class to the ```HTML``` element when calling ```init``` and will remove a ```no-skrollr``` class if present. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
+* Skrollr keyframes can either be [absolute](#absolute-mode-or-document-mode) or [relative](#relative-mode-or-viewport-mode).
 
-All elements under skrollr's control (elements with appropriate data-attributes) will get the ```skrollable``` class.
+That's the end of this short intro. The following sections will explain some more things in detail.
 
-In addition we add the ```rendered``` **or** ```unrendered``` class, depending on whether an element is currently being styled by skrollr, that means the current scroll offset is in between the key frames of that element, or not.
+Absolute vs relative mode
+-----
 
-### Using anchors
+Being only able to define key frames in absolute values is simply insufficient for some cases. For example if you don't know where an element will exactly be in the document. That's why there are two modes for key frames, namely ```absolute``` and ```relative``` mode.
 
-Now it gets really exciting. Being only able to define key frames in absolute values is simply insufficient for some cases. For example if you don't know where an element will exactly be in the document. That's why there are two modes for key frames, namely ```absolute``` and ```relative``` move.
+### absolute mode (or document mode)
 
-#### absolute mode (or document mode)
-
-Absolute mode is what you already know about. The key frames are in absolute values, so how much the **document** has been scrolled down.
+The key frames are defined as absolute values describing how much the **document** has been scrolled down.
 
 The syntax is ```data-[offset]-[anchor]```, where ```offset``` can be any integer (0 is default) and ```anchor``` can be either ```start``` (default) or ```end```. Either ```offset``` or ```anchor``` can be ommited in some situations. Here are some examples of key frames and their meaning.
 
@@ -93,9 +113,9 @@ The syntax is ```data-[offset]-[anchor]```, where ```offset``` can be any intege
 * ```data-100-end```: 100px before we reach the bottom.
 * ```data--100-end```: 100px after we reach the bottom (again, it's up to you whether you need it).
 
-#### relative mode (or viewport mode)
+### relative mode (or viewport mode)
 
-Relative mode is something which has not been mentioned yet, even though it's very powerful. Instead of defining key frames relative to the **document**, we are able to define them depending on the position of any element in relation to the **viewport**.
+Instead of defining key frames relative to the **document** (i.e. absolute), we are able to define them depending on the position of any element in relation to the **viewport**.
 
 The syntax is ```data-[offset]-(viewport-anchor)-[element-anchor]```, where ```offset``` can again be any integer and defaults to 0. Both ```viewport-anchor``` (mandatory) and ```element-anchor``` (optional) can be one of ```top```, ```center``` or ```bottom```. If ```element-anchor``` is ommitted, the value of ```viewport-anchor``` will be taken (just like with background-position). Here are some examples of key frames and their meaning.
 
@@ -116,7 +136,8 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 
 **Important**: All those values will be calculated up-front and transformed to ```absolute``` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call ```refresh()``` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
-### Working with constants
+Working with constants
+-----
 
 I was lying to you. The syntax for absolute mode is not ```data-[offset]-[anchor]``` and for relative mode it's not ```data-[offset]-(viewport-anchor)-[element-anchor]```. In both cases ```offset``` can be preceeded by a constant which can be passed to the ```ìnit``` method. The name of the constant needs to be preceeded with an underscore.
 
@@ -140,7 +161,17 @@ skrollr.init({
 
 Valid characters for a constant are ```[a-z0-9_]```.
 
-### Filling missing values
+CSS classes
+-----
+
+skrollr will add a ```skrollr``` class to the ```HTML``` element when calling ```init``` and will remove a ```no-skrollr``` class if present. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
+
+All elements under skrollr's control (elements with appropriate data-attributes) will get the ```skrollable``` class.
+
+In addition we add the ```rendered``` **or** ```unrendered``` class, depending on whether an element is currently being styled by skrollr, that means the current scroll offset is in between the key frames of that element, or not.
+
+Filling missing values
+-----
 
 Imagine the following animation
 
@@ -154,7 +185,8 @@ One could expect ```left``` to have a value of ```25%``` at keyframe ```200```. 
 <div data-100="left:0%;top:0%;" data-200="left:0%;top:0%;" data-300="left:50%;top:0%;" data-400="left:50%;top:50%;"></div>
 ```
 
-### Preventing interpolation
+Preventing interpolation
+-----
 
 The reason why skrollr is so lightweight and powerfull is because it literally interpolates **any** numbers it can find. If you want to prevent some side effect, you can supress interpolation for a specific value by prepending an exclamation point.
 
@@ -169,42 +201,44 @@ Example:
 
 **Note:** The values for both keyframes (at least the if they contain a number) need to be prefixed if you want to avoid skrollr throwing an exception at you!
 
-### Limitations
+Limitations
+-----
 
-Now that we just talked about CSS transforms, there are some limitations of skrollr you should be aware of.
+There are some limitations of skrollr you should be aware of.
 
 * All numeric values have to have the same unit. It's not possible to animate from ```0%``` to ```100px```. skrollr won't complain, but results are undefined.
 * Animations between values which are composed of multiple numeric values like ```margin:0 0 0 0;``` are only possible for the same number of values. ```margin:0px 0px 0px 0px;``` to ```margin:0px 100px 50px 3px;``` is fine, but not ```margin:10px;``` to ```margin:5px 10px;```.
 * Animations between CSS transforms only work when they use the same functions in same order. From ```rotate(0deg) scale(1)``` to ```rotate(1000deg) scale(5)``` is fine.
-* Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use ```rgb()```, ```rgba()```, ```hsl()``` and ```hsla```. Don't worry, there's a skrollr plugin for IE < 9 to support ```hsl()``` (without "a"!) and to fall rgba back to rgb.
+* Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use ```rgb()```, ```rgba()```, ```hsl()``` and ```hsla()```. Don't worry, there's a skrollr plugin for IE < 9 to support ```hsl()``` (without "a"!) and to fall rgba back to rgb.
 * Color animations only work for same color functions. ```hsl()``` to ```hsl()``` or ```hsla()``` is fine, but not ```rgb()``` to ```hsl()```. Which makes sense, because animating from the same colors in rgb space and in hsl space results in different animations (hsl gives you the nice rainbow stuff).
 
 But feel free to send in a pull request to fix any of them. Just keep in mind that keeping skrollr as lightweight as possible has high priority.
 
 JavaScript
-------
+====
 
 On the JavaScript part there's not much to do (you can, if you want to!). So if you only know CSS and HTML, perfect.
 
-All there is to do is to call ```skrollr.init([options]);```. Subsequent calls to ```init()``` will just return the same skrollr instance again.
+skrollr.init([options])
+-----
 
-### options
+All there is to do is to call ```skrollr.init([options]);``` which returns an instance of the singleton skrollr class. Subsequent calls to ```init()``` will just return the same skrollr instance again.
 
-Possible options include
+Possible options for `init()` are
 
-#### smoothScrolling=true
+### smoothScrolling=true
 
 Smooth scrolling smoothens your animations. When you scroll down 50 pixel the animations will transition instead of jumping to the new position.
 
 The global setting can be overridden per element by setting ```data-smooth-scrolling``` to ```on``` or ```off```.
 
-#### constants={}
+### constants={}
 
 An object containing integers as values. The keys can contain ```[a-z0-9_]```. They *do not* need a leading underscore.
 
 Example: ```data-_myconst-200``` and ```skrollr.init({constants: {myconst: 300}})``` result in ```data-500```.
 
-#### scale=1
+### scale=1
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
@@ -214,13 +248,13 @@ When ```forceHeight``` is set to false, ```scale``` is ignored.
 
 `scale` does only affect key frames in absolute mode, e.g. `data-500` but not `data-top`.
 
-####forceHeight=true
+###forceHeight=true
 
 ```true```: Make sure the document is high enough that all key frames fit inside. Example: You use ```data-1000```, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px. Or if you use relative mode, e.g. `data-top-bottom`, skrollr will make sure the bottom of the element can actually reach the top of the viewport.
 
 ```false```: Don't manipulate the document and just keep the natural scrollbar.
 
-#### beforerender
+### beforerender
 
 A listener function getting called each time right before we render everything. The function will be passed an object with the following properties:
 
@@ -235,11 +269,11 @@ A listener function getting called each time right before we render everything. 
 
 Returning ```false``` will prevent rendering.
 
-#### render
+### render
 
 A listener function getting called right after we finished rendering everything. The function will be passed the same parameters as ```beforerender```
 
-#### easing
+### easing
 
 An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1 (the percentage of how much of the animation is done). The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 is just fine.
 
@@ -273,11 +307,12 @@ skrollr ships with some built in functions:
 
 **Note**: Your easing functions should return 1 for input of 1. After the keyframe is passed, skrollr sets the values to the values of this keyframe. So if you function returns .8 for input of 1, your elements will jump at the end. But you can also use this on purpose, like the "inverted" function in the above example. The element will do everything in reverse, but at end the jumps to the end position.
 
-### Public API
+Public API
+-----
 
 Calling ```init()``` returns an instance of skrollr which exposes a public api.
 
-#### refresh([elements])
+### refresh([elements])
 
 Reparses all given elements. Useful when
 
@@ -289,7 +324,7 @@ When no elements are given, all elements in the document will be parsed again. I
 
 Time consuming operation, should not be called on every rendering.
 
-#### relativeToAbsolute(element, viewportAnchor, elementAnchor)
+### relativeToAbsolute(element, viewportAnchor, elementAnchor)
 
 returns an integer which represents the absolute scroll position which correlates to the relative anchor.
 
@@ -306,54 +341,57 @@ var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom
 //if you now use window.scroll or similar to scroll to offset, #foo's top is aligned with the bottom of the viewport.
 ```
 
-#### setScrollTop(top)
+### setScrollTop(top)
 
 Sets the top offset using window.scroll(0, top)
 
-#### animateTo(top[, options])
+### animateTo(top[, options])
 
 Animates the scroll position from current position to ```top```. Possible Options include
 
-##### duration
+#### duration
 
 How long the animation should run in milliseconds. The default is ```1000``` or one second.
 
-##### easing
+#### easing
 
 The name of an easing function. The same functions can be used as for property animations. Default is ```linear``` .
 
-##### done
+#### done
 
-A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately. The function get a boolean argument ```interrupted``` which indicates if the animation was iterrupted by stopAnimateTo or finished to the end.
+A function to be called after the animation finished. When you pass a ```top``` value, which is the same as the current, then the function will be called immediately. The function gets a boolean argument ```interrupted``` which indicates if the animation was iterrupted by stopAnimateTo or finished to the end.
 
-#### stopAnimateTo()
+### stopAnimateTo()
 
 Stops the animation and calls the ```done``` callback passing ```true``` as ```interrupted``` arguments.
 
-#### isAnimatingTo()
+### isAnimatingTo()
 
 Returns if an animation caused by animateTo is running.
 
-#### on(name, fn)
+### on(name, fn)
 
 Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attached at a given time. This method overwrites the current listener, if any.
 
-#### off(name)
+### off(name)
 
 Removes the listener for the given event.
 
 Changelog
-------
+=====
 
-#### 0.5.2
+0.5.2
+-----
 
 * #78: Fixed that new parser didn't allowed omitting the last semicolon in a keyframe property list.
 
-#### 0.5.1
+0.5.1
+-----
 
 * Fixed `setScrollTop` and `animateTo` not working because iScroll uses negative offset.
 
-#### 0.5.0
+0.5.0
+-----
 
 * *breaking* the `plugin` api has been removed (the IE plugin has been updated to a new, hidden api).
 * Full mobile support using iscroll.
@@ -361,63 +399,77 @@ Changelog
 * #74: Fixed parser to not treat single periods as decimal numbers
 * #76: Fixed dummy element overlaping the content, even though it should be unobtrusive
 
-### 0.4.13
+0.4.13
+-----
 
 * #58: `forceHeight` now handles relative mode like a boss.
 * #59: Make `scale` option only affect absolute mode.
 
-### 0.4.12
+0.4.12
+-----
 
 * #64: Setting `float` property using JavaScript didn't work across browser. Now using `styleFloat` and `cssFloat` properties.
 
-### 0.4.11
+0.4.11
+-----
 
 * The `scale` option does not affect `constants`.
 
-### 0.4.10
+0.4.10
+-----
 
 * Allow smooth scrolling on element level using ```data-smooth-scrolling```
 
-### 0.4.9
+0.4.9
+-----
 
 * Added experimental smooth scrolling (no more CSS transitions. WORKS IN IE.).
 
-### 0.4.8
+0.4.8
+-----
 
 * Added ```stopAnimateTo``` method.
 
-### 0.4.7
+0.4.7
+-----
 
 * Updated the requestAnimationFrame polyfill for smoother animations
 * Updated the way requestAnimationFrame is used for even smoother animations
 
-### 0.4.6
+0.4.6
+-----
 
 * New method ```relativeToAbsolute``` which was formerly private
 * New method ```isAnimatingTo``` to check if an animation caused by ```animateTo``` is running
 * Added ```sqrt``` easing function
 
-### 0.4.5
+0.4.5
+-----
 
 * Experimental mobile support using https://github.com/zynga/scroller
 
-### 0.4.4
+0.4.4
+-----
 
 * A ```skrollr``` class is added to the HTML element and a ```no-skrollr``` class is removed when ```init``` is called. Useful for fallback styling.
 
-### 0.4.3
+0.4.3
+-----
 
 * Added new feature "constants".
 
-### 0.4.2
+0.4.2
+-----
 
 * Added new feature "anchor-target" which allows elements to react to other elements leaving/entering the viewport.
 
-### 0.4.1
+0.4.1
+-----
 
 * Fixed a bug which broke skrollr in IE caused by wrong regular expression behavior
 
-### 0.4.0
+0.4.0
+-----
 
 * *breaking* the ```data-end-[offset]``` syntax changed. It's now ```data-[offset]-end```.
 * Fixed a bug where white spaces between style declarations were not ignored.
@@ -426,7 +478,9 @@ Changelog
 * Added new method ```refresh()```.
 
 Contributors
-------
+=====
+
+Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https://github.com/cubiq/iscroll) which powers mobile support!
 
 * [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
 * [Ali Karbassi](https://github.com/karbassi)
