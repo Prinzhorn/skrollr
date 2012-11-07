@@ -3,7 +3,7 @@
 skrollr (v 0.5.2)
 =====
 
-Stand-alone **parallax scrolling** lib for **mobile (Android + iPhone) and desktop** in just over **3.4k** for desktop. And another 6.5k for **mobile support** (which is optional).
+Stand-alone **parallax scrolling** lib for **mobile (Android + iPhone) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -56,7 +56,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ##### Lessons learned
 
 * Skrollr ensures that you can actually scroll down 500 pixels or more, even if there's not enough content. You can suppress this using the `forceHeight` option
-* You can't use `#00f` or `#0000ff`. You need to use `rgb` or `hsl` and explicitly decide which color space you want because they result in different animations (HSL is much cooler most of the time). Don't worry, the IE plugin teaches IE < 9 do display `rgb` and `hsl` correctly.
+* You can't use `#00f` or `#0000ff`. You need to use `rgb` or `hsl` and explicitly decide which color space you want because they result in different animations (HSL is much cooler most of the time). Don't worry, the IE plugin teaches IE < 9 to display `rgb` and `hsl` correctly.
 
 #### Now let's do a barrel roll at the same time
 
@@ -188,11 +188,11 @@ One could expect ```left``` to have a value of ```25%``` at keyframe ```200```. 
 Preventing interpolation
 -----
 
-The reason why skrollr is so lightweight and powerfull is because it literally interpolates **any** numbers it can find. If you want to prevent some side effect, you can supress interpolation for a specific value by prepending an exclamation point.
+The reason why skrollr is so lightweight and powerfull is because it literally interpolates **every** number it can find. If you want to prevent some side effect, you can suppress interpolation for a specific value by prepending an exclamation point.
 
 Example:
 ```html
-<!-- This will get your image url f***** up because there's no "kitten0.4561799.jpg" and the like -->
+<!-- This will get your image url f***** up because there's no "kitten1.4561799.jpg" and the like -->
 <div data-0="background-image:url(kitten1.jpg);" data-100="background-image:url(kitten2.jpg)"></div>
 
 <!-- Better -->
