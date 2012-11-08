@@ -328,17 +328,17 @@ Time consuming operation, should not be called on every rendering.
 
 returns an integer which represents the absolute scroll position which correlates to the relative anchor.
 
-```element``` must be a DOM element.
+`element` must be a DOM element.
 
-```viewportAnchor``` and ```elementAnchor``` must be one of ```top```, ```center``` or ```bottom```
+`viewportAnchor` and `elementAnchor` must be one of `top`, `center` or `bottom`
 
 Example:
 
 ```js
 var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom');
 
-//offset contains the scroll position at which #foo's top is at the bottom of the viewport.
-//if you now use setScrollTop(offset) or animateTo(offset) #foo's top will be perfectly aligned with the bottom of the viewport.
+//offset contains the scroll position at which #foo's bottom is at the top of the viewport.
+//if you now use setScrollTop(offset) or animateTo(offset) #foo's bottom will be perfectly aligned with the top of the viewport.
 ```
 
 ### setScrollTop(top)
