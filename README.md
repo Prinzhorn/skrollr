@@ -338,20 +338,20 @@ Example:
 var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom');
 
 //offset contains the scroll position at which #foo's top is at the bottom of the viewport.
-//if you now use window.scroll or similar to scroll to offset, #foo's top is aligned with the bottom of the viewport.
+//if you now use setScrollTop(offset) or animateTo(offset) #foo's top will be perfectly aligned with the bottom of the viewport.
 ```
 
 ### setScrollTop(top)
 
-Sets the top offset using window.scroll(0, top)
+Sets the top offset using `window.scrollTo(0, top)` on dektop or `iscroll.scrollTo(0, -top)` when using skrollr.mobile.
 
 ### animateTo(top[, options])
 
-Animates the scroll position from current position to ```top```. Possible Options include
+Animates the scroll position from current position to ```top```. Possible options are
 
 #### duration
 
-How long the animation should run in milliseconds. The default is ```1000``` or one second.
+How long the animation should run in milliseconds. The default is `1000` or one second.
 
 #### easing
 
@@ -363,7 +363,7 @@ A function to be called after the animation finished. When you pass a ```top``` 
 
 ### stopAnimateTo()
 
-Stops the animation and calls the ```done``` callback passing ```true``` as ```interrupted``` arguments.
+Stops the animation and calls the `done` callback passing `true` as `interrupted` arguments.
 
 ### isAnimatingTo()
 
