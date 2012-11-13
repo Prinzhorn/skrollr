@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.2)
+skrollr (v 0.5.3)
 =====
 
 Stand-alone **parallax scrolling** lib for **mobile (Android + iPhone) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
@@ -130,6 +130,8 @@ The syntax is `data-[offset]-(viewport-anchor)-[element-anchor]`, where `offset`
 By default the element is the element where the key frames are defined on (self), but can be any element on the page. You can optionally specify which element you want by using the `data-anchor-target` and any CSS selector. The first element on the page matching the selector will be used. `data-anchor-target` requires IE 8 or greater.
 
 Examples: `data-anchor-target="#foo"` or `data-anchor-target=".bar:not(.bacon) ~ span > a[href]"`
+
+**Note**: If you need to support IE 7, then you may only use IDs as `anchor-target`s, i.e. `#foo`. The IE plugin maps `querySelector` to `getElementById`.
 
 Here's an infographic for better understanding of anchors (click to open PDF):
 
@@ -380,6 +382,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.3
+-----
+
+* #66: Make IE 7 support a light version of `data-anchor-target` by mapping `querySelector` to `getElementById`.
 
 0.5.2
 -----

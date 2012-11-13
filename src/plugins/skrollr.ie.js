@@ -6,9 +6,10 @@
  *
  * free to use under terms of MIT license
  */
-(function(skrollr) {
+(function(document, skrollr) {
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;
 	var rxRGBAColor = /rgba?\(\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?).*?\)/g;
+	var rxID = /^#[^\s]+$/;
 
 	var _setStyle = skrollr.setStyle;
 
@@ -107,4 +108,14 @@
 		}
 	};
 
-}(window.skrollr));
+	/*
+		A really bad polyfill. But the main use-case for data-anchor-target are IDs.
+	*/
+	document.querySelector = document.querySelector || function(selector) {
+		if(!rxID.test(selector)) {
+			throw 'Unsupported selector "' + selector + '". The querySelector polyfill only works for IDs.';
+		}
+
+		return document.getElementById(selector.substr(1));
+	};
+}(document, window.skrollr));
