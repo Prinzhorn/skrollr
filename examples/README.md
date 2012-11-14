@@ -13,3 +13,4 @@ Showcasing the awesomeness of skrollr.
 * [Using two custom easing functions to create a circular motion](http://prinzhorn.github.com/skrollr/examples/circular_motion.html)
 * [Parallax background with constant speed](http://prinzhorn.github.com/skrollr/examples/bg_constant_speed_less.html)
 * [gradientsmotherfucker](http://prinzhorn.github.com/skrollr/examples/gradientsmotherfucker.html)
+* [FoldScroll](http://prinzhorn.github.com/skrollr/examples/foldscroll.html)
