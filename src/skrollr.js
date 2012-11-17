@@ -387,16 +387,27 @@
 
 			//Does this element have key frames?
 			if(keyFrames.length) {
+				//Will hold the original style and class attributes before we controlled the element (see #80).
+				var styleAttr, classAttr;
+
 				var id;
 
 				if(!ignoreID && SKROLLABLE_ID_DOM_PROPERTY in el) {
+					//We already have this element under control. Grab the corresponding skrollable id.
 					id = el[SKROLLABLE_ID_DOM_PROPERTY];
+					styleAttr = _skrollables[id].styleAttr;
+					classAttr = _skrollables[id].classAttr;
 				} else {
+					//It's an unknown element. Asign it a new skrollable id.
 					id = (el[SKROLLABLE_ID_DOM_PROPERTY] = _skrollableIdCounter++);
+					styleAttr = el.style.cssText;
+					classAttr = el.className;
 				}
 
 				_skrollables[id] = {
 					element: el,
+					styleAttr: styleAttr,
+					classAttr: classAttr,
 					anchorTarget: anchorTarget,
 					keyFrames: keyFrames,
 					smoothScrolling: smoothScrollThis
@@ -550,24 +561,42 @@
 	 * That is "end" in "absolute" mode and all key frames in "relative" mode.
 	 */
 	var _updateDependentKeyFrames = function() {
-		var sk;
+		var skrollable;
+		var element;
 		var anchorTarget;
 		var keyFrames;
 		var kf;
 		var skrollableIndex;
 		var keyFrameIndex;
 
+		//For relative mode, we need to reset style and class. See #80
+		var styleAttr;
+		var classAttr;
+
 		//First process all relative-mode elements and find the max key frame.
 		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
-			sk = _skrollables[skrollableIndex];
-			anchorTarget = sk.anchorTarget;
-			keyFrames = sk.keyFrames;
+			skrollable = _skrollables[skrollableIndex];
+			element = skrollable.element;
+			anchorTarget = skrollable.anchorTarget;
+			keyFrames = skrollable.keyFrames;
 
 			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
+					//Save the current style and class (#80)
+					styleAttr = element.style.cssText;
+					classAttr = element.className;
+
+					//Reset style and class to original (#80)
+					element.style.cssText = skrollable.styleAttr;
+					element.className = skrollable.classAttr;
+
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
+
+					//Now set style and class back to what skrollr did to it.
+					element.style.cssText = styleAttr;
+					element.className = classAttr;
 				}
 
 				//Only search for max key frame when forceHeight is enabled.
@@ -582,8 +611,8 @@
 
 		//Now process all data-end keyframes.
 		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
-			sk = _skrollables[skrollableIndex];
-			keyFrames = sk.keyFrames;
+			skrollable = _skrollables[skrollableIndex];
+			keyFrames = skrollable.keyFrames;
 
 			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
@@ -1034,6 +1063,8 @@
 
 		skrollable = {
 			element: <the DOM element>,
+			styleAttr: <style attribute of the element before skrollr>,
+			classAttr: <class attribute of the element before skrollr>,
 			keyFrames: [
 				{
 					frame: 100,
@@ -1058,7 +1089,7 @@
 			]
 		};
 	*/
-	var _skrollables = [];
+	var _skrollables;
 
 	var _listeners;
 	var _forceHeight;
