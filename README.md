@@ -3,7 +3,7 @@
 skrollr (v 0.5.3)
 =====
 
-Stand-alone **parallax scrolling** lib for **mobile (Android + iPhone) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
+Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -95,6 +95,27 @@ Now you may have noticed that using `500` as a keyframe position is kind of rand
 * Skrollr keyframes can either be [absolute](#absolute-mode-or-document-mode) or [relative](#relative-mode-or-viewport-mode).
 
 That's the end of this short intro. The following sections will explain some more things in detail.
+
+Mobile support
+-----
+Starting with version 0.5.0 skrollr officially supports mobile browsers including iOS and Android.
+
+### The Problem with mobile and the solution
+
+(If you're not interested in the details, just scroll down a bit to see what you need to do for mobile support)
+
+Some words on why this is an important milestone and why others failed: Mobile browsers try to save battery wherever they can. That's why mobile browsers delay the execution of JavaScript while you are scrolling. iOS in particular does this very aggressively and completely stops JavaScript. And in short that's the reason why many scrolling libraries either don't work on mobile devices or they come with their own scrollbar which is a usability nightmare on desktop. It was an important requirement while I developed skrollr that I don't force you to scroll the way I want it. skrollr on desktop uses a native scrollbar and you can scroll the way you want to (keyboard, mouse, etc.).
+
+You just told me it doesn't work on mobile, but why does it? The answer is simple. When using skrollr on mobile you don't actually scroll. Using the excellent [iScroll](https://github.com/cubiq/iscroll) library scrolling is faked using the touch events on mobile browsers and preventing the native scrolling. Support for iScroll is built into the core of skrollr and you don't need to include it yourself. `skrollr.mobile.min.js` contains of iScroll together with a small bridge-script which does everything you need to have it work with skrollr. Just follow the steps in the next section.
+
+### What you need in order to support mobile browsers
+
+Take a look at the `shim.html` in the root of this project.
+
+* You need to include `skrollr.mobile.min.js` after the skrollr core. The `shim.html` contains a funky regular expression to only include it on mobile browsers. This does not only prevent unnecessary bytes to be transfered to desktop browsers, it's also very important because including `skrollr.mobile.min.js` on desktop browsers breaks scrolling there. Feel free to use a simpler check.
+* The element with the id `skrollr-body` needs to be the **very first** element inside the `body` element.
+
+If you wonder why this is, scroll up to the previous section (you didn't just scroll down here, right?).
 
 Absolute vs relative mode
 -----
