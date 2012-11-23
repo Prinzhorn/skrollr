@@ -5,11 +5,29 @@
  */
 
 (function(window, document, undefined) {
+
+	/**
+	 * Map iScroll events to custom skrollr events, to allow binding
+	 * document.addEventListener('skrollrOnScrollMove', function(e) { // var iScroll = e.context });
+	 */
+	function emitEvent(name, context) {
+	    var evt = document.createEvent("Events");
+	    evt.initEvent(name, true, true); //true for can bubble, true for cancelable
+	    evt.context = context;
+	    document.dispatchEvent(evt);
+	}
+
 	document.addEventListener('DOMContentLoaded', function () {
 		window.setTimeout(function() {
 			skrollr.iscroll = new iScroll(document.body, {
 				bounce: false,
-				useTransform: false
+				useTransform: false,
+				onScrollMove: function() {
+					emitEvent('skrollrOnScrollMove', this);
+				},
+				onScrollEnd: function() {
+					emitEvent('skrollrOnScrollEnd', this);
+				}
 			});
 
 			document.documentElement.style.overflow = document.body.style.overflow = 'hidden';
