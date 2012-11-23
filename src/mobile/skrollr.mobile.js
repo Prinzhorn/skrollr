@@ -11,7 +11,7 @@
 	 * document.addEventListener('skrollrOnScrollMove', function(e) { // var iScroll = e.context });
 	 */
 	function emitEvent(name, context) {
-	    var evt = document.createEvent("Events")
+	    var evt = document.createEvent("Events");
 	    evt.initEvent(name, true, true); //true for can bubble, true for cancelable
 	    evt.context = context;
 	    document.dispatchEvent(evt);
