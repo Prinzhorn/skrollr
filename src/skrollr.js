@@ -447,8 +447,24 @@
 	 */
 	Skrollr.prototype.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
 		var viewportHeight = documentElement.clientHeight;
-		var box = element.getBoundingClientRect();
-		var absolute = box.top;
+		var rect = element.getBoundingClientRect();
+		var box;
+		var absolute = rect.top;
+
+		// getBoundingClientRect doesn't return width and height in IE < 9.
+		// And TextRectangle object is not writable. So we make a new object to set the properties.
+		if (typeof rect.width !== 'number') {
+			box = {
+				top: rect.top,
+				right: rect.right,
+				bottom: rect.bottom,
+				left: rect.left,
+				width: rect.right - rect.left,
+				height: rect.bottom - rect.top
+			};
+		} else {
+			box = rect;
+		}
 
 		if(viewportAnchor === ANCHOR_BOTTOM) {
 			absolute -= viewportHeight;
