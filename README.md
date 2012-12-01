@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.4)
+skrollr (v 0.5.5)
 =====
 
 Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
@@ -403,6 +403,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.5
+-----
+
+* #100: Fixed relative-mode not working correctly in IE < 9 due to crippled getBoundingClientRect
 
 0.5.4
 -----

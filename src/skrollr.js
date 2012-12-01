@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.4'
+		VERSION: '0.5.5'
 	};
 
 	//Minify optimization.
@@ -450,6 +450,9 @@
 		var box = element.getBoundingClientRect();
 		var absolute = box.top;
 
+		//#100: IE doesn't supply "height" with getBoundingClientRect.
+		var boxHeight = box.bottom - box.top;
+
 		if(viewportAnchor === ANCHOR_BOTTOM) {
 			absolute -= viewportHeight;
 		} else if(viewportAnchor === ANCHOR_CENTER) {
@@ -457,9 +460,9 @@
 		}
 
 		if(elementAnchor === ANCHOR_BOTTOM) {
-			absolute += box.height;
+			absolute += boxHeight;
 		} else if(elementAnchor === ANCHOR_CENTER) {
-			absolute += box.height / 2;
+			absolute += boxHeight / 2;
 		}
 
 		//Compensate scrolling since getBoundingClientRect is relative to viewport.
