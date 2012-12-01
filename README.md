@@ -527,4 +527,5 @@ Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https
 * [Charles J Hardy](https://github.com/ChuckJHardy)
 * [Oscar Otero](https://github.com/oscarotero)
 * [Jim Osborn](https://github.com/ThinkTherefore)
+* [Dowon Kang](https://github.com/dowonkang)
 * Everyone giving feedback on Twitter and through other channels.
