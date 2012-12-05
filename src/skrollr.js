@@ -8,6 +8,8 @@
 (function(window, document, undefined) {
 	'use strict';
 
+	var documentElement;
+	var body;
 	/*
 	 * Global api.
 	 */
@@ -17,6 +19,9 @@
 		},
 		//Main entry point.
 		init: function(options) {
+            documentElement = document.documentElement;
+            body = document.body;
+			getTheCSSPrefix();
 			return _instance || new Skrollr(options);
 		},
 		VERSION: '0.5.5'
@@ -24,8 +29,6 @@
 
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
-	var documentElement = document.documentElement;
-	var body = document.body;
 
 	var RENDERED_CLASS = 'rendered';
 	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
@@ -105,35 +108,37 @@
 	//Finds all gradients.
 	var rxGradient = /[a-z\-]+-gradient/g;
 
-	//Only relevant prefixes. May be extended.
-	//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
-	var rxPrefixes = /^O|Moz|webkit|ms/;
-
 	var theCSSPrefix;
 	var theDashedCSSPrefix;
 
-	//Detect prefix for current browser by finding the first property using a prefix.
-	if(window.getComputedStyle) {
-		var style = window.getComputedStyle(body, null);
+    function getTheCSSPrefix(){
+        //Only relevant prefixes. May be extended.
+        //Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
+        var rxPrefixes = /^O|Moz|webkit|ms/;
 
-		for(var k in style) {
-			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
-			theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
+        //Detect prefix for current browser by finding the first property using a prefix.
+        if(window.getComputedStyle) {
+            var style = window.getComputedStyle(body, null);
 
-			if(theCSSPrefix) {
-				break;
-			}
-		}
-	}
+            for(var k in style) {
+                //We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
+                theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
 
-	//Empty string if no prefix detected
-	theCSSPrefix = (theCSSPrefix || [''])[0];
+                if(theCSSPrefix) {
+                    break;
+                }
+            }
+        }
 
-	//Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
-	theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
+        //Empty string if no prefix detected
+        theCSSPrefix = (theCSSPrefix || [''])[0];
 
-	//Cleanup.
-	rxPrefixes = undefined;
+        //Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
+        theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
+
+        //Cleanup.
+        rxPrefixes = undefined;
+    }
 
 	//Built-in easing functions.
 	var easings = {
