@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.5'
+		VERSION: '0.5.6'
 	};
 
 	//Minify optimization.
@@ -404,7 +404,7 @@
 					classAttr = el.className;
 				}
 
-				_skrollables[id] = {
+				var skrollable = _skrollables[id] = {
 					element: el,
 					styleAttr: styleAttr,
 					classAttr: classAttr,
@@ -413,7 +413,8 @@
 					smoothScrolling: smoothScrollThis
 				};
 
-				_updateClass(el, [SKROLLABLE_CLASS, UNRENDERED_CLASS], [RENDERED_CLASS]);
+				_updateClass(el, [SKROLLABLE_CLASS, RENDERED_CLASS], [UNRENDERED_CLASS]);
+				skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
 			}
 		}
 
@@ -657,7 +658,7 @@
 					}
 				}
 
-				//Add the unrendered class when exactly at first/last frame.
+				//Add the unrendered class when before or after first/last frame.
 				if(skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] && (frame < firstFrame || frame > lastFrame)) {
 					_updateClass(skrollable.element, [UNRENDERED_CLASS], [RENDERED_CLASS]);
 
