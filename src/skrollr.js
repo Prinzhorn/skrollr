@@ -481,7 +481,7 @@
 		var now = _now();
 		var scrollTop = _instance.getScrollTop();
 
-		//Setting this to a new value will automatically prevent the current animation to stop, if any.
+		//Setting this to a new value will automatically cause the current animation to stop, if any.
 		_scrollAnimation = {
 			startTop: scrollTop,
 			topDiff: top - scrollTop,
