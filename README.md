@@ -365,6 +365,10 @@ var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom
 //if you now use setScrollTop(offset) or animateTo(offset) #foo's bottom will be perfectly aligned with the top of the viewport.
 ```
 
+### getScrollTop()
+
+Returns the current scroll offset in pixels. Normalizes different browser quirks and returns the iScroll y-position in case of skrollr.mobile.
+
 ### setScrollTop(top)
 
 Sets the top offset using `window.scrollTo(0, top)` on dektop or `iscroll.scrollTo(0, -top)` when using skrollr.mobile.
