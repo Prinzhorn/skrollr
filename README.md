@@ -1,9 +1,9 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.6)
+skrollr (v 0.5.7)
 =====
 
-Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.4k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
+Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.5k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -414,6 +414,11 @@ Removes the listener for the given event.
 Changelog
 =====
 
+0.5.7
+-----
+
+* #103: skrollr no longer depends on being added to the bottom of the document.
+
 0.5.6
 -----
 
@@ -543,4 +548,5 @@ Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https
 * [Oscar Otero](https://github.com/oscarotero)
 * [Jim Osborn](https://github.com/ThinkTherefore)
 * [Dowon Kang](https://github.com/dowonkang)
+* [rbeitra](https://github.com/rbeitra)
 * Everyone giving feedback on Twitter and through other channels.

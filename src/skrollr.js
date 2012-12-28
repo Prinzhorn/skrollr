@@ -19,13 +19,15 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.6'
+		VERSION: '0.5.7'
 	};
 
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
-	var documentElement = document.documentElement;
-	var body = document.body;
+
+	//They will be filled when skrollr gets initialized.
+	var documentElement;
+	var body;
 
 	var RENDERED_CLASS = 'rendered';
 	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
@@ -105,35 +107,36 @@
 	//Finds all gradients.
 	var rxGradient = /[a-z\-]+-gradient/g;
 
-	//Only relevant prefixes. May be extended.
-	//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
-	var rxPrefixes = /^O|Moz|webkit|ms/;
-
+	//Vendor prefix. Will be set once skrollr gets initialized.
 	var theCSSPrefix;
 	var theDashedCSSPrefix;
 
-	//Detect prefix for current browser by finding the first property using a prefix.
-	if(window.getComputedStyle) {
-		var style = window.getComputedStyle(body, null);
+	//Will be called once (when skrollr gets initialized).
+	var detectCSSPrefix = function() {
+		//Only relevant prefixes. May be extended.
+		//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
+		var rxPrefixes = /^O|Moz|webkit|ms/;
 
-		for(var k in style) {
-			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
-			theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
+		//Detect prefix for current browser by finding the first property using a prefix.
+		if(window.getComputedStyle) {
+			var style = window.getComputedStyle(body, null);
 
-			if(theCSSPrefix) {
-				break;
+			for(var k in style) {
+				//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
+				theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
+
+				if(theCSSPrefix) {
+					break;
+				}
 			}
 		}
-	}
 
-	//Empty string if no prefix detected
-	theCSSPrefix = (theCSSPrefix || [''])[0];
+		//Empty string if no prefix detected
+		theCSSPrefix = (theCSSPrefix || [''])[0];
 
-	//Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
-	theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
-
-	//Cleanup.
-	rxPrefixes = undefined;
+		//Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
+		theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
+	};
 
 	//Built-in easing functions.
 	var easings = {
@@ -182,6 +185,11 @@
 	 * Constructor.
 	 */
 	function Skrollr(options) {
+		detectCSSPrefix();
+
+		documentElement = document.documentElement;
+		body = document.body;
+
 		_instance = this;
 
 		options = options || {};
