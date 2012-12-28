@@ -21,6 +21,11 @@ In the wild
 * http://www.futuremylove.com/
 * http://jonnyacevedo.com/
 
+Further resources (tutorials etc.)
+=====
+
+* http://pepsized.com/merry-scrolling-with-skrollr-js/
+
 _Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
 
 
