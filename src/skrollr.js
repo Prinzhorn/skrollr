@@ -185,10 +185,10 @@
 	 * Constructor.
 	 */
 	function Skrollr(options) {
-		detectCSSPrefix();
-
 		documentElement = document.documentElement;
 		body = document.body;
+
+		detectCSSPrefix();
 
 		_instance = this;
 
