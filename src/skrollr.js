@@ -409,7 +409,7 @@
 					//It's an unknown element. Asign it a new skrollable id.
 					id = (el[SKROLLABLE_ID_DOM_PROPERTY] = _skrollableIdCounter++);
 					styleAttr = el.style.cssText;
-					classAttr = el.className;
+					classAttr = _getClass(el);
 				}
 
 				var skrollable = _skrollables[id] = {
@@ -598,17 +598,17 @@
 				if(kf.mode === 'relative') {
 					//Save the current style and class (#80)
 					styleAttr = element.style.cssText;
-					classAttr = element.className;
+					classAttr = _getClass(element);
 
 					//Reset style and class to original (#80)
 					element.style.cssText = skrollable.styleAttr;
-					element.className = skrollable.classAttr;
+					_updateClass(element, skrollable.classAttr);
 
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 
 					//Now set style and class back to what skrollr did to it.
 					element.style.cssText = styleAttr;
-					element.className = classAttr;
+					_updateClass(element, classAttr);
 				}
 
 				//Only search for max key frame when forceHeight is enabled.
@@ -1012,20 +1012,44 @@
 	};
 
 	/**
-	 * Adds and removes a CSS classes.
+	 * Returns a string of space separated classnames for the current element.
 	 * Works with SVG as well.
 	 */
-	var _updateClass = function(el, add, remove) {
+	var _getClass = function(element) {
 		var prop = 'className';
 
 		//SVG support by using className.baseVal instead of just className
-		if(window.SVGElement && el instanceof window.SVGElement) {
-			el = el[prop];
+		if(window.SVGElement && element instanceof window.SVGElement) {
+			element = element[prop];
 			prop = 'baseVal';
 		}
 
+		return element[prop];
+	};
+
+	/**
+	 * Adds and removes a CSS classes.
+	 * Works with SVG as well.
+	 * add and remove are either arrays of strings,
+	 * or if remove is ommited add is a string and overwrites all classes.
+	 */
+	var _updateClass = function(element, add, remove) {
+		var prop = 'className';
+
+		//SVG support by using className.baseVal instead of just className
+		if(window.SVGElement && element instanceof window.SVGElement) {
+			element = element[prop];
+			prop = 'baseVal';
+		}
+
+		//When remove is ommited, we want to overwrite/set the classes.
+		if(remove === undefined) {
+			element[prop] = add;
+			return;
+		}
+
 		//Cache current classes. We will work on a string before passing back to DOM.
-		var val = el[prop];
+		var val = element[prop];
 
 		//All classes to be added.
 		for(var classAddIndex = 0; classAddIndex < add.length; classAddIndex++) {
@@ -1040,7 +1064,7 @@
 			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
-		el[prop] = _trim(val);
+		element[prop] = _trim(val);
 	};
 
 	var _trim = function(a) {

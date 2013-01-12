@@ -58,7 +58,7 @@ var scrollTests = function(offset, tests) {
 				if(curTest.styles) {
 					for(var k in curTest.styles) {
 						if(Object.prototype.hasOwnProperty.call(curTest.styles, k)) {
-							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct')
+							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct');
 						}
 					}
 				}
@@ -84,8 +84,8 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 16, 'All elements have the .skrollable class');
-	strictEqual($('.rendered').length, 14, 'data-start/0 elements have the .rendered class');
+	strictEqual($('.skrollable').length, 17, 'All elements have the .skrollable class');
+	strictEqual($('.rendered').length, 15, 'data-start/0 elements have the .rendered class');
 	strictEqual($('.unrendered').length, 2, 'Elements whose keyframe start later than 0 have the .undrendered class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
