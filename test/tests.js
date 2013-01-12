@@ -85,8 +85,8 @@ module('basic stuff');
 
 test('CSS classes present', function() {
 	strictEqual($('.skrollable').length, 17, 'All elements have the .skrollable class');
-	strictEqual($('.rendered').length, 15, 'data-start/0 elements have the .rendered class');
-	strictEqual($('.unrendered').length, 2, 'Elements whose keyframe start later than 0 have the .undrendered class');
+	strictEqual($('.rendered:not(rect)').length, 14, 'data-start/0 elements have the .rendered class');
+	strictEqual($('.unrendered:not(rect)').length, 2, 'Elements whose keyframe start later than 0 have the .undrendered class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
