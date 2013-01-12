@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.8'
+		VERSION: '0.5.9'
 	};
 
 	//Minify optimization.
@@ -115,7 +115,7 @@
 	var detectCSSPrefix = function() {
 		//Only relevant prefixes. May be extended.
 		//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
-		var rxPrefixes = /^O|Moz|webkit|ms/;
+		var rxPrefixes = /^(?:O|Moz|webkit|ms)/;
 
 		//Detect prefix for current browser by finding the first property using a prefix.
 		if(window.getComputedStyle) {
