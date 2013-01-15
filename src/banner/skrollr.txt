@@ -1,1 +1,1 @@
-/*! skrollr v0.5.9 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
+/*! skrollr v0.5.10 https://github.com/Prinzhorn/skrollr | free to use under terms of MIT license */
