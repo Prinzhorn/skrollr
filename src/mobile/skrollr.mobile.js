@@ -5,7 +5,8 @@
  */
 
 (function(window, document, undefined) {
-	document.addEventListener('DOMContentLoaded', function () {
+
+	function patchSkrollr(skrollr){
 		window.setTimeout(function() {
 			var skrollrBody = document.getElementById('skrollr-body');
 
@@ -17,13 +18,32 @@
 
 			document.body.style.cssText += 'position:absolute;left:0;top:0;bottom:0;width:100%;padding:0;margin:0;';
 
+
 			skrollr.iscroll = new iScroll(document.body, {
 				bounce: false,
 				//When using transform, all fixed-positioned child elements degrade to absolut positioned.
 				useTransform: false
-			});
+			}); 
 
 			window.scroll(0, 0);
 		}, 200);
-	},false);
+	}
+
+	if (typeof define === "function" && define.amd) {
+		//If we are using require.js, load skroll module
+		//!!Important: this assumes require.js was configured to path to skrollr:
+		//  require.config({
+		//     paths: {
+		//         'skrollr': 'path-to-skrollr-module'
+		//     }
+		//  });
+		require(["skrollr"], function(skrollr){
+			patchSkrollr(skrollr);
+		});
+	} else {
+		document.addEventListener('DOMContentLoaded', function () {
+			patchSkrollr(window.skrollr);
+		},false);
+	}
+
 }(window, document));
