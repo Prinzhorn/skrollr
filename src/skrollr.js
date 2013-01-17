@@ -11,7 +11,7 @@
 	/*
 	 * Global api.
 	 */
-	var skrollr = window.skrollr = {
+	var skrollr = {
 		get: function() {
 			return _instance;
 		},
@@ -1158,4 +1158,22 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
+
+
+	/*  Export skrollr
+		
+		Wrap skrollr in a require.js module if require
+		is available, else fall back to global namespace
+		export
+	*/
+
+	/*global define:false */
+	if (typeof define === "function" && define.amd) {
+		define(function () {
+			return skrollr;
+		});
+	} else {
+		window.skrollr = skrollr;   
+	}
+
 }(window, document));
