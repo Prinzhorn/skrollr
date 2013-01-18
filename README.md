@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.10)
+skrollr (v 0.5.11)
 =====
 
 Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.5k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
@@ -413,6 +413,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.11
+-----
+
+* #126: When calling refresh(), force rerendering, even if the scrollbar didn't move.
 
 0.5.10
 -----
