@@ -256,7 +256,10 @@
 
 				_updateDependentKeyFrames();
 
+				//"force" the height.
 				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+
+				_forceRender = true;
 
 				if(skrollr.iscroll) {
 					window.setTimeout(function () {
@@ -267,7 +270,9 @@
 		} else {
 			_reflow = function() {
 				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
+
 				_updateDependentKeyFrames();
+
 				_forceRender = true;
 
 				if(skrollr.iscroll) {
