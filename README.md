@@ -48,6 +48,15 @@ With skrollr, you put the definition of your key frames right where they belong 
 
 By the way you may want to keep an eye on [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
 
+Files you should know about
+------
+
+* _**dist/skrollr.min.js**_ - The skrollr core file. That's all you need for modern desktop browsers.
+* _**dist/skrollr.ie.min.js**_ - For IE < 9, include it after the core using conditional comments. The plugin makes IE understand `rgb()` and `hsl()` (the ones with alpha are mapped to them) and it creates a very simple `document.querySelector` polyfill which only supports ID selectores (using `getElementById`). Needed if you want to use [data-anchor-target](#relative-mode-or-viewport-mode).
+* _**dist/skrollr.mobile.min.js**_ - Includes iScroll and a bridge script which initializes iScroll and makes it work with skrollr. Include it after the core when you need [mobile support](#mobile-support).
+* _**shim.html**_ - Sample file to kickstart a project for desktop and mobile.
+* _**shim-desktop-only.html**_ - Sample file for desktop only.
+
 Let's get serious
 ------
 
