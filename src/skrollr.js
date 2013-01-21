@@ -285,7 +285,7 @@
 
 		_instance.refresh();
 
-		_addEvent('resize', _reflow);
+		skrollr.addEvent(window, 'resize', _reflow);
 
 		//Let's go.
 		(function animloop(){
@@ -1008,11 +1008,11 @@
 	/**
 	 * Cross browser event handling.
 	 */
-	var _addEvent = function(name, fn) {
+	skrollr.addEvent = function(element, name, fn) {
 		if(window.addEventListener) {
-			window.addEventListener(name, fn, false);
+			element.addEventListener(name, fn, false);
 		} else {
-			window.attachEvent('on' + name, fn);
+			element.attachEvent('on' + name, fn);
 		}
 	};
 
