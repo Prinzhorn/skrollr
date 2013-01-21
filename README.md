@@ -24,6 +24,7 @@ In the wild
 Further resources (tutorials etc.)
 =====
 
+* http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
 
 _Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
