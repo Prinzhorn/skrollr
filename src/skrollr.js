@@ -456,6 +456,36 @@
 	};
 
 	/**
+	 * Transform "relative" mode to "absolute" mode.
+	 * That is, calculate anchor position and offset of element.
+	 */
+	Skrollr.prototype.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
+		var viewportHeight = documentElement.clientHeight;
+		var box = element.getBoundingClientRect();
+		var absolute = box.top;
+
+		//#100: IE doesn't supply "height" with getBoundingClientRect.
+		var boxHeight = box.bottom - box.top;
+
+		if(viewportAnchor === ANCHOR_BOTTOM) {
+			absolute -= viewportHeight;
+		} else if(viewportAnchor === ANCHOR_CENTER) {
+			absolute -= viewportHeight / 2;
+		}
+
+		if(elementAnchor === ANCHOR_BOTTOM) {
+			absolute += boxHeight;
+		} else if(elementAnchor === ANCHOR_CENTER) {
+			absolute += boxHeight / 2;
+		}
+
+		//Compensate scrolling since getBoundingClientRect is relative to viewport.
+		absolute += _instance.getScrollTop();
+
+		return (absolute + 0.5) | 0;
+	};
+
+	/**
 	 * Animates scroll top to new position.
 	 */
 	Skrollr.prototype.animateTo = function(top, options) {
@@ -579,7 +609,7 @@
 					element.style.cssText = skrollable.styleAttr;
 					_updateClass(element, skrollable.classAttr);
 
-					kf.frame = skrollr.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
+					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 
 					//Now set style and class back to what skrollr did to it.
 					element.style.cssText = styleAttr;
@@ -1001,36 +1031,6 @@
 		} else {
 			element.attachEvent('on' + name, intermediate);
 		}
-	};
-
-	/**
-	 * Transform "relative" mode to "absolute" mode.
-	 * That is, calculate anchor position and offset of element.
-	 */
-	Skrollr.prototype.relativeToAbsolute = skrollr.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
-		var viewportHeight = documentElement.clientHeight;
-		var box = element.getBoundingClientRect();
-		var absolute = box.top;
-
-		//#100: IE doesn't supply "height" with getBoundingClientRect.
-		var boxHeight = box.bottom - box.top;
-
-		if(viewportAnchor === ANCHOR_BOTTOM) {
-			absolute -= viewportHeight;
-		} else if(viewportAnchor === ANCHOR_CENTER) {
-			absolute -= viewportHeight / 2;
-		}
-
-		if(elementAnchor === ANCHOR_BOTTOM) {
-			absolute += boxHeight;
-		} else if(elementAnchor === ANCHOR_CENTER) {
-			absolute += boxHeight / 2;
-		}
-
-		//Compensate scrolling since getBoundingClientRect is relative to viewport.
-		absolute += _instance.getScrollTop();
-
-		return (absolute + 0.5) | 0;
 	};
 
 	/**

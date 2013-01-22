@@ -41,7 +41,7 @@
 		}
 
 		//Get the position to scroll to.
-		var offset = skrollr.relativeToAbsolute(scrollTarget, 'top', 'top');
+		var offset = _skrollrInstance.relativeToAbsolute(scrollTarget, 'top', 'top');
 
 		//Now finally scroll there.
 		_skrollrInstance.animateTo(offset, {
