@@ -17,6 +17,10 @@ module.exports = function(grunt) {
 				src: ['src/mobile/iscroll.js', 'src/mobile/skrollr.mobile.js'],
 				dest: 'dist/skrollr.mobile.min.js'
 			},
+			menu: {
+				src: ['src/plugins/skrollr.menu.js'],
+				dest: 'dist/skrollr.menu.min.js'
+			},
 			ie: {
 				src: ['src/plugins/skrollr.ie.js'],
 				dest: 'dist/skrollr.ie.min.js'
@@ -31,6 +35,10 @@ module.exports = function(grunt) {
 			mobile: {
 				src: ['src/banner/mobile.txt', 'dist/skrollr.mobile.min.js'],
 				dest: 'dist/skrollr.mobile.min.js'
+			},
+			menu: {
+				src: ['src/banner/skrollr.txt', 'dist/skrollr.menu.min.js'],
+				dest: 'dist/skrollr.menu.min.js'
 			},
 			ie: {
 				src: ['src/banner/skrollr.txt', 'dist/skrollr.ie.min.js'],
