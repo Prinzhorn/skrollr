@@ -32,9 +32,9 @@
 	/*
 		Animate to the element.
 	*/
-	var scrollToHash = function(hash, duration, easing) {
+	var scrollToId = function(id, duration, easing) {
 		//Grab the target element.
-		var scrollTarget = document.getElementById(hash);
+		var scrollTarget = document.getElementById(id);
 
 		if(!scrollTarget) {
 			return false;
@@ -72,8 +72,8 @@
 		}
 
 		//Great, it's a hashlink. Scroll to the element.
-		var hash = href.substr(1);
-		var scollSuccess = scrollToHash(hash, DEFAULT_DURATION, DEFAULT_EASING);
+		var id = href.substr(1);
+		var scollSuccess = scrollToId(id, DEFAULT_DURATION, DEFAULT_EASING);
 
 		if(scollSuccess) {
 			e.preventDefault();
