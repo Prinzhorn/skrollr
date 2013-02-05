@@ -17,6 +17,7 @@ In the wild
 * http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
 * http://www.officeline.se/kampanj/
 * http://www.evanshalshaw.com/bondcars/
+* http://erikreyna.com/ofthestreet/index.html
 * https://squareup.com/careers/creative
 * http://happy.is
 * http://www.futuremylove.com/
