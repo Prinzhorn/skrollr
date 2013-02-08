@@ -263,38 +263,15 @@
 				body.appendChild(dummy);
 			}
 
-			//Update height of dummy div when window size is changed.
-			_reflow = function() {
-				//Will be recalculated by _updateDependentKeyFrames.
-				_maxKeyFrame = 0;
+			//Update height of dummy div when reflowing (e.g. window size is changed).
+			(function(oldReflowFn) {
+				_reflow = function() {
+					oldReflowFn.apply(this, arguments);
 
-				_updateDependentKeyFrames();
-
-				//"force" the height.
-				dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-
-				_forceRender = true;
-
-				if(skrollr.iscroll) {
-					window.setTimeout(function () {
-						skrollr.iscroll.refresh();
-					}, 0);
-				}
-			};
-		} else {
-			_reflow = function() {
-				_maxKeyFrame = body.scrollHeight - documentElement.clientHeight;
-
-				_updateDependentKeyFrames();
-
-				_forceRender = true;
-
-				if(skrollr.iscroll) {
-					window.setTimeout(function () {
-						skrollr.iscroll.refresh();
-					}, 0);
-				}
-			};
+					//"force" the height.
+					dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+				};
+			}(_reflow));
 		}
 
 		_instance.refresh();
@@ -639,6 +616,9 @@
 				}
 			}
 		}
+
+		//#133: The document can be larger than the maxKeyFrame we found.
+		_maxKeyFrame = Math.max(_maxKeyFrame, _getDocumentHeight());
 
 		//Now process all data-end keyframes.
 		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
@@ -1050,6 +1030,30 @@
 		}
 	};
 
+	var _reflow = function() {
+		//Will be recalculated by _updateDependentKeyFrames.
+		_maxKeyFrame = 0;
+
+		_updateDependentKeyFrames();
+
+		_forceRender = true;
+
+		if(skrollr.iscroll) {
+			window.setTimeout(function () {
+				skrollr.iscroll.refresh();
+			}, 0);
+		}
+	};
+
+	/*
+	 * Returns the height of the document.
+	 */
+	var _getDocumentHeight = function() {
+		var bodyHeight = Math.max(body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
+
+		return bodyHeight - documentElement.clientHeight;
+	};
+
 	/**
 	 * Returns a string of space separated classnames for the current element.
 	 * Works with SVG as well.
@@ -1169,7 +1173,6 @@
 	var _listeners;
 	var _forceHeight;
 	var _maxKeyFrame = 0;
-	var _reflow;
 
 	var _scale = 1;
 	var _constants;
