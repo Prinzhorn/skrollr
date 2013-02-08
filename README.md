@@ -1,9 +1,9 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.11)
+skrollr (v 0.5.12)
 =====
 
-Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.5k** (gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
+Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.8k** (minified + gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS.
 
@@ -425,6 +425,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.12
+-----
+
+* #121: Fixed prefix detection in Safari.
 
 0.5.11
 -----
