@@ -115,7 +115,7 @@
 	var detectCSSPrefix = function() {
 		//Only relevant prefixes. May be extended.
 		//Could be dangerous if there will ever be a CSS property which actually starts with "ms". Don't hope so.
-		var rxPrefixes = /^(?:O|Moz|webkit|ms)/;
+		var rxPrefixes = /^(?:O|Moz|webkit|ms)|(?:-(?:o|moz|webkit|ms)-)/;
 
 		//Detect prefix for current browser by finding the first property using a prefix.
 		if(window.getComputedStyle) {
@@ -129,13 +129,27 @@
 					break;
 				}
 			}
+
+			//Did we even detect a prefix?
+			if(theCSSPrefix) {
+				theCSSPrefix = theCSSPrefix[0];
+
+				//We could have detected either a dashed prefix or this camelCaseish-inconsistent stuff.
+				if(theCSSPrefix.slice(0,1) === '-') {
+					theDashedCSSPrefix = theCSSPrefix;
+
+					//There's no logic behind these. Need a look up.
+					theCSSPrefix = ({
+						'-webkit-': 'webkit',
+						'-moz-': 'Moz',
+						'-ms-': 'ms',
+						'-o-': 'O'
+					})[theCSSPrefix];
+				} else {
+					theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
+				}
+			}
 		}
-
-		//Empty string if no prefix detected
-		theCSSPrefix = (theCSSPrefix || [''])[0];
-
-		//Will be "--" if no prefix detected. No problem, browser will ignore "--transform" and stuff.
-		theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
 	};
 
 	//Built-in easing functions.
@@ -878,11 +892,12 @@
 
 		//Handle prefixing of "gradient" values.
 		//For now only the prefixed value will be set. Unprefixed isn't supported anyway.
-		rxGradient.lastIndex = 0;
-		val = val.replace(rxGradient, function(s) {
-			return theDashedCSSPrefix + s;
-		});
-
+		if(theDashedCSSPrefix) {
+			rxGradient.lastIndex = 0;
+			val = val.replace(rxGradient, function(s) {
+				return theDashedCSSPrefix + s;
+			});
+		}
 
 		//Now parse ANY number inside this string and create a format string.
 		val = val.replace(rxNumericValue, function(n) {
@@ -996,8 +1011,10 @@
 		else {
 			//Need try-catch for old IE.
 			try {
-				//Set prefixed property.
-				style[theCSSPrefix + prop.slice(0,1).toUpperCase() + prop.slice(1)] = val;
+				//Set prefixed property if there's a prefix.
+				if(theCSSPrefix) {
+					style[theCSSPrefix + prop.slice(0,1).toUpperCase() + prop.slice(1)] = val;
+				}
 
 				//Set unprefixed.
 				style[prop] = val;
