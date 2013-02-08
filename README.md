@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.12)
+skrollr (v 0.5.13)
 =====
 
 Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.8k** (minified + gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
@@ -425,6 +425,12 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.13
+-----
+
+* #131: Use a cross browser approach for getting the body scroll-height.
+* #133: Use the maximum of document height or the max keyframe for edge cases where absolute keyframes are used in a relative-mode-like document and `data-end` was calculated wrong.
 
 0.5.12
 -----
