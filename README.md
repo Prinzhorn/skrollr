@@ -26,6 +26,7 @@ In the wild
 Further resources (tutorials etc.)
 =====
 
+* http://www.guardian.co.uk/info/developer-blog/2012/nov/20/how-we-built-america-elect-graphic-novel-interactive
 * http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
 
