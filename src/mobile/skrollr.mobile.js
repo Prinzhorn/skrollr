@@ -23,6 +23,8 @@
 				useTransform: false
 			});
 
+			document.documentElement.className += ' skrollr-mobile';
+
 			window.scroll(0, 0);
 		}, 200);
 	},false);

@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.13)
+skrollr (v 0.5.14)
 =====
 
 Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.8k** (minified + gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
@@ -426,6 +426,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.5.14
+-----
+
+* Add a `skrollr-mobile` class to the html element when the mobile script is included.
 
 0.5.13
 -----
