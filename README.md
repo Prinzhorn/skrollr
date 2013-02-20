@@ -182,7 +182,7 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 Hash navigation
 -----
 
-In case you want to use hash links, e.g. `<href="#section-about">About</a>` you need to know the following:
+In case you want to use hash links, e.g. `<a href="#section-about">About</a>` you need to know the following:
 
 * If you animate `top`, `margin-top` or anything that moves the element up/down, the browser won't be able to jump to the correct position and you may end up somewhere else
 * If you're using skrollr on mobile they won't work at all, because we're not using native scrolling there
@@ -203,7 +203,7 @@ skrollr.menu.init(s, {
 And in order to fix the problem with the wrong offset, you are able to specify the target scroll position right at the link, e.g.
 
 ```html
-<href="#section-about" data-menu-top="500">About</a>
+<a href="#section-about" data-menu-top="500">About</a>
 ```
 
 This link will cause the page to scroll to `500`. But you should let the the href point to the actual target because if skrollr or js are disabled, the links will still work.
