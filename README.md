@@ -179,6 +179,27 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 
 **Important**: All those values will be calculated up-front and transformed to `absolute` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call `refresh()` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
+Hash navigation
+-----
+
+In case you want to use hash links, e.g. `<href="#section-about">About</a>` you need to know the following:
+
+* If you animate `top`, `margin-top` or anything that moves the element up/down, the browser won't be able to jump to the correct position and you may end up somewhere else
+* If you're using skrollr on mobile they won't work at all, because we're not using native scrolling there
+
+**But** we've got you covered. Download the `dist/skrollr.menu.min.js` file and include it right after the `skrollr.min.js` file. Then you need to call `skrollr.menu.init(s)` passing the skrollr instance as first parameter and optionally some options. Here's a full example.
+
+```js
+var s = skrollr.init(/*other stuff*/);
+
+//The options (second parameter) are all optional. The values shown are the default values.
+skrollr.menu.init(s, {
+	animate: true, //skrollr will smoothly animate to the new position using `animateTo`.
+	duration: 500, //How long the animation should take in ms.
+	easing: 'sqrt' //The easing function to use.
+});
+```
+
 Working with constants
 -----
 

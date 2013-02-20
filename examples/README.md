@@ -6,6 +6,7 @@ Showcasing the awesomeness of skrollr.
 * [The "main" example](http://prinzhorn.github.com/skrollr/)
 * [Demonstrating different anchors](http://prinzhorn.github.com/skrollr/examples/anchors.html)
 * [Demonstrating data-anchor-target](http://prinzhorn.github.com/skrollr/examples/anchor_target.html)
+* [skrollr.menu plugin](http://prinzhorn.github.com/skrollr/examples/skrollr.menu.html)
 * [Drawing a SVG path](http://prinzhorn.github.com/skrollr/examples/path.html)
 * [Creating a fixed nav](http://prinzhorn.github.com/skrollr/examples/fixed_nav.html)
 * [Snapping](http://prinzhorn.github.com/skrollr/examples/snapping.html)
