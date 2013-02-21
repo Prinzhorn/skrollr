@@ -5,6 +5,10 @@
  */
 
 (function(window, document, undefined) {
+	document.addEventListener('touchmove', function(e) {
+		e.preventDefault();
+	}, false);
+
 	document.addEventListener('DOMContentLoaded', function () {
 		window.setTimeout(function() {
 			var skrollrBody = document.getElementById('skrollr-body');
@@ -20,7 +24,18 @@
 			skrollr.iscroll = new iScroll(document.body, {
 				bounce: false,
 				//When using transform, all fixed-positioned child elements degrade to absolut positioned.
-				useTransform: false
+				useTransform: false,
+				onBeforeScrollStart: function(e) {
+					var target = e.target;
+
+					while(target.nodeType != 1) {
+						target = target.parentNode;
+					}
+
+					if(!/(select|input|textarea)/i.test(target.tagName)) {
+						e.preventDefault();
+					}
+				}
 			});
 
 			document.documentElement.className += ' skrollr-mobile';
