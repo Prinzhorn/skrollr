@@ -27,6 +27,7 @@ In the wild
 Further resources (tutorials etc.)
 =====
 
+* https://github.com/Prinzhorn/skrollr-stylesheets
 * http://www.guardian.co.uk/info/developer-blog/2012/nov/20/how-we-built-america-elect-graphic-novel-interactive
 * http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
@@ -52,7 +53,7 @@ Other libraries require you to write JavaScript in order to define your animatio
 
 With skrollr, you put the definition of your key frames right where they belong (to the element) using a syntax you already know (plain CSS).
 
-By the way you may want to keep an eye on [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
+If you rather want the keyframes inside a separate file, take a look at [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
 
 Files you should know about
 ------
@@ -116,6 +117,8 @@ Now you may have noticed that using `500` as a keyframe position is kind of rand
 * Skrollr keyframes can either be [absolute](#absolute-mode-or-document-mode) or [relative](#relative-mode-or-viewport-mode).
 
 That's the end of this short intro. The following sections will explain some more things in detail.
+
+If you're not a fan of `data-attributes` or if you're planning a big website where you want a better and more flexible structure, take a look at [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
 
 Mobile support
 -----
