@@ -422,9 +422,11 @@ var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom
 
 Returns the current scroll offset in pixels. Normalizes different browser quirks and returns the iScroll y-position in case of skrollr.mobile.
 
-### setScrollTop(top)
+### setScrollTop(top[, force = false])
 
 Sets the top offset using `window.scrollTo(0, top)` on dektop or `iscroll.scrollTo(0, -top)` when using skrollr.mobile.
+
+When `force` is set to `true`, skrollr will jump to the new position without any kind of transition. By default the global `smoothScrolling` setting applies.
 
 ### animateTo(top[, options])
 

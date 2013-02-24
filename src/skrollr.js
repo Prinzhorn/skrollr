@@ -527,7 +527,13 @@
 		return !!_scrollAnimation;
 	};
 
-	Skrollr.prototype.setScrollTop = function(top) {
+	Skrollr.prototype.setScrollTop = function(top, force) {
+		//Don't do smooth scrolling (last top === new top).
+		if(force === true) {
+			_lastTop = top;
+			_forceRender = true;
+		}
+
 		//skrollr.iscroll is an instance of iscroll available in mobile mode
 		if(skrollr.iscroll) {
 			//Notice the minus.
