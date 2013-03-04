@@ -81,7 +81,6 @@
 
 
 	var rxTrim = /^\s*(.+)\s*$/m;
-	var rxDoubleSpace = /\s\s+/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
@@ -1114,11 +1113,11 @@
 			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
-		element[prop] = _trim(val);
+		element[prop] = _trim(val).replace(/\s\s+/g, ' ');
 	};
 
 	var _trim = function(a) {
-		return a.replace(rxTrim, '$1').replace(rxDoubleSpace, ' ');
+		return a.replace(rxTrim, '$1');
 	};
 
 	/**
