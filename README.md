@@ -14,6 +14,7 @@ In the wild
 
 * http://pixeljuice.ru/en
 * http://everylastdrop.co.uk/
+* http://erfgenaam.submarinechannel.com/en/
 * http://www.guardian.co.uk/world/interactive/2012/dec/21/2012-america-year-review
 * http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
 * http://www.officeline.se/kampanj/
