@@ -118,37 +118,41 @@
 		var rxPrefixes = /^(?:O|Moz|webkit|ms)|(?:-(?:o|moz|webkit|ms)-)/;
 
 		//Detect prefix for current browser by finding the first property using a prefix.
-		if(window.getComputedStyle) {
-			var style = window.getComputedStyle(body, null);
+		if(!window.getComputedStyle) {
+			return;
+		}
 
-			for(var k in style) {
-				//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
-				theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
+		var style = window.getComputedStyle(body, null);
 
-				if(theCSSPrefix) {
-					break;
-				}
-			}
+		for(var k in style) {
+			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
+			theCSSPrefix = (k.match(rxPrefixes) || (+k == k && style[k].match(rxPrefixes)));
 
-			//Did we even detect a prefix?
 			if(theCSSPrefix) {
-				theCSSPrefix = theCSSPrefix[0];
-
-				//We could have detected either a dashed prefix or this camelCaseish-inconsistent stuff.
-				if(theCSSPrefix.slice(0,1) === '-') {
-					theDashedCSSPrefix = theCSSPrefix;
-
-					//There's no logic behind these. Need a look up.
-					theCSSPrefix = ({
-						'-webkit-': 'webkit',
-						'-moz-': 'Moz',
-						'-ms-': 'ms',
-						'-o-': 'O'
-					})[theCSSPrefix];
-				} else {
-					theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
-				}
+				break;
 			}
+		}
+
+		//Did we even detect a prefix?
+		if(!theCSSPrefix) {
+			return;
+		}
+
+		theCSSPrefix = theCSSPrefix[0];
+
+		//We could have detected either a dashed prefix or this camelCaseish-inconsistent stuff.
+		if(theCSSPrefix.slice(0,1) === '-') {
+			theDashedCSSPrefix = theCSSPrefix;
+
+			//There's no logic behind these. Need a look up.
+			theCSSPrefix = ({
+				'-webkit-': 'webkit',
+				'-moz-': 'Moz',
+				'-ms-': 'ms',
+				'-o-': 'O'
+			})[theCSSPrefix];
+		} else {
+			theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
 		}
 	};
 
@@ -345,81 +349,85 @@
 
 				var match = attr.name.match(rxKeyframeAttribute);
 
-				if(match !== null) {
-					var constant = match[1];
+				if(match === null) {
+					continue;
+				}
 
-					//If there is a constant, get it's value or fall back to 0.
-					constant = constant && _constants[constant.substr(1)] || 0;
+				var constant = match[1];
 
-					//Parse key frame offset. If undefined will be casted to 0.
-					var offset = (match[2] | 0) + constant;
-					var anchor1 = match[3];
-					//If second anchor is not set, the first will be taken for both.
-					var anchor2 = match[4] || anchor1;
+				//If there is a constant, get it's value or fall back to 0.
+				constant = constant && _constants[constant.substr(1)] || 0;
 
-					var kf = {
-						offset: offset,
-						props: attr.value,
-						//Point back to the element as well.
-						element: el
-					};
+				//Parse key frame offset. If undefined will be casted to 0.
+				var offset = (match[2] | 0) + constant;
+				var anchor1 = match[3];
+				//If second anchor is not set, the first will be taken for both.
+				var anchor2 = match[4] || anchor1;
 
-					keyFrames.push(kf);
+				var kf = {
+					offset: offset,
+					props: attr.value,
+					//Point back to the element as well.
+					element: el
+				};
 
-					//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
-					if(!anchor1 || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
-						kf.mode = 'absolute';
+				keyFrames.push(kf);
 
-						//data-end needs to be calculated after all key frames are know.
-						if(anchor1 === ANCHOR_END) {
-							kf.isEnd = true;
-						} else {
-							//For data-start we can already set the key frame w/o calculations.
-							//#59: "scale" options should only affect absolute mode.
-							kf.frame = offset * _scale;
+				//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
+				if(!anchor1 || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
+					kf.mode = 'absolute';
 
-							delete kf.offset;
-						}
+					//data-end needs to be calculated after all key frames are know.
+					if(anchor1 === ANCHOR_END) {
+						kf.isEnd = true;
+					} else {
+						//For data-start we can already set the key frame w/o calculations.
+						//#59: "scale" options should only affect absolute mode.
+						kf.frame = offset * _scale;
+
+						delete kf.offset;
 					}
-					//"relative" mode, where numbers are relative to anchors.
-					else {
-						kf.mode = 'relative';
-						kf.anchors = [anchor1, anchor2];
-					}
+				}
+				//"relative" mode, where numbers are relative to anchors.
+				else {
+					kf.mode = 'relative';
+					kf.anchors = [anchor1, anchor2];
 				}
 			}
 
 			//Does this element have key frames?
-			if(keyFrames.length) {
-				//Will hold the original style and class attributes before we controlled the element (see #80).
-				var styleAttr, classAttr;
-
-				var id;
-
-				if(!ignoreID && SKROLLABLE_ID_DOM_PROPERTY in el) {
-					//We already have this element under control. Grab the corresponding skrollable id.
-					id = el[SKROLLABLE_ID_DOM_PROPERTY];
-					styleAttr = _skrollables[id].styleAttr;
-					classAttr = _skrollables[id].classAttr;
-				} else {
-					//It's an unknown element. Asign it a new skrollable id.
-					id = (el[SKROLLABLE_ID_DOM_PROPERTY] = _skrollableIdCounter++);
-					styleAttr = el.style.cssText;
-					classAttr = _getClass(el);
-				}
-
-				var skrollable = _skrollables[id] = {
-					element: el,
-					styleAttr: styleAttr,
-					classAttr: classAttr,
-					anchorTarget: anchorTarget,
-					keyFrames: keyFrames,
-					smoothScrolling: smoothScrollThis
-				};
-
-				_updateClass(el, [SKROLLABLE_CLASS, RENDERED_CLASS], [UNRENDERED_CLASS]);
-				skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
+			if(!keyFrames.length) {
+				continue;
 			}
+
+			//Will hold the original style and class attributes before we controlled the element (see #80).
+			var styleAttr, classAttr;
+
+			var id;
+
+			if(!ignoreID && SKROLLABLE_ID_DOM_PROPERTY in el) {
+				//We already have this element under control. Grab the corresponding skrollable id.
+				id = el[SKROLLABLE_ID_DOM_PROPERTY];
+				styleAttr = _skrollables[id].styleAttr;
+				classAttr = _skrollables[id].classAttr;
+			} else {
+				//It's an unknown element. Asign it a new skrollable id.
+				id = (el[SKROLLABLE_ID_DOM_PROPERTY] = _skrollableIdCounter++);
+				styleAttr = el.style.cssText;
+				classAttr = _getClass(el);
+			}
+
+			var skrollable = _skrollables[id] = {
+				element: el,
+				styleAttr: styleAttr,
+				classAttr: classAttr,
+				anchorTarget: anchorTarget,
+				keyFrames: keyFrames,
+				smoothScrolling: smoothScrollThis
+			};
+
+			_updateClass(el, [SKROLLABLE_CLASS, RENDERED_CLASS], [UNRENDERED_CLASS]);
+			skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
 		}
 
 		//Reflow for the first time.
