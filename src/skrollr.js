@@ -57,9 +57,10 @@
 	//Credits go to Erik Möller (http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating)
 	(function() {
 		var vendors = ['ms', 'moz', 'webkit', 'o'];
-		var i;
+		var i = 0;
+		var vendorsLength = vendors.length;
 
-		for(i = 0; i < vendors.length && !requestAnimFrame; i++) {
+		for(; i < vendorsLength && !requestAnimFrame; i++) {
 			requestAnimFrame = window[vendors[i] + 'RequestAnimationFrame'];
 		}
 
@@ -294,6 +295,7 @@
 	 */
 	Skrollr.prototype.refresh = function(elements) {
 		var elementIndex;
+		var elementsLength;
 		var ignoreID = false;
 
 		//Completely reparse anything without argument.
@@ -310,7 +312,10 @@
 			elements = [].concat(elements);
 		}
 
-		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
+		elementIndex = 0;
+		elementsLength = elements.length;
+
+		for(; elementIndex < elementsLength; elementIndex++) {
 			var el = elements[elementIndex];
 			var anchorTarget = el;
 			var keyFrames = [];
@@ -323,7 +328,10 @@
 			}
 
 			//Iterate over all attributes and search for key frame attributes.
-			for (var attributeIndex = 0; attributeIndex < el.attributes.length; attributeIndex++) {
+			var attributeIndex = 0;
+			var attributesLength = el.attributes.length;
+
+			for (; attributeIndex < attributesLength; attributeIndex++) {
 				var attr = el.attributes[attributeIndex];
 
 				if(attr.name === 'data-anchor-target') {
@@ -426,7 +434,10 @@
 		_reflow();
 
 		//Now that we got all key frame numbers right, actually parse the properties.
-		for(elementIndex = 0; elementIndex < elements.length; elementIndex++) {
+		elementIndex = 0;
+		elementsLength = elements.length;
+
+		for(; elementIndex < elementsLength; elementIndex++) {
 			var sk = _skrollables[elements[elementIndex][SKROLLABLE_ID_DOM_PROPERTY]];
 
 			if(sk === undefined) {
@@ -579,22 +590,30 @@
 		var element;
 		var anchorTarget;
 		var keyFrames;
+		var keyFrameIndex;
+		var keyFramesLength;
 		var kf;
 		var skrollableIndex;
-		var keyFrameIndex;
+		var skrollablesLength;
 
 		//For relative mode, we need to reset style and class. See #80
 		var styleAttr;
 		var classAttr;
 
 		//First process all relative-mode elements and find the max key frame.
-		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+		skrollableIndex = 0;
+		skrollablesLength = _skrollables.length;
+
+		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
 			skrollable = _skrollables[skrollableIndex];
 			element = skrollable.element;
 			anchorTarget = skrollable.anchorTarget;
 			keyFrames = skrollable.keyFrames;
 
-			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
+			keyFrameIndex = 0;
+			keyFramesLength = keyFrames.length;
+
+			for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
@@ -627,11 +646,17 @@
 		_maxKeyFrame = Math.max(_maxKeyFrame, _getDocumentHeight());
 
 		//Now process all data-end keyframes.
-		for(skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+		skrollableIndex = 0;
+		skrollablesLength = _skrollables.length;
+
+		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
 			skrollable = _skrollables[skrollableIndex];
 			keyFrames = skrollable.keyFrames;
 
-			for(keyFrameIndex = 0; keyFrameIndex < keyFrames.length; keyFrameIndex++) {
+			keyFrameIndex = 0;
+			keyFramesLength = keyFrames.length;
+
+			for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
 				if(kf.isEnd) {
@@ -648,7 +673,10 @@
 	 */
 	var _calcSteps = function(fakeFrame, actualFrame) {
 		//Iterate over all skrollables.
-		for(var skrollableIndex = 0; skrollableIndex < _skrollables.length; skrollableIndex++) {
+		var skrollableIndex = 0;
+		var skrollablesLength = _skrollables.length;
+
+		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
 			var skrollable = _skrollables[skrollableIndex];
 			var frame = skrollable.smoothScrolling ? fakeFrame : actualFrame;
 			var frames = skrollable.keyFrames;
@@ -690,7 +718,10 @@
 			}
 
 			//Find out between which two key frames we are right now.
-			for(var keyFrameIndex = 0; keyFrameIndex < frames.length - 1; keyFrameIndex++) {
+			var keyFrameIndex = 0;
+			var framesLength = frames.length - 1;
+
+			for(; keyFrameIndex < framesLength; keyFrameIndex++) {
 				if(frame >= frames[keyFrameIndex].frame && frame <= frames[keyFrameIndex + 1].frame) {
 					var left = frames[keyFrameIndex];
 					var right = frames[keyFrameIndex + 1];
@@ -817,7 +848,10 @@
 	 */
 	var _parseProps = function(skrollable) {
 		//Iterate over all key frames
-		for(var keyFrameIndex = 0; keyFrameIndex < skrollable.keyFrames.length; keyFrameIndex++) {
+		var keyFrameIndex = 0;
+		var keyFramesLength = skrollable.keyFrames.length;
+
+		for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
 			var easing;
 			var value;
@@ -908,9 +942,13 @@
 		//Will collect the properties key frame by key frame
 		var propList = {};
 		var keyFrameIndex;
+		var keyFramesLength;
 
 		//Iterate over all key frames from left to right
-		for(keyFrameIndex = 0; keyFrameIndex < sk.keyFrames.length; keyFrameIndex++) {
+		keyFrameIndex = 0;
+		keyFramesLength = sk.keyFrames.length;
+
+		for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 			_fillPropForFrame(sk.keyFrames[keyFrameIndex], propList);
 		}
 
@@ -919,7 +957,9 @@
 		propList = {};
 
 		//Iterate over all key frames from right to left
-		for(keyFrameIndex = sk.keyFrames.length - 1; keyFrameIndex >= 0; keyFrameIndex--) {
+		keyFrameIndex = sk.keyFrames.length - 1;
+
+		for(; keyFrameIndex >= 0; keyFrameIndex--) {
 			_fillPropForFrame(sk.keyFrames[keyFrameIndex], propList);
 		}
 	};
@@ -946,15 +986,20 @@
 	 * Calculates the new values for two given values array.
 	 */
 	var _calcInterpolation = function(val1, val2, progress) {
+		var valueIndex;
+		var val1Length = val1.length;
+
 		//They both need to have the same length
-		if(val1.length !== val2.length) {
+		if(val1Length !== val2.length) {
 			throw 'Can\'t interpolate between "' + val1[0] + '" and "' + val2[0] + '"';
 		}
 
 		//Add the format string as first element.
 		var interpolated = [val1[0]];
 
-		for(var valueIndex = 1; valueIndex < val1.length; valueIndex++) {
+		valueIndex = 1;
+
+		for(; valueIndex < val1Length; valueIndex++) {
 			//That's the line where the two numbers are actually interpolated.
 			interpolated[valueIndex] = val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress);
 		}
@@ -1101,7 +1146,10 @@
 		var val = element[prop];
 
 		//All classes to be added.
-		for(var classAddIndex = 0; classAddIndex < add.length; classAddIndex++) {
+		var classAddIndex = 0;
+		var addIndex = add.length;
+
+		for(; classAddIndex < addIndex; classAddIndex++) {
 			//Only add if el not already has class.
 			if(_untrim(val).indexOf(_untrim(add[classAddIndex])) === -1) {
 				val += ' ' + add[classAddIndex];
@@ -1109,7 +1157,10 @@
 		}
 
 		//All classes to be removed.
-		for(var classRemoveIndex = 0; classRemoveIndex < remove.length; classRemoveIndex++) {
+		var classRemoveIndex = 0;
+		var removeLength = remove.length;
+
+		for(; classRemoveIndex < removeLength; classRemoveIndex++) {
 			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
