@@ -80,7 +80,7 @@
 	}());
 
 
-	var rxTrim = /^\s*(.+)\s*$/m;
+	var rxTrim = /^\s+|\s+$/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
 	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
@@ -1125,7 +1125,7 @@
 	};
 
 	var _trim = function(a) {
-		return a.replace(rxTrim, '$1');
+		return a.replace(rxTrim, '');
 	};
 
 	/**
