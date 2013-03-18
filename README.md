@@ -471,18 +471,18 @@ Changelog
 
 * Add a `skrollr-mobile` class to the html element when the mobile script is included.
 
-0.5.13
+0.5.13 (2013-02-08)
 -----
 
 * #131: Use a cross browser approach for getting the body scroll-height.
 * #133: Use the maximum of document height or the max keyframe for edge cases where absolute keyframes are used in a relative-mode-like document and `data-end` was calculated wrong.
 
-0.5.12
+0.5.12 (2013-02-08)
 -----
 
 * #121: Fixed prefix detection in Safari.
 
-0.5.11
+0.5.11 (2013-01-18)
 -----
 
 * #126: When calling refresh(), force rerendering, even if the scrollbar didn't move.
@@ -497,7 +497,7 @@ Changelog
 
 * #118: Fixed broken prefix detection. Was broken all the time, but worked before Firefox 18.
 
-0.5.8
+0.5.8 (2013-01-12)
 -----
 
 * #116 + #117: SVG support was broken for relative mode.
@@ -517,7 +517,7 @@ Changelog
 
 * #100: Fixed relative-mode not working correctly in IE < 9 due to crippled getBoundingClientRect
 
-0.5.4
+0.5.4 (2012-11-18)
 -----
 
 * #80: When resizing the browser window the calculation of relative mode was wrong when the element's vertical position was changed before.
@@ -532,12 +532,12 @@ Changelog
 
 * #78: Fixed that new parser didn't allowed omitting the last semicolon in a keyframe property list.
 
-0.5.1
+0.5.1 (2012-10-29)
 -----
 
 * Fixed `setScrollTop` and `animateTo` not working because iScroll uses negative offset.
 
-0.5.0
+0.5.0 (2012-10-09)
 -----
 
 * *breaking* the `plugin` api has been removed (the IE plugin has been updated to a new, hidden api).
@@ -557,7 +557,7 @@ Changelog
 
 * #64: Setting `float` property using JavaScript didn't work across browser. Now using `styleFloat` and `cssFloat` properties.
 
-0.4.11
+0.4.11 (2012-09-17)
 -----
 
 * The `scale` option does not affect `constants`.
@@ -600,22 +600,22 @@ Changelog
 
 * A `skrollr` class is added to the HTML element and a `no-skrollr` class is removed when `init` is called. Useful for fallback styling.
 
-0.4.3
+0.4.3 (2012-08-02)
 -----
 
 * Added new feature "constants".
 
-0.4.2
+0.4.2 (2012-07-26)
 -----
 
 * Added new feature "anchor-target" which allows elements to react to other elements leaving/entering the viewport.
 
-0.4.1
+0.4.1 (2012-07-25)
 -----
 
 * Fixed a bug which broke skrollr in IE caused by wrong regular expression behavior
 
-0.4.0
+0.4.0 (2012-07-22)
 -----
 
 * *breaking* the `data-end-[offset]` syntax changed. It's now `data-[offset]-end`.
