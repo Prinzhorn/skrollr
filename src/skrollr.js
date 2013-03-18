@@ -1121,7 +1121,7 @@
 			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
-		element[prop] = _trim(val);
+		element[prop] = _trim(val).replace(/\s\s+/g, ' ');
 	};
 
 	var _trim = function(a) {
