@@ -1147,9 +1147,9 @@
 
 		//All classes to be added.
 		var classAddIndex = 0;
-		var addIndex = add.length;
+		var addLength = add.length;
 
-		for(; classAddIndex < addIndex; classAddIndex++) {
+		for(; classAddIndex < addLength; classAddIndex++) {
 			//Only add if el not already has class.
 			if(_untrim(val).indexOf(_untrim(add[classAddIndex])) === -1) {
 				val += ' ' + add[classAddIndex];
