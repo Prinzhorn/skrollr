@@ -32,7 +32,7 @@
 						target = target.parentNode;
 					}
 
-					if(!/(select|input|textarea|span|nav)/i.test(target.tagName)) {
+					if(!/(select|input|textarea)/i.test(target.tagName)) {
 						e.preventDefault();
 					}
 				}
