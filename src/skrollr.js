@@ -1,9 +1,9 @@
 /*!
- * skrollr
+ * skrollr core
  *
- * https://github.com/Prinzhorn/skrollr
+ * Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr
  *
- * free to use under terms of MIT license
+ * Free to use under terms of MIT license
  */
 (function(window, document, undefined) {
 	'use strict';

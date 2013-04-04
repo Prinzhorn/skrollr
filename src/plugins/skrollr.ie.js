@@ -2,9 +2,9 @@
  * Plugin for skrollr.
  * This plugin brings opacity and hsl colors to IE < 9.
  *
- * https://github.com/Prinzhorn/skrollr
+ * Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr
  *
- * free to use under terms of MIT license
+ * Free to use under terms of MIT license
  */
 (function(document, skrollr) {
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;

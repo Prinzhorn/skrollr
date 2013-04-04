@@ -1,9 +1,13 @@
-/*
+ /*!
+ * Plugin for skrollr.
  * This file is the bridge between iscroll and skrollr.
  * It configures the page so that both work together
  * and exposes an instance of iscroll to skrollr.
- */
 
+ * Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr
+ *
+ * Free to use under terms of MIT license
+ */
 (function(window, document, undefined) {
 	document.addEventListener('touchmove', function(e) {
 		e.preventDefault();

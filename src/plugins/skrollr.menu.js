@@ -1,10 +1,10 @@
-/*!
+ /*!
  * Plugin for skrollr.
  * This plugin makes hashlinks scroll nicely to their target position.
  *
- * https://github.com/Prinzhorn/skrollr
+ * Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr
  *
- * free to use under terms of MIT license
+ * Free to use under terms of MIT license
  */
 (function(document, skrollr) {
 	var DEFAULT_DURATION = 500;

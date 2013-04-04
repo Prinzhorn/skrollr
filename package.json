@@ -1,36 +1,39 @@
 {
-	"name": "skrollr",
-	"title": "skrollr",
-	"description": "Stand-alone parallax scrolling library with zero dependencies.",
-	"version": "0.5.0-alpha",
-	"homepage": "https://github.com/Prinzhorn/skrollr",
-	"author": {
-		"name": "Alexander Prinzhorn",
-		"email": "alexander@prinzhorn.it",
-		"url": "http://www.prinzhorn.it/"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/Prinzhorn/skrollr.git"
-	},
-	"bugs": {
-		"url": "https://github.com/Prinzhorn/skrollr/issues"
-	},
-	"licenses": [
-		{
-			"type": "MIT",
-			"url": "https://github.com/Prinzhorn/skrollr/blob/master/LICENSE.txt"
-		}
-	],
-	"main": "dist/skrollr.min.js",
-	"engines": {
-		"node": ">=0.8"
-	},
-	"scripts": {
-		"test": "grunt travis --verbose"
-	},
-	"devDependencies": {
-		"grunt": "0.3.x"
-	},
-	"keywords": []
+  "name": "skrollr",
+  "title": "skrollr",
+  "description": "Stand-alone parallax scrolling library with zero dependencies.",
+  "version": "0.5.14",
+  "homepage": "https://github.com/Prinzhorn/skrollr",
+  "author": {
+    "name": "Alexander Prinzhorn",
+    "email": "alexander@prinzhorn.it",
+    "url": "http://www.prinzhorn.it/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/Prinzhorn/skrollr.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Prinzhorn/skrollr/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/Prinzhorn/skrollr/blob/master/LICENSE.txt"
+    }
+  ],
+  "main": "dist/skrollr.min.js",
+  "engines": {
+    "node": ">=0.8"
+  },
+  "scripts": {
+    "test": "grunt travis --verbose"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.1",
+    "grunt-contrib-uglify": "~0.2.0",
+    "grunt-contrib-jshint": "~0.3.0",
+    "grunt-contrib-qunit": "~0.2.0"
+  },
+  "keywords": []
 }
