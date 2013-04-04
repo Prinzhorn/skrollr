@@ -30,7 +30,7 @@
     "test": "grunt travis --verbose"
   },
   "devDependencies": {
-    "grunt": "~0.4.1",
+    "grunt-cli": "~0.4.1",
     "grunt-contrib-uglify": "~0.2.0",
     "grunt-contrib-jshint": "~0.3.0",
     "grunt-contrib-qunit": "~0.2.0"
