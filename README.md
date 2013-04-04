@@ -12,6 +12,7 @@ _Actually, skrollr is much more than "just" **parallax scrolling**. It's a full-
 In the wild
 =====
 
+* http://moto.oakley.com/
 * http://pixeljuice.ru/en
 * http://everylastdrop.co.uk/
 * http://erfgenaam.submarinechannel.com/en/
