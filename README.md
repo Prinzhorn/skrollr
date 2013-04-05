@@ -213,6 +213,7 @@ And in order to fix the problem with the wrong offset, you are able to specify t
 
 ```html
 <a href="#section-about" data-menu-top="500">About</a>
+```
 
 You can also offset from the target anchor. This will offset 100px from #section-about:
 
