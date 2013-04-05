@@ -4,9 +4,23 @@ module.exports = function(grunt) {
 		pkg: grunt.file.readJSON('package.json') ,
 		jshint: {
 			options: {
-				smarttabs: false
+				smarttabs: false,
+				curly: true,
+				immed: true,
+				latedef: true,
+				noarg: true,
+				quotmark: 'single',
+				undef: true,
+				unused: true,
+				strict: true,
+				trailing: true,
+				globals: {
+					window: true,
+					document: true,
+					navigator: true
+				}
 			},
-			all: ['Gruntfile.js', 'test/test.js', 'src/skrollr.js', 'src/plugins/skrollr.ie.js', 'src/plugins/skrollr.menu.js', 'src/mobile/skrollr.mobile.js']
+			all: ['test/test.js', 'src/**/*.js']
 		},
 		qunit: {
 			all: ['test/index.html']
@@ -19,22 +33,8 @@ module.exports = function(grunt) {
 			all: {
 				files: {
 					'dist/skrollr.min.js': ['src/skrollr.js'],
-					'dist/skrollr.mobile.min.js': ['src/mobile/iscroll.js', 'src/mobile/skrollr.mobile.js'],
 					'dist/skrollr.ie.min.js': ['src/plugins/skrollr.ie.js'],
 					'dist/skrollr.menu.min.js': ['src/plugins/skrollr.menu.js']
-				}
-			},
-
-			mobile: {
-				options: {
-					banner:
-						'/*! skrollr <%= pkg.version %> (<%= grunt.template.today("yyyy-mm-dd") %>) | Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr | Free to use under terms of MIT license */\n' +
-						'/*! contains iScroll  */\n' +
-						'/*! iScroll v4.2.4 ~ Copyright (c) 2012 Matteo Spinelli, http://cubiq.org Released under MIT license, http://cubiq.org/license */\n'
-				},
-
-				files: {
-					'dist/skrollr.mobile.min.js': ['src/mobile/iscroll.js', 'src/mobile/skrollr.mobile.js']
 				}
 			}
 		}

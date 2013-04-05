@@ -1,189 +1,192 @@
-html,
-body,
-div,
-span,
-p,
-a,
-del,
-em,
-img,
-ol,
-ul,
-li,
-fieldset,
-form,
-label {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  vertical-align: baseline;
+html, body, div, span, p, a, del, em, img, ol, ul, li, fieldset, form, label {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
 }
-article,
-aside,
-details,
-figcaption,
-figure,
-footer,
-header,
-hgroup,
-menu,
-nav,
-section {
-  display: block;
+
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+	display: block;
 }
-html,
+
+html, body {
+	line-height: 1;
+	min-height:100%;
+	font-family:Artial, Verdana, sans-serif;
+}
+
 body {
-  line-height: 1;
-  min-height: 100%;
-  font-family: Artial, Verdana, sans-serif;
+	background: #eeeeee;
+	background: -webkit-linear-gradient(top, #eeeeee, #cccccc 100%);
+	background: -moz-linear-gradient(top, #eeeeee, #cccccc 100%);
+	background: -o-linear-gradient(top, #eeeeee, #cccccc 100%);
+	background: -ms-linear-gradient(top, #eeeeee, #cccccc 100%);
+	background: linear-gradient(top, #eeeeee, #cccccc 100%);
+	background-attachment:fixed;
 }
-body {
-  background: #eeeeee;
-  background: -webkit-linear-gradient(top, #eeeeee, #cccccc 100%);
-  background: -moz-linear-gradient(top, #eeeeee, #cccccc 100%);
-  background: -o-linear-gradient(top, #eeeeee, #cccccc 100%);
-  background: -ms-linear-gradient(top, #eeeeee, #cccccc 100%);
-  background: linear-gradient(top, #eeeeee, #cccccc 100%);
-  background-attachment: fixed;
+
+ol, ul {
+	list-style: none;
 }
-ol,
-ul {
-  list-style: none;
-}
+
 p {
-  margin: 1em 0;
-  line-height: 1.1em;
+	margin:1em 0;
+	line-height:1.1em;
 }
+
 q {
-  font-style: italic;
-  color: #333;
+	font-style:italic;
+	color:#333;
 }
+
 h1 {
-  font-size: 2.91em;
-  margin: 0;
+	font-size:2.91em;
+	margin:0;
 }
+
 h1 > small {
-  text-align: right;
-  display: inline-block;
-  font-size: .71em;
-  text-indent: 15em;
-  color: #444;
+	text-align:right;
+	display:inline-block;
+	font-size:.71em;
+	text-indent:15em;
+	color:#444;
 }
+
 h2 {
-  color: inherit;
-  font-size: 1.91em;
-  margin: 2em 0 1em 0;
+	color:inherit;
+	font-size:1.91em;
+	margin:2em 0 1em 0;
 }
-h2:first-child {
-  margin-top: 0;
-}
+
+h2:first-child {margin-top:0;}
+
 h3 {
-  color: #333;
-  font-size: 1.41em;
-  margin: 1em 0;
+	color:#333;
+	font-size:1.41em;
+	margin:1em 0;
 }
+
 h4 {
-  color: #444;
-  font-size: 1.11em;
-  margin: 1em 0;
+	color:#444;
+	font-size:1.11em;
+	margin:1em 0;
 }
+
 #progress {
-  height: 2%;
-  background: #444;
-  bottom: 0;
-  z-index: 200;
+	height:2%;
+	background:#444;
+	bottom:0;
+	z-index:200;
 }
-#bg1,
-#bg2,
-#bg3 {
-  z-index: 50;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: url(images/bubbles.png) repeat 0 0;
+
+#scrollbar {
+	position:fixed;
+	right:2px;
+	height:100px;
+	width:10px;
+	background:red;
+	z-index:300;
 }
+
+#bg1, #bg2, #bg3 {
+	z-index:50;
+	top:0;
+	left:0;
+	width:100%;
+	height:100%;
+	background:url(images/bubbles.png) repeat 0 0;
+}
+
 #bg2 {
-  z-index: 49;
-  background-image: url(images/bubbles2.png);
+	z-index:49;
+	background-image:url(images/bubbles2.png);
 }
+
 #bg3 {
-  z-index: 48;
-  background-image: url(images/bubbles3.png);
+	z-index:48;
+	background-image:url(images/bubbles3.png);
 }
+
 #intro {
-  width: 80%;
-  left: 50%;
-  top: 1em;
-  margin-left: -40%;
-  padding: 2em;
-  background: #fff;
-  text-align: center;
-  -webkit-transform-origin: 0 0;
-  -moz-transform-origin: 0 0;
-  -ms-transform-origin: 0 0;
-  -o-transform-origin: 0 0;
-  transform-origin: 0 0;
-  -webkit-border-radius: 1em;
-  -moz-border-radius: 1em;
-  border-radius: 1em;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+	width:80%;
+	left:50%;
+	top:1em;
+	margin-left:-40%;
+	padding:2em;
+	background:#fff;
+	text-align:center;
+	border-radius:1em;
+
+	-webkit-transform-origin:0 0;
+	-moz-transform-origin:0 0;
+	-ms-transform-origin:0 0;
+	-o-transform-origin:0 0;
+	transform-origin:0 0;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
+
 #intro .arrows {
-  font-size: 2em;
-  color: #09f;
+	font-size:2em;
+	color:#09f;
 }
+
 #transform {
-  width: 70%;
-  left: 50%;
-  top: 20%;
-  margin-left: -35%;
-  text-align: center;
-  font-size: 150%;
-  -webkit-transform-origin: 50% 50%;
-  -moz-transform-origin: 50% 50%;
-  -ms-transform-origin: 50% 50%;
-  -o-transform-origin: 50% 50%;
-  transform-origin: 50% 50%;
+	width:70%;
+	left:50%;
+	top:20%;
+	margin-left:-35%;
+	text-align:center;
+	font-size:150%;
+
+	.transform-origin(50%, 50%);
 }
+
 #properties {
-  width: 100%;
-  height: 100%;
-  padding-top: 10%;
-  text-align: center;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+	width:100%;
+	height:100%;
+	padding-top:10%;
+	text-align:center;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
+
 #easing_wrapper {
-  width: 100%;
-  height: 100%;
+	width:100%;
+	height:100%;
 }
+
 #easing {
-  top: 10%;
-  width: 50%;
-  z-index: 101;
+	top:10%;
+	width:50%;
+	z-index:101;
 }
+
 .drop {
-  background: #09f;
-  font-weight: bold;
-  padding: 1em;
+	background:#09f;
+	font-weight:bold;
+	padding:1em;
 }
+
 #download {
-  width: 80%;
-  left: 10%;
-  height: 80%;
-  padding: 3em;
-  border: 0 solid #222;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  box-sizing: border-box;
+	width:80%;
+	left:10%;
+	height:80%;
+	padding:3em;
+	border:0 solid #222;
+
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
-.twitter-share-button,
-.twitter-follow-button {
-  vertical-align: middle;
+
+.twitter-share-button, .twitter-follow-button {
+	vertical-align:middle;
 }

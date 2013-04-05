@@ -7,6 +7,8 @@
  * Free to use under terms of MIT license
  */
 (function(document, skrollr) {
+	'use strict';
+
 	var rxHSLAColor = /hsla?\(\s*(-?[\d.]+)\s*,\s*(-?[\d.]+)%\s*,\s*(-?[\d.]+)%.*?\)/g;
 	var rxRGBAColor = /rgba?\(\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?)\s*,\s*(-?[\d.]+%?).*?\)/g;
 	var rxID = /^#[^\s]+$/;

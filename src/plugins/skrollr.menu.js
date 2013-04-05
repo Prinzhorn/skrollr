@@ -6,11 +6,15 @@
  *
  * Free to use under terms of MIT license
  */
-(function(document, skrollr) {
+(function(document, window) {
+	'use strict';
+
 	var DEFAULT_DURATION = 500;
 	var DEFAULT_EASING = 'sqrt';
 
 	var TOP_OFFSET_ATTRIBUTE = 'data-menu-top';
+
+	var skrollr = window.skrollr;
 
 	/*
 		Since we are using event bubbling, the element that has been clicked
@@ -109,8 +113,8 @@
 	//In case the page was opened with a hash, prevent jumping to it.
 	//http://stackoverflow.com/questions/3659072/jquery-disable-anchor-jump-when-loading-a-page
 	window.setTimeout(function() {
-		if(location.hash) {
+		if(window.location.hash) {
 			window.scrollTo(0, 0);
 		}
 	}, 1);
-}(document, window.skrollr));
+}(document, window));

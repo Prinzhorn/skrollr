@@ -19,21 +19,29 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.5.14'
+		VERSION: '0.6.0-pre'
 	};
 
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
+	var Math = window.Math;
 
 	//They will be filled when skrollr gets initialized.
 	var documentElement;
 	var body;
+
+	var EVENT_TOUCHSTART = 'touchstart';
+	var EVENT_TOUCHMOVE = 'touchmove';
+	var EVENT_TOUCHCANCEL = 'touchcancel';
+	var EVENT_TOUCHEND = 'touchend';
 
 	var RENDERED_CLASS = 'rendered';
 	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
 	var SKROLLABLE_CLASS = 'skrollable';
 	var SKROLLR_CLASS = 'skrollr';
 	var NO_SKROLLR_CLASS = 'no-' + SKROLLR_CLASS;
+	var SKROLLR_DESKTOP_CLASS = SKROLLR_CLASS + '-desktop';
+	var SKROLLR_MOBILE_CLASS = SKROLLR_CLASS + '-mobile';
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;
@@ -42,7 +50,6 @@
 
 	var ANCHOR_START = 'start';
 	var ANCHOR_END = 'end';
-	var ANCHOR_TOP = 'top';
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
 
@@ -57,11 +64,11 @@
 	//Credits go to Erik Möller (http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating)
 	(function() {
 		var vendors = ['ms', 'moz', 'webkit', 'o'];
-		var i = 0;
+		var vendorIndex = 0;
 		var vendorsLength = vendors.length;
 
-		for(; i < vendorsLength && !requestAnimFrame; i++) {
-			requestAnimFrame = window[vendors[i] + 'RequestAnimationFrame'];
+		for(; vendorIndex < vendorsLength && !requestAnimFrame; vendorIndex++) {
+			requestAnimFrame = window[vendors[vendorIndex] + 'RequestAnimationFrame'];
 		}
 
 		var lastTime = 0;
@@ -180,6 +187,9 @@
 		sqrt: function(p) {
 			return Math.sqrt(p);
 		},
+		easeOutCubic: function(p) {
+			return (Math.pow((p - 1), 3) + 1);
+		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
 		bounce: function(p) {
 			var a;
@@ -215,7 +225,7 @@
 
 		_constants = options.constants || {};
 
-		//We allow defining custom easings or overwrite existing
+		//We allow defining custom easings or overwrite existing.
 		if(options.easing) {
 			for(var e in options.easing) {
 				easings[e] = options.easing[e];
@@ -233,6 +243,10 @@
 		//forceHeight is true by default
 		_forceHeight = options.forceHeight !== false;
 
+		if(_forceHeight) {
+			_scale = options.scale || 1;
+		}
+
 		_smoothScrollingEnabled = options.smoothScrolling !== false;
 
 		//Dummy object. Will be overwritten in the _render method when smooth scrolling is calculated.
@@ -240,48 +254,114 @@
 			targetTop: _instance.getScrollTop()
 		};
 
-		if(_forceHeight) {
-			_scale = options.scale || 1;
+		_skrollrBody = document.getElementById('skrollr-body');
+
+		if(_skrollrBody) {
+			_setStyle(_skrollrBody, 'transform', 'translateZ(0)');
 		}
 
-		//Remove "no-skrollr" and add "skrollr" to the HTML element.
-		_updateClass(documentElement, [SKROLLR_CLASS], [NO_SKROLLR_CLASS]);
+		//Don't expose mobile specific variables.
+		(function() {
+			var initialElement;
+			var initialTouchY;
+			var initialTouchX;
+			var currentTouchY;
+			var currentTouchX;
+			var lastTouchY;
+			var deltaY;
 
-		if(_forceHeight) {
-			//Add a dummy element in order to get a large enough scrollbar.
-			//On mobile and later desktop versions a #skrollr-body element takes this role.
+			var currentTouchTime;
+			var lastTouchTime;
+			var deltaTime;
 
-			var dummy = document.getElementById('skrollr-body') || document.createElement('div');
-			var dummyStyle = dummy.style;
+			//A custom check function may be passed.
+			_isMobile = ((options.mobileCheck || function() {
+				return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
+			})());
 
-			dummyStyle.minWidth = '1px';
-			dummyStyle.position = 'absolute';
-			dummyStyle.top = dummyStyle.zIndex = '0';
+			if(_isMobile) {
+				_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
+					e.preventDefault();
+					_instance.stopAnimateTo();
 
-			//It's the dummy we just created.
-			if(!dummy.id) {
-				//Give the dummy element a small width and move it to the right to not overlap or interfere with the content.
-				//Fixes #76.
-				dummyStyle.width = '1px';
-				dummyStyle.right = '0';
+					var touch = e.changedTouches[0];
 
-				body.appendChild(dummy);
+					currentTouchY = touch.clientY;
+					currentTouchX = touch.clientX;
+					currentTouchTime = e.timeStamp;
+
+					switch(e.type) {
+						case EVENT_TOUCHSTART:
+							//The last element we tapped on.
+							if(initialElement) {
+								initialElement.blur();
+							}
+
+							initialElement = e.target;
+							initialTouchY = lastTouchY = touch.clientY;
+							initialTouchX = touch.clientX;
+							break;
+						case EVENT_TOUCHMOVE:
+							deltaY = currentTouchY - lastTouchY;
+							deltaTime = currentTouchTime - lastTouchTime;
+
+							_instance.setScrollTop(_mobileOffset - deltaY);
+
+							lastTouchY = currentTouchY;
+							lastTouchTime = currentTouchTime;
+							break;
+						default:
+						case EVENT_TOUCHCANCEL:
+						case EVENT_TOUCHEND:
+							//Check if it was more like a tap.
+							var distanceY = initialTouchY - currentTouchY;
+							var distanceX = initialTouchX - currentTouchX;
+							var distance2 = distanceX * distanceX + distanceY * distanceY;
+
+							//Why use Math.sqrt when you can just compare the square number ;-).
+							if(distance2 < 49) {
+								//It was a tap, click the element.
+								initialElement.focus();
+								initialElement.click();
+
+								return;
+							}
+
+							initialElement = undefined;
+
+							var duration = 1000;
+							var speed = deltaY / deltaTime;
+							var top = _instance.getScrollTop();
+							var targetTop = top - (0.5 * speed * Math.abs(speed) * duration);
+
+							if(targetTop > _maxKeyFrame) {
+								targetTop = _maxKeyFrame;
+							} else if(targetTop < 0) {
+								targetTop = 0;
+							}
+
+							//TODO: let the duration depend on the distance
+							_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
+							break;
+					}
+				});
+
+				//Just in case there has already been some native scrolling, reset it.
+				window.scrollTo(0, 0);
+				documentElement.style.overflow = body.style.overflow = 'hidden';
 			}
+		}());
 
-			//Update height of dummy div when reflowing (e.g. window size is changed).
-			(function(oldReflowFn) {
-				_reflow = function() {
-					oldReflowFn.apply(this, arguments);
-
-					//"force" the height.
-					dummyStyle.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-				};
-			}(_reflow));
+		if(_isMobile) {
+			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS], [NO_SKROLLR_CLASS]);
+		} else {
+			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS], [NO_SKROLLR_CLASS]);
 		}
 
+		//Triggers parsing of elements and a first reflow.
 		_instance.refresh();
 
-		skrollr.addEvent(window, 'resize', _reflow);
+		_addEvent(window, 'resize orientationchange', _reflow);
 
 		//Let's go.
 		(function animloop(){
@@ -553,10 +633,8 @@
 			_forceRender = true;
 		}
 
-		//skrollr.iscroll is an instance of iscroll available in mobile mode
-		if(skrollr.iscroll) {
-			//Notice the minus.
-			skrollr.iscroll.scrollTo(0, -top);
+		if(_isMobile) {
+			_mobileOffset = Math.min(Math.max(top, 0), _maxKeyFrame);
 		} else {
 			window.scrollTo(0, top);
 		}
@@ -565,9 +643,8 @@
 	};
 
 	Skrollr.prototype.getScrollTop = function() {
-		//skrollr.iscroll is an instance of iscroll available in mobile mode
-		if(skrollr.iscroll) {
-			return -skrollr.iscroll.y;
+		if(_isMobile) {
+			return _mobileOffset;
 		} else {
 			return window.pageYOffset || documentElement.scrollTop || body.scrollTop || 0;
 		}
@@ -703,7 +780,7 @@
 					if(hasProp.call(props, key)) {
 						value = _interpolateString(props[key].value);
 
-						skrollr.setStyle(skrollable.element, key, value);
+						_setStyle(skrollable.element, key, value);
 					}
 				}
 
@@ -746,7 +823,7 @@
 
 							value = _interpolateString(value);
 
-							skrollr.setStyle(skrollable.element, key, value);
+							_setStyle(skrollable.element, key, value);
 						}
 					}
 
@@ -808,13 +885,14 @@
 			}
 		}
 
-		//In OSX it's possible to have a negative scrolltop, so, we set it to zero.
-		if(renderTop < 0) {
-			renderTop = 0;
-		}
-
 		//Did the scroll position even change?
 		if(_forceRender || _lastTop !== renderTop) {
+			//That's were we actually "scroll" on mobile.
+			if(_isMobile && _skrollrBody) {
+				//Set the transform ("scroll it").
+				_setStyle(_skrollrBody, 'transform', 'translateY(' + -_mobileOffset + 'px)');
+			}
+
 			//Remember in which direction are we scrolling?
 			_direction = (renderTop >= _lastTop) ? 'down' : 'up';
 
@@ -1031,7 +1109,7 @@
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	skrollr.setStyle = function(el, prop, val) {
+	var _setStyle = skrollr.setStyle = function(el, prop, val) {
 		var style = el.style;
 
 		//Camel case.
@@ -1064,7 +1142,7 @@
 	/**
 	 * Cross browser event handling.
 	 */
-	skrollr.addEvent = function(element, name, callback) {
+	var _addEvent = skrollr.addEvent = function(element, names, callback) {
 		var intermediate = function(e) {
 			//Normalize IE event stuff.
 			e = e || window.event;
@@ -1082,10 +1160,17 @@
 			return callback.call(this, e);
 		};
 
-		if(window.addEventListener) {
-			element.addEventListener(name, intermediate, false);
-		} else {
-			element.attachEvent('on' + name, intermediate);
+		names = names.split(' ');
+
+		var nameCounter = 0;
+		var namesLength = names.length;
+
+		for(; nameCounter < namesLength; nameCounter++) {
+			if(element.addEventListener) {
+				element.addEventListener(names[nameCounter], intermediate, false);
+			} else {
+				element.attachEvent('on' + names[nameCounter], intermediate);
+			}
 		}
 	};
 
@@ -1095,13 +1180,17 @@
 
 		_updateDependentKeyFrames();
 
-		_forceRender = true;
-
-		if(skrollr.iscroll) {
-			window.setTimeout(function () {
-				skrollr.iscroll.refresh();
-			}, 0);
+		//The scroll offset may now be larger than needed (on desktop the browser/os prevents scrolling farther than the bottom).
+		if(_isMobile) {
+			_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
 		}
+
+		if(_forceHeight) {
+			//"force" the height.
+			body.style.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+		}
+
+		_forceRender = true;
 	};
 
 	/*
@@ -1235,6 +1324,8 @@
 	*/
 	var _skrollables;
 
+	var _skrollrBody;
+
 	var _listeners;
 	var _forceHeight;
 	var _maxKeyFrame = 0;
@@ -1265,4 +1356,11 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
+
+
+	//Mobile specific vars. Will be stripped by UglifyJS when not in use.
+	var _isMobile = false;
+
+	//The virtual scroll offset when using mobile scrolling.
+	var _mobileOffset = 0;
 }(window, document));

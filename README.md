@@ -1,11 +1,11 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr (v 0.5.14)
+skrollr 0.6.0-pre
 =====
 
-Stand-alone **parallax scrolling** lib for **mobile (Android + iOS) and desktop** in just over **3.8k** (minified + gzipped) for desktop. And another 6.5k for **mobile support** (which is optional).
+Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.2k** (minified) or **4.3k** (minified + gzipped).
 
-Designer friendly. No JavaScript skills needed. Just plain CSS.
+Designer friendly. No JavaScript skills needed. Just plain CSS and HTML.
 
 _Actually, skrollr is much more than "just" **parallax scrolling**. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But I wanted to sound hip and use some buzz-words. By the way, skrollr leverages HTML5 and CSS3 ;-)_
 
@@ -62,11 +62,9 @@ If you rather want the keyframes inside a separate file, take a look at [skrollr
 Files you should know about
 ------
 
-* _**dist/skrollr.min.js**_ - The skrollr core file. That's all you need for modern desktop browsers.
+* _**dist/skrollr.min.js**_ - The skrollr core file. That's all you need for mondern desktop and mobile browsers.
 * _**dist/skrollr.ie.min.js**_ - For IE < 9, include it after the core using conditional comments. The plugin makes IE understand `opacity`, `rgb()` and `hsl()` (the ones with alpha are mapped to them) and it creates a very simple `document.querySelector` polyfill which only supports ID selectores (using `getElementById`). Needed if you want to use [data-anchor-target](#relative-mode-or-viewport-mode).
-* _**dist/skrollr.mobile.min.js**_ - Includes iScroll and a bridge script which initializes iScroll and makes it work with skrollr. Include it after the core when you need [mobile support](#mobile-support).
 * _**shim.html**_ - Sample file to kickstart a project for desktop and mobile.
-* _**shim-desktop-only.html**_ - Sample file for desktop only.
 
 Let's get serious
 ------
@@ -126,7 +124,7 @@ If you're not a fan of `data-attributes` or if you're planning a big website whe
 
 Mobile support
 -----
-Starting with version 0.5.0 skrollr officially supports mobile browsers including iOS and Android.
+Starting with version 0.5.0 skrollr officially supports mobile browsers including Android and iOS. And mobile support has been rewritten from scratch for skrollr 0.6.0.
 
 ### The Problem with mobile and the solution
 
@@ -134,16 +132,11 @@ Starting with version 0.5.0 skrollr officially supports mobile browsers includin
 
 Some words on why this is an important milestone and why others failed: Mobile browsers try to save battery wherever they can. That's why mobile browsers delay the execution of JavaScript while you are scrolling. iOS in particular does this very aggressively and completely stops JavaScript. And in short that's the reason why many scrolling libraries either don't work on mobile devices or they come with their own scrollbar which is a usability nightmare on desktop. It was an important requirement while I developed skrollr that I don't force you to scroll the way I want it. skrollr on desktop uses a native scrollbar and you can scroll the way you want to (keyboard, mouse, etc.).
 
-You just told me it doesn't work on mobile, but why does it? The answer is simple. When using skrollr on mobile you don't actually scroll. Using the excellent [iScroll](https://github.com/cubiq/iscroll) library scrolling is faked using the touch events on mobile browsers and preventing the native scrolling. Support for iScroll is built into the core of skrollr and you don't need to include it yourself. `skrollr.mobile.min.js` contains iScroll together with a small bridge-script which does everything you need to have it work with skrollr. Just follow the steps in the next section.
+You just told me it doesn't work on mobile, but why does it? The answer is simple. When using skrollr on mobile you don't actually scroll. When detecting a mobile browser skrollr disables native scrolling and instead listens for touch events and moves the content (more specific the `#skrollr-body` element) using CSS transforms.
 
 ### What you need in order to support mobile browsers
 
-Take a look at the `shim.html` in the root of this project.
-
-* You need to include `skrollr.mobile.min.js` after the skrollr core. The `shim.html` contains a funky regular expression to only include it on mobile browsers. This does not only prevent unnecessary bytes to be transfered to desktop browsers, it's also very important because including `skrollr.mobile.min.js` on desktop browsers breaks scrolling there. Feel free to use a simpler check.
-* The element with the id `skrollr-body` needs to be the **very first** element inside the `body` element.
-
-If you wonder why this is, scroll up to the previous section (you didn't just scroll down here, right?).
+Starting with skrollr 0.6.0 there's just one thing you need to do: Include an element on your page with the id `skrollr-body`. That's the element we move in order to fake scrolling. The only case were you don't need a `#skrollr-body` is when using `position:fixed` exlusively. In fact the skrollr website doesn't include a `#skrollr-body` element. If you need both fixed and non-fixed (i.e. static) elements, put the static ones inside the `#skrollr-body` element.
 
 Absolute vs relative mode
 -----
@@ -245,11 +238,9 @@ Valid characters for a constant are `[a-z0-9_]`.
 CSS classes
 -----
 
-skrollr will add a `skrollr` class to the `HTML` element when calling `init` and will remove a `no-skrollr` class if present. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
+skrollr will add a `skrollr` class to the `HTML` element when calling `init` and will remove a `no-skrollr` class if present. Additionally it will add a `skrollr-desktop` or `skrollr-mobile` class depending on which it detects. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
 
-All elements under skrollr's control (elements with appropriate data-attributes) will get the `skrollable` class.
-
-In addition we add the `rendered` **or** `unrendered` class, depending on whether an element is currently being styled by skrollr, that means the current scroll offset is in between the key frames of that element, or not.
+All elements under skrollr's control (elements with appropriate data-attributes) will get the `skrollable` class. In addition we add either the `skrollable-before`, `skrollable-between` **or** `skrollable-after` class, depending on whether the current scroll position is before, between or after the first/last (smallest/largest) keyframe of an element.
 
 Filling missing values
 -----
@@ -384,9 +375,13 @@ skrollr ships with some built in functions:
 * begin/end: They always return 0 or 1 respectively. No animation.
 * swing: Slow at the beginning and accelerates at the end. So 25% -> 14.6%, 50% -> 50%, 75% -> 85.3%
 * sqrt: Square root. Starts fast, slows down at the end.
+* easeOutCubic
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
-**Note**: Your easing functions should return 1 for input of 1. After the keyframe is passed, skrollr sets the values to the values of this keyframe. So if you function returns .8 for input of 1, your elements will jump at the end. But you can also use this on purpose, like the "inverted" function in the above example. The element will do everything in reverse, but at end the jumps to the end position.
+skrollr.get()
+-----
+
+Returns the skrollr instance if `init()` has been called before or `undefined`.
 
 Public API
 -----
@@ -419,16 +414,15 @@ Example:
 var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom');
 
 //offset contains the scroll position at which #foo's bottom is at the top of the viewport.
-//if you now use setScrollTop(offset) or animateTo(offset) #foo's bottom will be perfectly aligned with the top of the viewport.
+//If you now use setScrollTop(offset) or animateTo(offset) #foo's bottom will be perfectly aligned with the top of the viewport. Yay.
 ```
 
 ### getScrollTop()
 
-Returns the current scroll offset in pixels. Normalizes different browser quirks and returns the iScroll y-position in case of skrollr.mobile.
-
+Returns the current scroll offset in pixels. Normalizes different browser quirks and handles mobile scrolling.
 ### setScrollTop(top[, force = false])
 
-Sets the top offset using `window.scrollTo(0, top)` on dektop or `iscroll.scrollTo(0, -top)` when using skrollr.mobile.
+Sets the top offset using `window.scrollTo(0, top)` on dektop or updating the internal state in case of mobile scrolling.
 
 When `force` is set to `true`, skrollr will jump to the new position without any kind of transition. By default the global `smoothScrolling` setting applies.
 
@@ -466,6 +460,17 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.0 (2013-04-*)
+-----
+
+**Expect things to break when coming from 0.5! Read through the changelog. Migration is not hard.**
+
+* There's no more `skrollr.mobile.js` file. You only need `skrollr.js`. You no longer need to conditionally include `skrollr.mobile.js`.
+* You can configure how skrollr detects mobile browsers using the `mobileCheck` option (check out the documentation).
+* The meaning of the `#skrollr-body` element changed. Put all static elements inside of it and all absolute/fixed elements outside.
+* The `rendered` and `unrendered` classes where renamed because they were confusing and wrong. They're now called `skrollable-before` and `skrollable-after`, because that's their meaning (the element with these classes is before/after the first/last keyframe).
+	* Added a new class `skrollable-between`, because symmetry. That's why.
 
 0.5.14
 -----
