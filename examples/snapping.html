@@ -25,39 +25,45 @@
 		color:#fff;
 	}
 
-	div {
+	#skrollr-body {
+		height:500%;
+	}
+
+	#skrollr-body > div {
 		width:100%;
-		height:100%;
+		height:20%;
 		background:#09f;
 		text-align:center;
 	}
 
 	.odd {
-		background:#f90;
+		background:#f90 !important;
 	}
 	</style>
 </head>
 
 <body style="text-align:center;">
-	<div id="start">
-		<h1>The different parts of this webpage will snap after you scroll</h1>
-	</div>
-	<div class="odd" id="a">
-		<h1>A</h1>
-	</div>
-	<div id="b">
-		<h1>B</h1>
-	</div>
-	<div class="odd" id="c">
-		<h1>C</h1>
-	</div>
-	<div id="d">
-		<h1>D</h1>
+	<div id="skrollr-body">
+		<div id="start">
+			<h1>The different parts of this webpage will snap after you scroll</h1>
+		</div>
+		<div class="odd" id="a">
+			<h1>A</h1>
+		</div>
+		<div id="b">
+			<h1>B</h1>
+		</div>
+		<div class="odd" id="c">
+			<h1>C</h1>
+		</div>
+		<div id="d">
+			<h1>D</h1>
+		</div>
 	</div>
 
 	<script type="text/javascript" src="../dist/skrollr.min.js"></script>
 	<script type="text/javascript">
-	var layers = document.getElementsByTagName('div');
+	var layers = document.getElementById('skrollr-body').getElementsByTagName('div');
 	var activeLayer = 0;
 	var animateUpSettings = {
 		duration: 200,
@@ -72,6 +78,7 @@
 	};
 
 	var s = skrollr.init({
+		forceHeight: false,
 		render: function(info) {
 			if(this.isAnimatingTo()) {
 				return;

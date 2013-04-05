@@ -348,7 +348,6 @@
 
 				//Just in case there has already been some native scrolling, reset it.
 				window.scrollTo(0, 0);
-				documentElement.style.overflow = body.style.overflow = 'hidden';
 			}
 		}());
 
@@ -1196,8 +1195,8 @@
 	/*
 	 * Returns the height of the document.
 	 */
-	var _getDocumentHeight = function() {
-		var bodyHeight = Math.max(body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
+	var _getDocumentHeight = window.foo = function() {
+		var bodyHeight = Math.max(_skrollrBody && _skrollrBody.offsetHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
 
 		return bodyHeight - documentElement.clientHeight;
 	};
