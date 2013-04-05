@@ -275,9 +275,7 @@
 			var deltaTime;
 
 			//A custom check function may be passed.
-			_isMobile = ((options.mobileCheck || function() {
-				return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
-			})());
+			_isMobile = options.mobileCheck || (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
 
 			if(_isMobile) {
 				_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
