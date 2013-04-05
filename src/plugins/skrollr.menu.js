@@ -35,13 +35,8 @@
   /*
     Do the actual scrolling given an anchor and an offset
   */
-  var navigate = function(link, href) {
-    var offset = 0;
-
-    //If there's a data-menu-top attribute, it overrides the actuall anchor offset.
-    if (link && link.hasAttribute(TOP_OFFSET_ATTRIBUTE)) {
-      offset = +link.getAttribute(TOP_OFFSET_ATTRIBUTE);
-    } else {
+  var navigate = function(offset, href) {
+    if (!offset) {
       // Check if browser supports pushstate, if so, push the hash on
       if (this.history && this.history.pushState) {
         history.pushState({}, "", href);
@@ -61,7 +56,6 @@
         offset += +scrollTarget.getAttribute(TARGET_OFFSET_ATTRIBUTE);
       }
     }
-
 
     //Now finally scroll there.
     if (_animate) {
@@ -93,7 +87,12 @@
       return;
     }
 
-    navigate(link, href);
+    var offset = null;
+    if (link.hasAttribute(TOP_OFFSET_ATTRIBUTE)) {
+      offset = +link.getAttribute(TOP_OFFSET_ATTRIBUTE);
+    }
+
+    navigate(offset, href);
 
     e.preventDefault();
   };
