@@ -11,6 +11,7 @@
 	var DEFAULT_EASING = 'sqrt';
 
 	var TOP_OFFSET_ATTRIBUTE = 'data-menu-top';
+	var TARGET_OFFSET_ATTRIBUTE = 'data-target-top';
 
 	/*
 		Since we are using event bubbling, the element that has been clicked
@@ -58,7 +59,8 @@
 		//If there's a data-menu-top attribute, it overrides the actuall anchor offset.
 		if(link.hasAttribute(TOP_OFFSET_ATTRIBUTE)) {
 			offset = +link.getAttribute(TOP_OFFSET_ATTRIBUTE);
-		} else {
+		}
+		else {
 			var scrollTarget = document.getElementById(href.substr(1));
 
 			//Ignore the click if no target is found.
@@ -67,6 +69,11 @@
 			}
 
 			offset = _skrollrInstance.relativeToAbsolute(scrollTarget, 'top', 'top');
+
+			// add/subtract 
+			if(link.hasAttribute(TARGET_OFFSET_ATTRIBUTE)) {
+				offset += +link.getAttribute(TARGET_OFFSET_ATTRIBUTE);
+			}
 		}
 
 		//Now finally scroll there.
