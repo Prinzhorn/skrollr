@@ -326,6 +326,18 @@ When `forceHeight` is set to false, `scale` is ignored.
 
 `false`: Don't manipulate the document and just keep the natural scrollbar.
 
+###mobileCheck=function() {...}
+
+This option allows you to pass a function to skrollr overwriting the check for mobile devices. The function should return `true` when mobile scrolling should be used and `false` if not.
+
+The default looks like this
+
+```js
+function() {
+	return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
+}
+```
+
 ### beforerender
 
 A listener function getting called each time right before we render everything. The function will be passed an object with the following properties:
@@ -633,8 +645,6 @@ Changelog
 Contributors
 =====
 
-Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https://github.com/cubiq/iscroll) which powers mobile support!
-
 * [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
 * [Ali Karbassi](https://github.com/karbassi)
 * [Tri Nguyen](https://github.com/idlesysop)
@@ -644,3 +654,5 @@ Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https
 * [Dowon Kang](https://github.com/dowonkang)
 * [rbeitra](https://github.com/rbeitra)
 * Everyone giving feedback on Twitter and through other channels.
+
+Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https://github.com/cubiq/iscroll) which powered mobile support prior to skrollr 0.6.
