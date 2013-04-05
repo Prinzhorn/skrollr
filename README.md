@@ -218,7 +218,7 @@ And in order to fix the problem with the wrong offset, you are able to specify t
 You can also offset from the target anchor. This will offset 100px from #section-about:
 
 ```html
-<a href="#section-about" data-target-top="100">About</a>
+<a href="#section-about" data-menu-offset="100">About</a>
 ```
 
 This link will cause the page to scroll to `500`. But you should let the the href point to the actual target because if skrollr or js are disabled, the links will still work.

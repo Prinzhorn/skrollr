@@ -11,7 +11,7 @@
 	var DEFAULT_EASING = 'sqrt';
 
 	var TOP_OFFSET_ATTRIBUTE = 'data-menu-top';
-	var TARGET_OFFSET_ATTRIBUTE = 'data-target-top';
+	var TARGET_OFFSET_ATTRIBUTE = 'data-menu-offset';
 
 	/*
 		Since we are using event bubbling, the element that has been clicked
