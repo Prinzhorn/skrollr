@@ -348,6 +348,7 @@
 
 				//Just in case there has already been some native scrolling, reset it.
 				window.scrollTo(0, 0);
+				documentElement.style.overflow = body.style.overflow = 'hidden';
 			}
 		}());
 
