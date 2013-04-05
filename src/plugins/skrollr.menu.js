@@ -6,7 +6,7 @@
  *
  * Free to use under terms of MIT license
  */
-(function (document, skrollr) {
+(function(document, skrollr) {
   var DEFAULT_DURATION = 500;
   var DEFAULT_EASING = 'sqrt';
 
@@ -17,7 +17,7 @@
     Since we are using event bubbling, the element that has been clicked
     might not acutally be the link but a child.
   */
-  var findParentLink = function (element) {
+  var findParentLink = function(element) {
     //Yay, it's a link!
     if (element.tagName === 'A') {
       return element;
@@ -35,7 +35,7 @@
   /*
     Do the actual scrolling given an anchor and an offset
   */
-  var navigate = function (link, href) {
+  var navigate = function(link, href) {
     var offset = 0;
 
     //If there's a data-menu-top attribute, it overrides the actuall anchor offset.
@@ -49,17 +49,17 @@
 
       var scrollTarget = document.getElementById(href.substr(1));
 
-			//Ignore the click if no target is found.
-			if (!scrollTarget) {
-				return;
-			}
+      //Ignore the click if no target is found.
+      if (!scrollTarget) {
+        return;
+      }
 
-			offset = _skrollrInstance.relativeToAbsolute(scrollTarget, 'top', 'top');
+      offset = _skrollrInstance.relativeToAbsolute(scrollTarget, 'top', 'top');
 
-			// add/subtract using the scrollTarget's offset attr val
-			if (scrollTarget.hasAttribute(TARGET_OFFSET_ATTRIBUTE)) {
-				offset += +scrollTarget.getAttribute(TARGET_OFFSET_ATTRIBUTE);
-			}
+      // add/subtract using the scrollTarget's offset attr val
+      if (scrollTarget.hasAttribute(TARGET_OFFSET_ATTRIBUTE)) {
+        offset += +scrollTarget.getAttribute(TARGET_OFFSET_ATTRIBUTE);
+      }
     }
 
 
@@ -72,12 +72,12 @@
     } else {
       _skrollrInstance.setScrollTop(offset);
     }
-    };
+  };
 
-    /*
+  /*
       Handle the click event on the document.
     */
-    var handleClick = function (e) {
+  var handleClick = function(e) {
     var link = findParentLink(e.target);
 
     //The click did not happen inside a link.
@@ -101,17 +101,17 @@
   /*
     Global menu function accessible through window.skrollr.menu.init.
   */
-  skrollr.menu = {}; skrollr.menu.init = function (skrollrInstance, options) {
-  _skrollrInstance = skrollrInstance;
+  skrollr.menu = {};
+  skrollr.menu.init = function(skrollrInstance, options) {
+    _skrollrInstance = skrollrInstance;
 
-  options = options || {};
+    options = options || {};
+    _duration = options.duration || DEFAULT_DURATION;
+    _easing = options.easing || DEFAULT_EASING;
+    _animate = options.animate !== false;
 
-  _duration = options.duration || DEFAULT_DURATION;
-  _easing = options.easing || DEFAULT_EASING;
-  _animate = options.animate !== false;
-
-  //Use event bubbling and attach a single listener to the document.
-  skrollr.addEvent(document, 'click', handleClick);
+    //Use event bubbling and attach a single listener to the document.
+    skrollr.addEvent(document, 'click', handleClick);
   };
 
   //Private reference to the initialized skrollr.
@@ -123,13 +123,13 @@
 
   //In case the page was opened with a hash, prevent jumping to it.
   //http://stackoverflow.com/questions/3659072/jquery-disable-anchor-jump-when-loading-a-page
-  window.setTimeout(function () {
-  if (location.hash) {
-    window.scrollTo(0, 0);
+  window.setTimeout(function() {
+    if (location.hash) {
+      window.scrollTo(0, 0);
 
-    // navigate properly
-    navigate(null, location.hash);
-  }
+      // navigate properly
+      navigate(null, location.hash);
+    }
   }, 1);
 
 }(document, window.skrollr));
