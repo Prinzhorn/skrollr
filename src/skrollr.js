@@ -341,6 +341,8 @@
 							}
 
 							//TODO: let the duration depend on the distance
+							//TODO: https://github.com/zynga/scroller/blob/master/src/Scroller.js#L898
+							//TODO: https://github.com/cubiq/iscroll/blob/master/src/iscroll.js#L575
 							_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
 							break;
 					}
@@ -635,6 +637,12 @@
 
 		if(_isMobile) {
 			_mobileOffset = Math.min(Math.max(top, 0), _maxKeyFrame);
+
+			//That's were we actually "scroll" on mobile.
+			if(_skrollrBody) {
+				//Set the transform ("scroll it").
+				_setStyle(_skrollrBody, 'transform', 'translateY(' + -_mobileOffset + 'px)');
+			}
 		} else {
 			window.scrollTo(0, top);
 		}
@@ -887,12 +895,6 @@
 
 		//Did the scroll position even change?
 		if(_forceRender || _lastTop !== renderTop) {
-			//That's were we actually "scroll" on mobile.
-			if(_isMobile && _skrollrBody) {
-				//Set the transform ("scroll it").
-				_setStyle(_skrollrBody, 'transform', 'translateY(' + -_mobileOffset + 'px)');
-			}
-
 			//Remember in which direction are we scrolling?
 			_direction = (renderTop >= _lastTop) ? 'down' : 'up';
 
