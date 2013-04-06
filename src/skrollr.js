@@ -257,11 +257,9 @@
 
 		_skrollrBody = document.getElementById('skrollr-body');
 
+		//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 		if(_skrollrBody) {
-			//Detect 3d transforms.
-			_translateZ = 'translateZ(0)';
-			_setStyle(_skrollrBody, 'transform', _translateZ);
-			//getStyle(el).getPropertyValue(transforms[t]);
+			_detect3DTransforms();
 		}
 
 		//A custom check function may be passed.
@@ -1118,6 +1116,23 @@
 		return val[0].replace(rxInterpolateString, function() {
 			return val[valueIndex++];
 		});
+	};
+
+	/**
+	 * Detects support for 3d transforms by applying it to the skrollr-body.
+	 */
+	var _detect3DTransforms = function() {
+		_translateZ = 'translateZ(0)';
+		_setStyle(_skrollrBody, 'transform', _translateZ);
+
+		var computedStyle = getStyle(_skrollrBody);
+		var computedTransform = computedStyle.getPropertyValue('transform');
+		var computedTransformWithPrefix = computedStyle.getPropertyValue(theDashedCSSPrefix + 'transform');
+		var has3D = (computedTransform && computedTransform !== 'none') || (computedTransformWithPrefix && computedTransformWithPrefix !== 'none');
+
+		if(!has3D) {
+			_translateZ = '';
+		}
 	};
 
 	/**
