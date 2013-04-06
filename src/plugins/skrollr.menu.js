@@ -63,8 +63,7 @@
         if (link.hasAttribute(MENU_TOP_ATTR)) {
           offset = +link.getAttribute(MENU_TOP_ATTR);
           scroll(offset);
-        } else if (hash) {
-
+        } else {
           var scrollTarget = document.getElementById(hash.substr(1));
 
           //Ignore the click if no target is found.
