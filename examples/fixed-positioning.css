@@ -24,6 +24,10 @@ html, body {
 	z-index:100;
 }
 
+.skrollr-mobile .skrollable {
+	position:absolute;
+}
+
 /*
 .skrollable.unrendered {
 	display:none !important;
