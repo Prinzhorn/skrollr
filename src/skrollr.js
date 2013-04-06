@@ -25,6 +25,7 @@
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 	var Math = window.Math;
+	var getStyle = window.getComputedStyle;
 
 	//They will be filled when skrollr gets initialized.
 	var documentElement;
@@ -126,11 +127,11 @@
 		var rxPrefixes = /^(?:O|Moz|webkit|ms)|(?:-(?:o|moz|webkit|ms)-)/;
 
 		//Detect prefix for current browser by finding the first property using a prefix.
-		if(!window.getComputedStyle) {
+		if(!getStyle) {
 			return;
 		}
 
-		var style = window.getComputedStyle(body, null);
+		var style = getStyle(body, null);
 
 		for(var k in style) {
 			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
@@ -257,113 +258,19 @@
 		_skrollrBody = document.getElementById('skrollr-body');
 
 		if(_skrollrBody) {
-			_setStyle(_skrollrBody, 'transform', 'translateZ(0)');
+			//Detect 3d transforms.
+			_translateZ = 'translateZ(0)';
+			_setStyle(_skrollrBody, 'transform', _translateZ);
+			//getStyle(el).getPropertyValue(transforms[t]);
 		}
 
-		//Don't expose mobile specific variables.
-		(function() {
-			var initialElement;
-			var initialTouchY;
-			var initialTouchX;
-			var currentTouchY;
-			var currentTouchX;
-			var lastTouchY;
-			var deltaY;
-
-			var initialTouchTime;
-			var currentTouchTime;
-			var lastTouchTime;
-			var deltaTime;
-
-			//A custom check function may be passed.
-			_isMobile = ((options.mobileCheck || function() {
-				return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
-			})());
-
-			if(_isMobile) {
-				_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
-					e.preventDefault();
-					_instance.stopAnimateTo();
-
-					var touch = e.changedTouches[0];
-
-					currentTouchY = touch.clientY;
-					currentTouchX = touch.clientX;
-					currentTouchTime = e.timeStamp;
-
-					switch(e.type) {
-						case EVENT_TOUCHSTART:
-							//The last element we tapped on.
-							if(initialElement) {
-								initialElement.blur();
-							}
-
-							initialElement = e.target;
-							initialTouchY = lastTouchY = currentTouchY;
-							initialTouchX = currentTouchX;
-							initialTouchTime = currentTouchTime;
-							break;
-						case EVENT_TOUCHMOVE:
-							deltaY = currentTouchY - lastTouchY;
-							deltaTime = currentTouchTime - lastTouchTime;
-
-							_instance.setScrollTop(_mobileOffset - deltaY);
-
-							lastTouchY = currentTouchY;
-							lastTouchTime = currentTouchTime;
-							break;
-						default:
-						case EVENT_TOUCHCANCEL:
-						case EVENT_TOUCHEND:
-							//Check if it was more like a tap.
-							var distanceY = initialTouchY - currentTouchY;
-							var distanceX = initialTouchX - currentTouchX;
-							var distance2 = distanceX * distanceX + distanceY * distanceY;
-							var speed = deltaY / deltaTime;
-
-							//Why use Math.sqrt when you can just compare the square number ;-).
-							if(distance2 < 49) {
-								//It was a tap, click the element.
-								initialElement.focus();
-								initialElement.click();
-
-								return;
-							}
-
-							//Check if it was a flick (TODO: combine with the momentum implementation as soon as it's done)
-							if(speed > 0.5 && currentTouchTime - initialTouchTime < 200) {
-								_instance.animateTo(distanceY < 0 ? 0 : _maxKeyFrame, {easing: 'easeOutCubic'});
-
-								return;
-							}
-
-							initialElement = undefined;
-
-							var duration = 1000;
-							var top = _instance.getScrollTop();
-							var targetTop = top - (0.5 * speed * Math.abs(speed) * duration);
-
-							if(targetTop > _maxKeyFrame) {
-								targetTop = _maxKeyFrame;
-							} else if(targetTop < 0) {
-								targetTop = 0;
-							}
-
-							//TODO: let the duration depend on the distance
-							//TODO: https://github.com/zynga/scroller/blob/master/src/Scroller.js#L898
-							//TODO: https://github.com/cubiq/iscroll/blob/master/src/iscroll.js#L575
-							_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
-							break;
-					}
-				});
-
-				//Just in case there has already been some native scrolling, reset it.
-				window.scrollTo(0, 0);
-				documentElement.style.overflow = body.style.overflow = 'hidden';
-			}
-		}());
+		//A custom check function may be passed.
+		_isMobile = ((options.mobileCheck || function() {
+			return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
+		})());
 
 		if(_isMobile) {
+			_initMobile();
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS], [NO_SKROLLR_CLASS]);
 		} else {
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS], [NO_SKROLLR_CLASS]);
@@ -650,7 +557,7 @@
 			//That's were we actually "scroll" on mobile.
 			if(_skrollrBody) {
 				//Set the transform ("scroll it").
-				_setStyle(_skrollrBody, 'transform', 'translateY(' + -_mobileOffset + 'px)');
+				_setStyle(_skrollrBody, 'transform', 'translate(' + -_mobileOffset + 'px, 0) ' + _translateZ);
 			}
 		} else {
 			window.scrollTo(0, top);
@@ -682,6 +589,102 @@
 	/*
 		Private methods.
 	*/
+
+	var _initMobile = function() {
+		var initialElement;
+		var initialTouchY;
+		var initialTouchX;
+		var currentTouchY;
+		var currentTouchX;
+		var lastTouchY;
+		var deltaY;
+
+		var initialTouchTime;
+		var currentTouchTime;
+		var lastTouchTime;
+		var deltaTime;
+
+		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
+			e.preventDefault();
+			_instance.stopAnimateTo();
+
+			var touch = e.changedTouches[0];
+
+			currentTouchY = touch.clientY;
+			currentTouchX = touch.clientX;
+			currentTouchTime = e.timeStamp;
+
+			switch(e.type) {
+				case EVENT_TOUCHSTART:
+					//The last element we tapped on.
+					if(initialElement) {
+						initialElement.blur();
+					}
+
+					initialElement = e.target;
+					initialTouchY = lastTouchY = currentTouchY;
+					initialTouchX = currentTouchX;
+					initialTouchTime = currentTouchTime;
+					break;
+				case EVENT_TOUCHMOVE:
+					deltaY = currentTouchY - lastTouchY;
+					deltaTime = currentTouchTime - lastTouchTime;
+
+					_instance.setScrollTop(_mobileOffset - deltaY);
+
+					lastTouchY = currentTouchY;
+					lastTouchTime = currentTouchTime;
+					break;
+				default:
+				case EVENT_TOUCHCANCEL:
+				case EVENT_TOUCHEND:
+					//Check if it was more like a tap.
+					var distanceY = initialTouchY - currentTouchY;
+					var distanceX = initialTouchX - currentTouchX;
+					var distance2 = distanceX * distanceX + distanceY * distanceY;
+					var speed = deltaY / deltaTime;
+
+					//Why use Math.sqrt when you can just compare the square number ;-).
+					if(distance2 < 49) {
+						//It was a tap, click the element.
+						initialElement.focus();
+						initialElement.click();
+
+						return;
+					}
+
+					//Check if it was a flick (TODO: combine with the momentum implementation as soon as it's done)
+					//TODO: cap speed http://gamedev.stackexchange.com/questions/21516/how-to-implement-flick-gesture-for-throwing-an-object-in-the-2d-realm
+					if(speed > 0.5 && currentTouchTime - initialTouchTime < 200) {
+						_instance.animateTo(distanceY < 0 ? 0 : _maxKeyFrame, {easing: 'easeOutCubic'});
+
+						return;
+					}
+
+					initialElement = undefined;
+
+					var duration = 1000;
+					var top = _instance.getScrollTop();
+					var targetTop = top - (0.5 * speed * Math.abs(speed) * duration);
+
+					if(targetTop > _maxKeyFrame) {
+						targetTop = _maxKeyFrame;
+					} else if(targetTop < 0) {
+						targetTop = 0;
+					}
+
+					//TODO: let the duration depend on the distance
+					//TODO: https://github.com/zynga/scroller/blob/master/src/Scroller.js#L898
+					//TODO: https://github.com/cubiq/iscroll/blob/master/src/iscroll.js#L575
+					_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
+					break;
+			}
+
+			//Just in case there has already been some native scrolling, reset it.
+			window.scrollTo(0, 0);
+			documentElement.style.overflow = body.style.overflow = 'hidden';
+		});
+	};
 
 	/**
 	 * Updates key frames which depend on others.
@@ -1374,4 +1377,7 @@
 
 	//The virtual scroll offset when using mobile scrolling.
 	var _mobileOffset = 0;
+
+	//If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
+	var _translateZ;
 }(window, document));
