@@ -76,7 +76,7 @@
 		if (!requestAnimFrame) {
 			requestAnimFrame = function(callback) {
 				var currTime = _now();
-				var timeToCall = Math.max(0, 30 - (currTime - lastTime));
+				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
 
 				window.setTimeout(function() {
 					callback(currTime + timeToCall);
