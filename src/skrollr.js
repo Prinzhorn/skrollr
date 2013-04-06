@@ -555,7 +555,7 @@
 			//That's were we actually "scroll" on mobile.
 			if(_skrollrBody) {
 				//Set the transform ("scroll it").
-				_setStyle(_skrollrBody, 'transform', 'translate(' + -_mobileOffset + 'px, 0) ' + _translateZ);
+				_setStyle(_skrollrBody, 'transform', 'translate(0, ' + -_mobileOffset + 'px) ' + _translateZ);
 			}
 		} else {
 			window.scrollTo(0, top);
