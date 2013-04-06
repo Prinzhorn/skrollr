@@ -632,6 +632,8 @@
 
 					lastTouchY = currentTouchY;
 					lastTouchTime = currentTouchTime;
+
+					_render();
 					break;
 				default:
 				case EVENT_TOUCHCANCEL:
