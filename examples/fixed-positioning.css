@@ -26,14 +26,7 @@ html, body {
 
 .skrollr-mobile .skrollable {
 	position:absolute;
-	-webkit-transform:translateZ(0);
 }
-
-/*
-.skrollable.unrendered {
-	display:none !important;
-}
-*/
 
 .skrollable .skrollable {
 	/*

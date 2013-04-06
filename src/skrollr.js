@@ -1214,7 +1214,7 @@
 			_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
 		}
 
-		if(_forceHeight) {
+		if(_forceHeight && !_isMobile) {
 			//"force" the height.
 			body.style.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
 		}
