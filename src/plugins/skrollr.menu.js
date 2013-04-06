@@ -80,11 +80,7 @@
             scroll(offset);
           }
         }
-      } else {
-        // scroll to the top
-        scroll(0);
       }
-
     } else {
       // scroll to the top
       scroll(0);
