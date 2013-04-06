@@ -270,6 +270,7 @@
 			var lastTouchY;
 			var deltaY;
 
+			var initialTouchTime;
 			var currentTouchTime;
 			var lastTouchTime;
 			var deltaTime;
@@ -298,8 +299,9 @@
 							}
 
 							initialElement = e.target;
-							initialTouchY = lastTouchY = touch.clientY;
-							initialTouchX = touch.clientX;
+							initialTouchY = lastTouchY = currentTouchY;
+							initialTouchX = currentTouchX;
+							initialTouchTime = currentTouchTime;
 							break;
 						case EVENT_TOUCHMOVE:
 							deltaY = currentTouchY - lastTouchY;
@@ -317,6 +319,7 @@
 							var distanceY = initialTouchY - currentTouchY;
 							var distanceX = initialTouchX - currentTouchX;
 							var distance2 = distanceX * distanceX + distanceY * distanceY;
+							var speed = deltaY / deltaTime;
 
 							//Why use Math.sqrt when you can just compare the square number ;-).
 							if(distance2 < 49) {
@@ -327,10 +330,16 @@
 								return;
 							}
 
+							//Check if it was a flick (TODO: combine with the momentum implementation as soon as it's done)
+							if(speed > 0.5 && currentTouchTime - initialTouchTime < 200) {
+								_instance.animateTo(distanceY < 0 ? 0 : _maxKeyFrame, {easing: 'easeOutCubic'});
+
+								return;
+							}
+
 							initialElement = undefined;
 
 							var duration = 1000;
-							var speed = deltaY / deltaTime;
 							var top = _instance.getScrollTop();
 							var targetTop = top - (0.5 * speed * Math.abs(speed) * duration);
 
