@@ -701,7 +701,7 @@
 					initialElement = undefined;
 
 					//Just use 80% of the speed, feels better.
-					speed = speedBuffer.avg() * 0.8;
+					//speed = speedBuffer.avg() * 0.8;
 
 					//Cap speed at 2 pixel/ms
 					//speed = Math.max(Math.min(speed, 2), -2);
