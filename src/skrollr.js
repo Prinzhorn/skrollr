@@ -45,7 +45,8 @@
 	var SKROLLR_MOBILE_CLASS = SKROLLR_CLASS + '-mobile';
 
 	var DEFAULT_EASING = 'linear';
-	var DEFAULT_DURATION = 1000;
+	var DEFAULT_DURATION = 1000;//ms
+	var MOBILE_DECELERATION = 0.004;//pixel/ms²
 
 	var SMOOTH_SCROLLING_DURATION = 200;
 
@@ -209,6 +210,42 @@
 
 			return 1 - Math.abs(3 * Math.cos(p * a * 1.028) / a);
 		}
+	};
+
+	/*
+	 * A ring buffer you can push numbers to and it returns the average.
+	 * Used on mobile to store the speed of the last N touch points.
+	 */
+	var AvgRingBuffer = function(length) {
+		var _this = this;
+		var index = 0;
+		var data = [];
+
+		//Push a value to the oldest spot.
+		_this.push = function(value) {
+			data[index] = value;
+			index = (index + 1) % length;
+		};
+
+		//Calculate the average of all set values.
+		_this.avg = function() {
+			var dataIndex = 0;
+			var dataLength = data.length;
+			var currentValue;
+			var sum = 0;
+
+			for(; dataIndex <  dataLength; dataIndex++) {
+				currentValue = data[dataIndex];
+
+				if(currentValue === undefined) {
+					break;
+				}
+
+				sum += currentValue;
+			}
+
+			return sum / dataIndex;
+		};
 	};
 
 	/**
@@ -602,6 +639,9 @@
 		var lastTouchTime;
 		var deltaTime;
 
+		var speed;
+		var speedBuffer;
+
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
 			e.preventDefault();
 			_instance.stopAnimateTo();
@@ -623,10 +663,19 @@
 					initialTouchY = lastTouchY = currentTouchY;
 					initialTouchX = currentTouchX;
 					initialTouchTime = currentTouchTime;
+
+					//Use 5 data points to calculate the average speed.
+					speedBuffer = new AvgRingBuffer(5);
 					break;
 				case EVENT_TOUCHMOVE:
 					deltaY = currentTouchY - lastTouchY;
 					deltaTime = currentTouchTime - lastTouchTime;
+
+					//Is this at least the second move we get?
+					if(lastTouchTime) {
+						speed = deltaY / deltaTime;
+						speedBuffer.push(speed);
+					}
 
 					_instance.setScrollTop(_mobileOffset - deltaY);
 
@@ -636,13 +685,11 @@
 				default:
 				case EVENT_TOUCHCANCEL:
 				case EVENT_TOUCHEND:
-					//Check if it was more like a tap.
 					var distanceY = initialTouchY - currentTouchY;
 					var distanceX = initialTouchX - currentTouchX;
 					var distance2 = distanceX * distanceX + distanceY * distanceY;
-					var speed = deltaY / deltaTime;
 
-					//Why use Math.sqrt when you can just compare the square number ;-).
+					//Check if it was more like a tap (moved less than 7px).
 					if(distance2 < 49) {
 						//It was a tap, click the element.
 						initialElement.focus();
@@ -651,29 +698,34 @@
 						return;
 					}
 
-					//Check if it was a flick (TODO: combine with the momentum implementation as soon as it's done)
-					//TODO: cap speed http://gamedev.stackexchange.com/questions/21516/how-to-implement-flick-gesture-for-throwing-an-object-in-the-2d-realm
-					if(speed > 0.5 && currentTouchTime - initialTouchTime < 200) {
-						_instance.animateTo(distanceY < 0 ? 0 : _maxKeyFrame, {easing: 'easeOutCubic'});
-
-						return;
-					}
-
 					initialElement = undefined;
 
-					var duration = 1000;
-					var top = _instance.getScrollTop();
-					var targetTop = top - (0.5 * speed * Math.abs(speed) * duration);
+					//Just use 80% of the speed, feels better.
+					speed = speedBuffer.avg() * 0.8;
 
+					//Cap speed at 2 pixel/ms
+					//speed = Math.max(Math.min(speed, 2), -2);
+
+					var duration = Math.abs(speed / MOBILE_DECELERATION);
+					var targetOffset = speed * duration + 0.5 * MOBILE_DECELERATION * duration * duration;
+					var targetTop = _instance.getScrollTop() - targetOffset;
+
+					//Relative duration change for when scrolling above bounds.
+					var targetRatio = 0;
+
+					//Change duration proportionally when scrolling would leave bounds.
 					if(targetTop > _maxKeyFrame) {
+						targetRatio = (_maxKeyFrame - targetTop) / targetOffset;
+
 						targetTop = _maxKeyFrame;
 					} else if(targetTop < 0) {
+						targetRatio = -targetTop / targetOffset;
+
 						targetTop = 0;
 					}
 
-					//TODO: let the duration depend on the distance
-					//TODO: https://github.com/zynga/scroller/blob/master/src/Scroller.js#L898
-					//TODO: https://github.com/cubiq/iscroll/blob/master/src/iscroll.js#L575
+					duration = duration * (1 - targetRatio);
+
 					_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
 					break;
 			}
@@ -879,8 +931,8 @@
 
 			_instance.setScrollTop(renderTop);
 		}
-		//Smooth scrolling only if there's no animation running.
-		else {
+		//Smooth scrolling only if there's no animation running and if we're not on mobile.
+		else if(!_isMobile) {
 			var smoothScrollingDiff = _smoothScrolling.targetTop - renderTop;
 
 			//The user scrolled, start new smooth scrolling.

@@ -3,7 +3,7 @@
 skrollr 0.6.0-pre
 =====
 
-Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.2k** (minified) or **4.3k** (minified + gzipped).
+Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
 
 Designer friendly. No JavaScript skills needed. Just plain CSS and HTML.
 
