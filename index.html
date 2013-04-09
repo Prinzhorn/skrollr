@@ -12,7 +12,6 @@
 </head>
 
 <body>
-	<div id="out" style="position:fixed;left:0;top:0;background:#fff;padding:1em;z-index:1000;">Bacon</div>
 	<div id="bg1" data-0="background-position:0px 0px;" data-end="background-position:-500px -10000px;"></div>
 	<div id="bg2" data-0="background-position:0px 0px;" data-end="background-position:-500px -8000px;"></div>
 	<div id="bg3" data-0="background-position:0px 0px;" data-end="background-position:-500px -6000px;"></div>
@@ -72,14 +71,7 @@
 	<![endif]-->
 
 	<script type="text/javascript">
-	var out = document.getElementById('out');
 	var s = skrollr.init({
-		beforerender: function(data) {
-			//console.log('beforerender');
-		},
-		render: function() {
-			out.innerHTML = Math.random();
-		},
 		easing: {
 			WTF: Math.random,
 			inverted: function(p) {

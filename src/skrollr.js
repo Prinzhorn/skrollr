@@ -212,42 +212,6 @@
 		}
 	};
 
-	/*
-	 * A ring buffer you can push numbers to and it returns the average.
-	 * Used on mobile to store the speed of the last N touch points.
-	 */
-	var AvgRingBuffer = function(length) {
-		var _this = this;
-		var index = 0;
-		var data = [];
-
-		//Push a value to the oldest spot.
-		_this.push = function(value) {
-			data[index] = value;
-			index = (index + 1) % length;
-		};
-
-		//Calculate the average of all set values.
-		_this.avg = function() {
-			var dataIndex = 0;
-			var dataLength = data.length;
-			var currentValue;
-			var sum = 0;
-
-			for(; dataIndex <  dataLength; dataIndex++) {
-				currentValue = data[dataIndex];
-
-				if(currentValue === undefined) {
-					break;
-				}
-
-				sum += currentValue;
-			}
-
-			return sum / dataIndex;
-		};
-	};
-
 	/**
 	 * Constructor.
 	 */
@@ -639,9 +603,6 @@
 		var lastTouchTime;
 		var deltaTime;
 
-		var speed;
-		var speedBuffer;
-
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
 			e.preventDefault();
 			_instance.stopAnimateTo();
@@ -664,18 +625,10 @@
 					initialTouchX = currentTouchX;
 					initialTouchTime = currentTouchTime;
 
-					//Use 5 data points to calculate the average speed.
-					speedBuffer = new AvgRingBuffer(5);
 					break;
 				case EVENT_TOUCHMOVE:
 					deltaY = currentTouchY - lastTouchY;
 					deltaTime = currentTouchTime - lastTouchTime;
-
-					//Is this at least the second move we get?
-					if(lastTouchTime) {
-						speed = deltaY / deltaTime;
-						speedBuffer.push(speed);
-					}
 
 					_instance.setScrollTop(_mobileOffset - deltaY);
 
@@ -700,12 +653,7 @@
 
 					initialElement = undefined;
 
-					//Just use 80% of the speed, feels better.
-					//speed = speedBuffer.avg() * 0.8;
-
-					//Cap speed at 2 pixel/ms
-					//speed = Math.max(Math.min(speed, 2), -2);
-
+					var speed = deltaY / deltaTime;
 					var duration = Math.abs(speed / MOBILE_DECELERATION);
 					var targetOffset = speed * duration + 0.5 * MOBILE_DECELERATION * duration * duration;
 					var targetTop = _instance.getScrollTop() - targetOffset;
