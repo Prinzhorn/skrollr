@@ -60,36 +60,6 @@
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
 
-	var requestAnimFrame = window.requestAnimationFrame;
-
-	//Request animation frame polyfill.
-	//Credits go to Erik Möller (http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating)
-	(function() {
-		var vendors = ['ms', 'moz', 'webkit', 'o'];
-		var vendorIndex = 0;
-		var vendorsLength = vendors.length;
-
-		for(; vendorIndex < vendorsLength && !requestAnimFrame; vendorIndex++) {
-			requestAnimFrame = window[vendors[vendorIndex] + 'RequestAnimationFrame'];
-		}
-
-		var lastTime = 0;
-
-		if (!requestAnimFrame) {
-			requestAnimFrame = function(callback) {
-				var currTime = _now();
-				var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-
-				window.setTimeout(function() {
-					callback(currTime + timeToCall);
-				}, timeToCall);
-
-				lastTime = currTime + timeToCall;
-			};
-		}
-	}());
-
-
 	var rxTrim = /^\s+|\s+$/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
@@ -164,6 +134,27 @@
 		} else {
 			theDashedCSSPrefix = '-' + theCSSPrefix.toLowerCase() + '-';
 		}
+	};
+
+	var polyfillRAF = function() {
+		var requestAnimFrame = window.requestAnimationFrame || window[theCSSPrefix.toLowerCase() + 'RequestAnimationFrame'];
+
+		var lastTime = _now();
+
+		if(_isMobile || !requestAnimFrame) {
+			requestAnimFrame = function(callback) {
+				//How long did it take to render?
+				var deltaTime = _now() - lastTime;
+				var delay = Math.max(0, 33 - deltaTime);
+
+				window.setTimeout(function() {
+					lastTime = _now();
+					callback();
+				}, delay);
+			};
+		}
+
+		return requestAnimFrame;
 	};
 
 	//Built-in easing functions.
@@ -280,12 +271,12 @@
 
 		_addEvent(window, 'resize orientationchange', _reflow);
 
+		var requestAnimFrame = polyfillRAF();
+
 		//Let's go.
 		(function animloop(){
-			//This is how the cool kids use requestAnimationFrame
-			//http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-			requestAnimFrame(animloop);
 			_render();
+			requestAnimFrame(animloop);
 		}());
 
 		return _instance;
