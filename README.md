@@ -22,6 +22,7 @@ In the wild
 * http://www.direct.tv/thekingsroadmap/
 * http://www.evanshalshaw.com/bondcars/
 * http://www.caavadesign.com/
+* http://www.edel-und-stein.com/
 * http://erikreyna.com/ofthestreet/index.html
 * https://squareup.com/careers/creative
 * http://happy.is
@@ -402,13 +403,15 @@ Calling `init()` returns an instance of skrollr which exposes a public api.
 
 ### refresh([elements])
 
-Reparses all given elements. Useful when
+Reparses all given `elements`. You can pass a single element or an array-like element (Array, NodeList, jQuery object)
+
+Useful when
 
 * elements in `relative` mode change and need to be updated
 * data-attributes are manipulated dynamically
 * new elements are added to the DOM and should be controlled by skrollr
 
-When no elements are given, all elements in the document will be parsed again. In fact, when calling `skrollr.init()` skrollr uses `refresh()` without parameters internally.
+When no `elements` are given, all elements in the document will be parsed again. In fact, when calling `skrollr.init()` skrollr uses `refresh()` without parameters internally.
 
 Time consuming operation, should not be called on every rendering.
 
@@ -440,7 +443,7 @@ When `force` is set to `true`, skrollr will jump to the new position without any
 
 ### animateTo(top[, options])
 
-Animates the scroll position from current position to `top`. Possible options are
+Animates the scroll position from current position to `top`. Possible `options` are
 
 #### duration
 
