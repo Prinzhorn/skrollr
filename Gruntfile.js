@@ -20,7 +20,7 @@ module.exports = function(grunt) {
 					navigator: true
 				}
 			},
-			all: ['test/test.js', 'src/**/*.js']
+			all: ['src/**/*.js']
 		},
 		qunit: {
 			all: ['test/index.html']
