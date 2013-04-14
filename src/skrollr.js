@@ -180,7 +180,7 @@
 		sqrt: function(p) {
 			return Math.sqrt(p);
 		},
-		easeOutCubic: function(p) {
+		outCubic: function(p) {
 			return (Math.pow((p - 1), 3) + 1);
 		},
 		//see https://www.desmos.com/calculator/tbr20s8vd2 for how I did this
@@ -664,7 +664,7 @@
 
 					duration = duration * (1 - targetRatio);
 
-					_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
+					_instance.animateTo(targetTop, {easing: 'outCubic', duration: duration});
 					break;
 			}
 		});
