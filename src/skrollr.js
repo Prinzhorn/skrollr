@@ -547,7 +547,7 @@
 			//That's were we actually "scroll" on mobile.
 			if(_skrollrBody) {
 				//Set the transform ("scroll it").
-				_setStyle(_skrollrBody, 'transform', 'translate(0, ' + -_mobileOffset + 'px) ' + _translateZ);
+				_setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
 			}
 		} else {
 			window.scrollTo(0, top);
@@ -596,7 +596,6 @@
 
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
 			e.preventDefault();
-			_instance.stopAnimateTo();
 
 			var touch = e.changedTouches[0];
 
@@ -668,11 +667,11 @@
 					_instance.animateTo(targetTop, {easing: 'easeOutCubic', duration: duration});
 					break;
 			}
-
-			//Just in case there has already been some native scrolling, reset it.
-			window.scrollTo(0, 0);
-			documentElement.style.overflow = body.style.overflow = 'hidden';
 		});
+
+		//Just in case there has already been some native scrolling, reset it.
+		window.scrollTo(0, 0);
+		documentElement.style.overflow = body.style.overflow = 'hidden';
 	};
 
 	/**
@@ -1187,7 +1186,7 @@
 
 		for(; nameCounter < namesLength; nameCounter++) {
 			if(element.addEventListener) {
-				element.addEventListener(names[nameCounter], intermediate, false);
+				element.addEventListener(names[nameCounter], callback, false);
 			} else {
 				element.attachEvent('on' + names[nameCounter], intermediate);
 			}
