@@ -46,7 +46,7 @@
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
-	var MOBILE_DECELERATION = 0.004;//pixel/ms²
+	var MOBILE_DECELERATION = 0.0006;//pixel/ms²
 
 	var SMOOTH_SCROLLING_DURATION = 200;
 
@@ -644,6 +644,10 @@
 					initialElement = undefined;
 
 					var speed = deltaY / deltaTime;
+
+					//Cap speed at 3 pixel/ms.
+					speed = Math.max(Math.min(speed, 3), -3);
+
 					var duration = Math.abs(speed / MOBILE_DECELERATION);
 					var targetOffset = speed * duration + 0.5 * MOBILE_DECELERATION * duration * duration;
 					var targetTop = _instance.getScrollTop() - targetOffset;
