@@ -85,10 +85,13 @@ h4 {
 #scrollbar {
 	position:fixed;
 	right:2px;
-	height:100px;
-	width:10px;
-	background:red;
+	height:50px;
+	width:6px;
+	background:#444;
+	background:rgba(0,0,0,0.6);
+	border:1px solid rgba(255,255,255,0.6);
 	z-index:300;
+	border-radius:3px;
 }
 
 #bg1, #bg2, #bg3 {
