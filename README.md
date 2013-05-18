@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.0
+skrollr 0.6.2
 =====
 
 **This is the cutting edge 0.6 version. For the latest stable check out [0.5.14](https://github.com/Prinzhorn/skrollr/tree/0.5.14).**
@@ -488,6 +488,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.2 (2013-05-18)
+-----
+
+* When resizing the browser, `forceHeight` was colliding with the already forced height (#216).
 
 0.6.1 (2013-05-18)
 -----
