@@ -489,6 +489,11 @@ Removes the listener for the given event.
 Changelog
 =====
 
+0.6.1 (2013-05-18)
+-----
+
+* Allow numbers inside of easing function names (#152).
+
 0.6.0 (2013-05-18)
 -----
 
