@@ -49,11 +49,11 @@
 	<div id="rgba-color" data-0="color:rgba(0,0,0,.2);" data-500="color:rgba(50,100,150,.5);">TEST</div>
 	<div id="hsl-color" data-0="color:hsl(0,0%,0%);" data-500="color:hsl(3600,50%,50%);">TEST</div>
 	<div id="hsla-color" data-0="color:hsla(0,0%,0%,.0);" data-500="color:hsla(3600,50%,50%,.5);">TEST</div>
-	<div id="no-interpolation" data-0="right:!0px;" data-500="right:!100px;">TEST</div>
+	<div id="no-interpolation" data-0="right:!0px;" data-499="right:!100px;">TEST</div>
 	<div id="anchor-1" data-top-bottom="right:100px;" data-top="right:0px;">TEST</div>
 	<div id="anchor-2" data-top="right:0px;" data-top-center="right:200px;">TEST</div>
 	<div id="foreign-anchor" data-top="padding:200px;" data-top-center="padding:100px;" data-anchor-target="#anchor-2"></div>
-	<div id="float" data-start="float:none;" data-500="float:left;" style="background:red;">TEST</div>
+	<div id="float" data-start="float:none;" data-499="float:left;" style="background:red;">TEST</div>
 
 	<svg version="1.1" width="200px" height="200px">
 		<rect
@@ -62,10 +62,13 @@
 			data-top="margin:100px;" data-top-bottom="margin:200px;" />
 	</svg>
 
-	<div id="colon-url" data-250="background-image:!none;" data-500='background-image:!url("https://secure.travis-ci.org/Prinzhorn/skrollr.png");'>TEST</div>
-	<div id="period-number" data-250="background-image:!none;" data-500='background-image:!url("https://secure.travis-ci.org/Prinzhorn/skrollr.png?1337");'>TEST</div>
+	<div id="colon-url" data-250="background-image:!none;" data-499='background-image:!url("https://secure.travis-ci.org/Prinzhorn/skrollr.png");'>TEST</div>
+	<div id="period-number" data-250="background-image:!none;" data-499='background-image:!url("https://secure.travis-ci.org/Prinzhorn/skrollr.png?1337");'>TEST</div>
 
-	<div id="easing" data-0="left[begin]:0px;" data-500="left[begin]:50px;">TEST</div>
+	<div id="easing" data-0="left[half]:0px;" data-500="left[half]:50px;">TEST</div>
+	<div id="easing_with_easing_strategy" data-0="left[half]:0px;" data-500="left[half]:50px;" data-edge-strategy="ease">TEST</div>
+
+	<div id="reset-strategy" data-0="left:0px;" data-500="left:50px;" data-edge-strategy="reset" style="left:1337px;">TEST</div>
 
 	<div id="qunit"></div>
 

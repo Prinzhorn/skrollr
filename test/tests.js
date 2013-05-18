@@ -3,9 +3,15 @@ $(window).on('load', function() {
 
 //Initialize skrollr and save the instance.
 var s = skrollr.init({
+	edgeStrategy: 'set',
 	constants: {
 		myconst: 300,
 		my500: 500
+	},
+	easing: {
+		half: function() {
+			return 0.5
+		}
 	}
 });
 
@@ -41,14 +47,9 @@ var scrollTests = function(offset, tests) {
 		expect(countAssertions(tests));
 
 		//Scroll to offset, which will cause rendering (sooner or later)
-		s.setScrollTop(offset);
+		s.setScrollTop(offset, true);
 
 		s.on('render', function(info) {
-			//Due to smooth scrolling we need to make sure we are where we want to be.
-			if(info.curTop !== offset) {
-				return;
-			}
-
 			//Prevent another render event. Only need one for test.
 			s.off('render');
 
@@ -84,9 +85,7 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 17, 'All elements have the .skrollable class');
-	strictEqual($('.rendered:not(rect)').length, 14, 'data-start/0 elements have the .rendered class');
-	strictEqual($('.unrendered:not(rect)').length, 2, 'Elements whose keyframe start later than 0 have the .undrendered class');
+	strictEqual($('.skrollable').length, 19, 'All elements have the .skrollable class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -117,7 +116,7 @@ scrollTests(500, [
 	{
 		element: $('#easing'),
 		styles: {
-			left: '50px'
+			left: '25px'
 		}
 	},
 	{
@@ -187,7 +186,7 @@ scrollTests(0, [
 	{
 		element: $('#easing'),
 		styles: {
-			left: '0px'
+			left: '25px'
 		}
 	},
 	{
@@ -254,7 +253,7 @@ scrollTests(250, [
 	{
 		element: $('#easing'),
 		styles: {
-			left: '0px'
+			left: '25px'
 		}
 	},
 	{
@@ -327,6 +326,24 @@ scrollTests(maxScrollHeight, [
 		element: $('#anchor-1'),
 		styles: {
 			right: '100px'
+		}
+	},
+	{
+		element: $('#easing'),
+		styles: {
+			left: '50px'
+		}
+	},
+	{
+		element: $('#easing_with_easing_strategy'),
+		styles: {
+			left: '25px'
+		}
+	},
+	{
+		element: $('#reset-strategy'),
+		styles: {
+			left: '1337px'
 		}
 	}
 ]);

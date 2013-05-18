@@ -788,8 +788,9 @@
 
 			//If we are before/after the first/last frame, set the styles according to the given edge strategy.
 			if(beforeFirst || afterLast) {
-				//Check if we already handled the edge case last time.
-				if(skrollable.wasEdge) {
+				//Check if we already handled this edge case last time.
+				//Note: using setScrollTop it's possible that we jumped from one edge to the other.
+				if(beforeFirst && skrollable.edge === -1 || afterLast && skrollable.edge === 1) {
 					continue;
 				}
 
@@ -797,7 +798,7 @@
 				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BETWEEN_CLASS]);
 
 				//Remember that we handled the edge case (before/after the first/last keyframe).
-				skrollable.wasEdge = true;
+				skrollable.edge = beforeFirst ? -1 : 1;
 
 				switch(skrollable.edgeStrategy) {
 					case 'reset':
@@ -822,9 +823,10 @@
 						break;
 				}
 			} else {
-				if(skrollable.wasEdge !== false) {//Explicit false check because undefined has a different meaning.
+				//Did we handle an edge last time?
+				if(skrollable.edge !== 0) {
 					_updateClass(element, [SKROLLABLE_CLASS, SKROLLABLE_BETWEEN_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_AFTER_CLASS]);
-					skrollable.wasEdge = false;
+					skrollable.edge = 0;
 				}
 			}
 
