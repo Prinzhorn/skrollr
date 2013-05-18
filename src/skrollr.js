@@ -36,13 +36,15 @@
 	var EVENT_TOUCHCANCEL = 'touchcancel';
 	var EVENT_TOUCHEND = 'touchend';
 
-	var RENDERED_CLASS = 'rendered';
-	var UNRENDERED_CLASS = 'un' + RENDERED_CLASS;
 	var SKROLLABLE_CLASS = 'skrollable';
 	var SKROLLR_CLASS = 'skrollr';
 	var NO_SKROLLR_CLASS = 'no-' + SKROLLR_CLASS;
 	var SKROLLR_DESKTOP_CLASS = SKROLLR_CLASS + '-desktop';
 	var SKROLLR_MOBILE_CLASS = SKROLLR_CLASS + '-mobile';
+
+	var SKROLLR_BEFORE_CLASS = SKROLLR_CLASS + '-before';
+	var SKROLLR_BETWEEN_CLASS = SKROLLR_CLASS + '-between';
+	var SKROLLR_AFTER_CLASS = SKROLLR_CLASS + '-after';
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
@@ -54,8 +56,6 @@
 	var ANCHOR_END = 'end';
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
-
-	var SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY = '___has_rendered_class';
 
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
@@ -225,6 +225,8 @@
 			}
 		}
 
+		_edgeStrategy = options.edgeStrategy || 'ease';
+
 		_listeners = {
 			//Function to be called right before rendering.
 			beforerender: options.beforerender,
@@ -315,6 +317,9 @@
 			//If this particular element should be smooth scrolled.
 			var smoothScrollThis = _smoothScrollingEnabled;
 
+			//The edge strategy for this particular element.
+			var edgeStrategy = _edgeStrategy;
+
 			if(!el.attributes) {
 				continue;
 			}
@@ -339,6 +344,13 @@
 				//Global smooth scrolling can be overridden by the element attribute.
 				if(attr.name === 'data-smooth-scrolling') {
 					smoothScrollThis = attr.value !== 'off';
+
+					continue;
+				}
+
+				//Global edge strategy can be overridden by the element attribute.
+				if(attr.name === 'data-edge-strategy') {
+					edgeStrategy = attr.value;
 
 					continue;
 				}
@@ -413,17 +425,17 @@
 				classAttr = _getClass(el);
 			}
 
-			var skrollable = _skrollables[id] = {
+			_skrollables[id] = {
 				element: el,
 				styleAttr: styleAttr,
 				classAttr: classAttr,
 				anchorTarget: anchorTarget,
 				keyFrames: keyFrames,
-				smoothScrolling: smoothScrollThis
+				smoothScrolling: smoothScrollThis,
+				edgeStrategy: edgeStrategy
 			};
 
-			_updateClass(el, [SKROLLABLE_CLASS, RENDERED_CLASS], [UNRENDERED_CLASS]);
-			skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
+			_updateClass(el, [SKROLLABLE_CLASS], []);
 		}
 
 		//Reflow for the first time.
@@ -775,43 +787,60 @@
 
 		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
 			var skrollable = _skrollables[skrollableIndex];
+			var element = skrollable.element;
 			var frame = skrollable.smoothScrolling ? fakeFrame : actualFrame;
 			var frames = skrollable.keyFrames;
 			var firstFrame = frames[0].frame;
 			var lastFrame = frames[frames.length - 1].frame;
-			var atFirst = frame <= firstFrame;
-			var atLast = frame >= lastFrame;
+			var beforeFirst = frame < firstFrame;
+			var afterLast = frame > lastFrame;
+			var firstOrLastFrame = frames[beforeFirst ? 0 : frames.length - 1];
 			var key;
 			var value;
 
-			//If we are before/after or exactly at the first/last frame, the element gets all props from this key frame.
-			if(atFirst || atLast) {
-				var props = frames[atFirst ? 0 : frames.length - 1].props;
-
-				for(key in props) {
-					if(hasProp.call(props, key)) {
-						value = _interpolateString(props[key].value);
-
-						_setStyle(skrollable.element, key, value);
-					}
+			//If we are before/after the first/last frame, set the styles according to the given edge strategy.
+			if(beforeFirst || afterLast) {
+				//Check if we already handled the edge case last time.
+				if(skrollable.wasEdge) {
+					continue;
 				}
 
-				//Add the unrendered class when before or after first/last frame.
-				if(skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] && (frame < firstFrame || frame > lastFrame)) {
-					_updateClass(skrollable.element, [UNRENDERED_CLASS], [RENDERED_CLASS]);
+				//Add the skrollr-before or -after class.
+				_updateClass(element, [beforeFirst ? SKROLLR_BEFORE_CLASS : SKROLLR_AFTER_CLASS], [SKROLLR_BETWEEN_CLASS]);
 
-					//Does a faster job than sth. like hasClass('string')
-					skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = false;
+				//Remember that we handled the edge case (before/after the first/last keyframe).
+				skrollable.wasEdge = true;
+
+				//TODO: check if we already handled this case (in between). If so, continue; right away.
+				switch(skrollable.edgeStrategy) {
+					case 'reset':
+						//TODO: reset className and style.cssText
+						//Handle right here and continue;
+						//Create a reset() and unreset() method.
+						continue;
+					case 'set':
+						var props = firstOrLastFrame.props;
+
+						for(key in props) {
+							if(hasProp.call(props, key)) {
+								value = _interpolateString(props[key].value);
+
+								_setStyle(element, key, value);
+							}
+						}
+
+						continue;
+					default:
+					case 'ease':
+						//Handle this case like it would be exactly at first/last keyframe and just pass it on.
+						frame = firstOrLastFrame.frame;
+						break;
 				}
-
-				continue;
-			}
-
-			//We are between two frames.
-			if(!skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY]) {
-				_updateClass(skrollable.element, [RENDERED_CLASS], [UNRENDERED_CLASS]);
-
-				skrollable[SKROLLABLE_HAS_RENDERED_CLASS_PROPERTY] = true;
+			} else {
+				if(skrollable.wasEdge !== false) {//Explicit false check because undefined has a different meaning.
+					_updateClass(element, [SKROLLR_BETWEEN_CLASS], [SKROLLR_BEFORE_CLASS, SKROLLR_AFTER_CLASS]);
+					skrollable.wasEdge = false;
+				}
 			}
 
 			//Find out between which two key frames we are right now.
@@ -835,7 +864,7 @@
 
 							value = _interpolateString(value);
 
-							_setStyle(skrollable.element, key, value);
+							_setStyle(element, key, value);
 						}
 					}
 
@@ -846,7 +875,7 @@
 	};
 
 	/**
-	 * Renders all elements
+	 * Renders all elements.
 	 */
 	var _render = function() {
 		//We may render something else than the actual scrollbar position.
@@ -1232,7 +1261,7 @@
 	var _getClass = function(element) {
 		var prop = 'className';
 
-		//SVG support by using className.baseVal instead of just className
+		//SVG support by using className.baseVal instead of just className.
 		if(window.SVGElement && element instanceof window.SVGElement) {
 			element = element[prop];
 			prop = 'baseVal';
@@ -1244,13 +1273,13 @@
 	/**
 	 * Adds and removes a CSS classes.
 	 * Works with SVG as well.
-	 * add and remove are either arrays of strings,
+	 * add and remove are arrays of strings,
 	 * or if remove is ommited add is a string and overwrites all classes.
 	 */
 	var _updateClass = function(element, add, remove) {
 		var prop = 'className';
 
-		//SVG support by using className.baseVal instead of just className
+		//SVG support by using className.baseVal instead of just className.
 		if(window.SVGElement && element instanceof window.SVGElement) {
 			element = element[prop];
 			prop = 'baseVal';
@@ -1379,6 +1408,8 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
+
+	var _edgeStrategy;
 
 
 	//Mobile specific vars. Will be stripped by UglifyJS when not in use.
