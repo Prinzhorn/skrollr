@@ -94,6 +94,8 @@ h4 {
 	border-radius:3px;
 }
 
+.skrollr-desktop #scrollbar {display:none;}
+
 #bg1, #bg2, #bg3 {
 	z-index:50;
 	top:0;
