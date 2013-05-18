@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.6.1'
+		VERSION: '0.6.2'
 	};
 
 	//Minify optimization.
@@ -1254,6 +1254,11 @@
 	var _reflow = function() {
 		//Will be recalculated by _updateDependentKeyFrames.
 		_maxKeyFrame = 0;
+
+		if(_forceHeight && !_isMobile) {
+			//un-"force" the height to not mess with the calculations in _updateDependentKeyFrames (#216).
+			body.style.height = 'auto';
+		}
 
 		_updateDependentKeyFrames();
 
