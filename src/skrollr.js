@@ -1272,7 +1272,8 @@
 	 * Returns the height of the document.
 	 */
 	var _getDocumentHeight = window.foo = function() {
-		var bodyHeight = Math.max(_skrollrBody && _skrollrBody.offsetHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
+		var skrollrBodyHeight = (_skrollrBody && _skrollrBody.offsetHeight || 0);
+		var bodyHeight = Math.max(skrollrBodyHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
 
 		return bodyHeight - documentElement.clientHeight;
 	};
