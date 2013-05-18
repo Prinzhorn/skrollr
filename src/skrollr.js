@@ -37,14 +37,14 @@
 	var EVENT_TOUCHEND = 'touchend';
 
 	var SKROLLABLE_CLASS = 'skrollable';
+	var SKROLLABLE_BEFORE_CLASS = SKROLLABLE_CLASS + '-before';
+	var SKROLLABLE_BETWEEN_CLASS = SKROLLABLE_CLASS + '-between';
+	var SKROLLABLE_AFTER_CLASS = SKROLLABLE_CLASS + '-after';
+
 	var SKROLLR_CLASS = 'skrollr';
 	var NO_SKROLLR_CLASS = 'no-' + SKROLLR_CLASS;
 	var SKROLLR_DESKTOP_CLASS = SKROLLR_CLASS + '-desktop';
 	var SKROLLR_MOBILE_CLASS = SKROLLR_CLASS + '-mobile';
-
-	var SKROLLR_BEFORE_CLASS = SKROLLR_CLASS + '-before';
-	var SKROLLR_BETWEEN_CLASS = SKROLLR_CLASS + '-between';
-	var SKROLLR_AFTER_CLASS = SKROLLR_CLASS + '-after';
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
@@ -249,19 +249,19 @@
 			targetTop: _instance.getScrollTop()
 		};
 
-		_skrollrBody = document.getElementById('skrollr-body');
-
-		//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
-		if(_skrollrBody) {
-			_detect3DTransforms();
-		}
-
 		//A custom check function may be passed.
 		_isMobile = ((options.mobileCheck || function() {
 			return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
 		})());
 
 		if(_isMobile) {
+			_skrollrBody = document.getElementById('skrollr-body');
+
+			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
+			if(_skrollrBody) {
+				_detect3DTransforms();
+			}
+
 			_initMobile();
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS], [NO_SKROLLR_CLASS]);
 		} else {
@@ -705,10 +705,6 @@
 		var skrollableIndex;
 		var skrollablesLength;
 
-		//For relative mode, we need to reset style and class. See #80
-		var styleAttr;
-		var classAttr;
-
 		//First process all relative-mode elements and find the max key frame.
 		skrollableIndex = 0;
 		skrollablesLength = _skrollables.length;
@@ -726,19 +722,11 @@
 				kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
-					//Save the current style and class (#80)
-					styleAttr = element.style.cssText;
-					classAttr = _getClass(element);
-
-					//Reset style and class to original (#80)
-					element.style.cssText = skrollable.styleAttr;
-					_updateClass(element, skrollable.classAttr);
+					_reset(element);
 
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 
-					//Now set style and class back to what skrollr did to it.
-					element.style.cssText = styleAttr;
-					_updateClass(element, classAttr);
+					_reset(element, true);
 				}
 
 				//Only search for max key frame when forceHeight is enabled.
@@ -806,17 +794,14 @@
 				}
 
 				//Add the skrollr-before or -after class.
-				_updateClass(element, [beforeFirst ? SKROLLR_BEFORE_CLASS : SKROLLR_AFTER_CLASS], [SKROLLR_BETWEEN_CLASS]);
+				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BETWEEN_CLASS]);
 
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.wasEdge = true;
 
-				//TODO: check if we already handled this case (in between). If so, continue; right away.
 				switch(skrollable.edgeStrategy) {
 					case 'reset':
-						//TODO: reset className and style.cssText
-						//Handle right here and continue;
-						//Create a reset() and unreset() method.
+						_reset(element);
 						continue;
 					case 'set':
 						var props = firstOrLastFrame.props;
@@ -838,7 +823,7 @@
 				}
 			} else {
 				if(skrollable.wasEdge !== false) {//Explicit false check because undefined has a different meaning.
-					_updateClass(element, [SKROLLR_BETWEEN_CLASS], [SKROLLR_BEFORE_CLASS, SKROLLR_AFTER_CLASS]);
+					_updateClass(element, [SKROLLABLE_CLASS, SKROLLABLE_BETWEEN_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_AFTER_CLASS]);
 					skrollable.wasEdge = false;
 				}
 			}
@@ -1139,6 +1124,44 @@
 		return val[0].replace(rxInterpolateString, function() {
 			return val[valueIndex++];
 		});
+	};
+
+	/**
+	 * Resets the class and style attribute to what it was before skrollr manipulated the element.
+	 * Also remembers the values it had before reseting, in order to undo the reset.
+	 */
+	var _reset = function(elements, undo) {
+		//We accept a single element or an array of elements.
+		elements = [].concat(elements);
+
+		var skrollable;
+		var element;
+		var elementsIndex = 0;
+		var elementsLength = elements.length;
+
+		for(; elementsIndex < elementsLength; elementsIndex++) {
+			element = elements[elementsIndex];
+			skrollable = _skrollables[element[SKROLLABLE_ID_DOM_PROPERTY]];
+
+			//Couldn't find the skrollable for this DOM element.
+			if(!skrollable) {
+				continue;
+			}
+
+			if(undo) {
+				//Reset class and style to the "dirty" (set by skrollr) values.
+				element.style.cssText = skrollable.dirtyStyleAttr;
+				_updateClass(element, skrollable.dirtyClassAttr);
+			} else {
+				//Remember the "dirty" (set by skrollr) class and style.
+				skrollable.dirtyStyleAttr = element.style.cssText;
+				skrollable.dirtyClassAttr = _getClass(element);
+
+				//Reset class and style to what it originally was.
+				element.style.cssText = skrollable.styleAttr;
+				_updateClass(element, skrollable.classAttr);
+			}
+		}
 	};
 
 	/**

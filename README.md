@@ -339,6 +339,39 @@ function() {
 }
 ```
 
+### edgeStrategy='ease'
+
+This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
+
+One of three options are possible
+
+* `set`: When before/after the first/last keyframe, apply the styles of the first/last keyframe to the element.
+* `ease` _(default)_: Same as set, but the values will be transformed using the given easing function.
+* `reset`: When before/after the first/last keyframe, apply the styles which the element had before skrollr did anything. This means resetting the class attribute as well as removing all styles which have been applied to the `style` property. This means the element won't have any `skrollable-*` CSS classes.
+
+Example:
+
+Given the following element with two keyframes
+
+```html
+<div data-1000="left:0%;top:0%;" data-2000="left:50%;top:100%;" style="left:-100%;" class="section"></div>
+```
+
+and the following easing function which always returns `0.5` (I know it's pointless, but it's just an example. A real world example would be an easing function that represents a curve and starts somewhere between `0` and `1`, but not at `1`)
+
+```js
+function(p) {
+	return 0.5;
+}
+```
+
+and imagine the scrollbar is at `237`, which is below the first keyframe which is at `1000`.
+
+* `set` will result in `<div style="left:0%;top:0%;" class="section skrollable skrollable-before"></div>` which is plain `data-1000`.
+* `ease` will result in `<div style="left:25%;top:50%;" class="section skrollable skrollable-before"></div>` which is `0.5 * data-1000`.
+* `reset` will result in `<div style="left:-100%;" class="section"></div>` which is what the element originally had. Note how `top` is missing.
+
+
 ### beforerender
 
 A listener function getting called each time right before we render everything. The function will be passed an object with the following properties:
@@ -476,16 +509,19 @@ Removes the listener for the given event.
 Changelog
 =====
 
-0.6.0 (2013-04-*)
+0.6.0 (2013-05-*)
 -----
 
 **Expect things to break when coming from 0.5! Read through the changelog. Migration is not hard.**
 
-* There's no more `skrollr.mobile.js` file. You only need `skrollr.js`. You no longer need to conditionally include `skrollr.mobile.js`.
+* **breaking** There's no more `skrollr.mobile.js` file. You only need `skrollr.js`. You no longer need to conditionally include `skrollr.mobile.js`.
 * You can configure how skrollr detects mobile browsers using the `mobileCheck` option (check out the documentation).
-* The meaning of the `#skrollr-body` element changed. Put all static elements inside of it and all absolute/fixed elements outside.
-* The `rendered` and `unrendered` classes where renamed because they were confusing and wrong. They're now called `skrollable-before` and `skrollable-after`, because that's their meaning (the element with these classes is before/after the first/last keyframe).
+* **possibly breaking** The meaning of the `#skrollr-body` element changed. Put all static elements inside of it and all absolute/fixed elements outside. It doesn't need to be the first child of the body anymore.
+* **breaking** The `rendered` and `unrendered` classes where renamed because they were confusing and wrong. They're now called `skrollable-before` and `skrollable-after`, because that's their meaning (the element with these classes is before/after the first/last keyframe).
 	* Added a new class `skrollable-between`, because symmetry. That's why.
+* Easing functions are now applied when exactly at a keyframe (#132).
+* **possibly breaking** The behavior changed for the case when the scroll position is before/after the first/last keyframe (I'm just gonna use "before first" from now on, because "after last" is analog). In 0.5 the behavior was not exactly specified and buggy (see item above regarding #132). Skrollr was applying the styles of the first keyframe to the element for all scroll position that were before the first keyframe. E.g. when `data-100="top:200px;"` was the first keyframe, the element had `top:200px;` at all scroll positions before (all from `0` to `99`). From now on you can specify the behavior you want (see `edgeStrategy` option for details, set it to `set` for old behavior).
+
 
 0.5.14
 -----
