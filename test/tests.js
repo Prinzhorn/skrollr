@@ -9,7 +9,7 @@ var s = skrollr.init({
 		my500: 500
 	},
 	easing: {
-		half: function() {
+		half1: function() {
 			return 0.5
 		}
 	}
