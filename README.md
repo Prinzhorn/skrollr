@@ -11,8 +11,18 @@ Designer friendly. No JavaScript skills needed. Just plain CSS and HTML.
 
 _Actually, skrollr is much more than "just" **parallax scrolling**. It's a full-fledged scrolling animation library. In fact, you can use it and still have no parallax scrolling at all. But I wanted to sound hip and use some buzz-words. By the way, skrollr leverages HTML5 and CSS3 ;-)_
 
-In the wild
+Resources
 =====
+
+Official plugins
+-----
+
+* [skrollr-menu](https://github.com/Prinzhorn/skrollr-menu) - Hash navigation
+* [skrollr-ie](https://github.com/Prinzhorn/skrollr-ie) - IE < 9 CSS fixes
+* [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets) - Keyframes inside CSS files
+
+In the wild
+-----
 
 * http://moto.oakley.com/
 * http://pixeljuice.ru/en
@@ -32,9 +42,8 @@ In the wild
 * http://jonnyacevedo.com/
 
 Further resources (tutorials etc.)
-=====
+-----
 
-* https://github.com/Prinzhorn/skrollr-stylesheets
 * http://www.guardian.co.uk/info/developer-blog/2012/nov/20/how-we-built-america-elect-graphic-novel-interactive
 * http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
@@ -61,13 +70,6 @@ Other libraries require you to write JavaScript in order to define your animatio
 With skrollr, you put the definition of your key frames right where they belong (to the element) using a syntax you already know (plain CSS).
 
 If you rather want the keyframes inside a separate file, take a look at [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
-
-Files you should know about
-------
-
-* _**dist/skrollr.min.js**_ - The skrollr core file. That's all you need for mondern desktop and mobile browsers.
-* _**dist/skrollr.ie.min.js**_ - For IE < 9, include it after the core using conditional comments. The plugin makes IE understand `opacity`, `rgb()` and `hsl()` (the ones with alpha are mapped to them) and it creates a very simple `document.querySelector` polyfill which only supports ID selectores (using `getElementById`). Needed if you want to use [data-anchor-target](#relative-mode-or-viewport-mode).
-* _**shim.html**_ - Sample file to kickstart a project for desktop and mobile.
 
 Let's get serious
 ------
@@ -187,31 +189,7 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 Hash navigation
 -----
 
-In case you want to use hash links, e.g. `<a href="#section-about">About</a>` you need to know the following:
-
-* If you animate `top`, `margin-top` or anything that moves the element up/down, the browser won't be able to jump to the correct position and you may end up somewhere else
-* If you're using skrollr on mobile they won't work at all, because we're not using native scrolling there
-
-**But** we've got you covered. Download the `dist/skrollr.menu.min.js` file and include it right after the `skrollr.min.js` file. Then you need to call `skrollr.menu.init(s)` passing the skrollr instance as first parameter and optionally some options. Here's a full example.
-
-```js
-var s = skrollr.init(/*other stuff*/);
-
-//The options (second parameter) are all optional. The values shown are the default values.
-skrollr.menu.init(s, {
-	animate: true, //skrollr will smoothly animate to the new position using `animateTo`.
-	duration: 500, //How long the animation should take in ms.
-	easing: 'sqrt' //The easing function to use.
-});
-```
-
-And in order to fix the problem with the wrong offset, you are able to specify the target scroll position right at the link, e.g.
-
-```html
-<a href="#section-about" data-menu-top="500">About</a>
-```
-
-This link will cause the page to scroll to `500`. But you should let the the href point to the actual target because if skrollr or js are disabled, the links will still work.
+Check out the [skrollr-menu](https://github.com/Prinzhorn/skrollr-menu) plugin.
 
 Working with constants
 -----

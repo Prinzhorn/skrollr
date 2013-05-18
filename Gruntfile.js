@@ -32,9 +32,7 @@ module.exports = function(grunt) {
 
 			all: {
 				files: {
-					'dist/skrollr.min.js': ['src/skrollr.js'],
-					'dist/skrollr.ie.min.js': ['src/plugins/skrollr.ie.js'],
-					'dist/skrollr.menu.min.js': ['src/plugins/skrollr.menu.js']
+					'dist/skrollr.min.js': 'src/skrollr.js'
 				}
 			}
 		}
