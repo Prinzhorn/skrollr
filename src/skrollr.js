@@ -1252,6 +1252,8 @@
 	};
 
 	var _reflow = function() {
+		var pos = _instance.getScrollTop();
+
 		//Will be recalculated by _updateDependentKeyFrames.
 		_maxKeyFrame = 0;
 
@@ -1262,14 +1264,17 @@
 
 		_updateDependentKeyFrames();
 
-		//The scroll offset may now be larger than needed (on desktop the browser/os prevents scrolling farther than the bottom).
-		if(_isMobile) {
-			_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
-		}
-
 		if(_forceHeight && !_isMobile) {
 			//"force" the height.
 			body.style.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+		}
+
+		//The scroll offset may now be larger than needed (on desktop the browser/os prevents scrolling farther than the bottom).
+		if(_isMobile) {
+			_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
+		} else {
+			//Remember and reset the scroll pos (#217).
+			_instance.setScrollTop(pos, true);
 		}
 
 		_forceRender = true;
@@ -1278,7 +1283,7 @@
 	/*
 	 * Returns the height of the document.
 	 */
-	var _getDocumentHeight = window.foo = function() {
+	var _getDocumentHeight = function() {
 		var skrollrBodyHeight = (_skrollrBody && _skrollrBody.offsetHeight || 0);
 		var bodyHeight = Math.max(skrollrBodyHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
 
