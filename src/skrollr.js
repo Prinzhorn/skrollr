@@ -11,7 +11,7 @@
 	/*
 	 * Global api.
 	 */
-	var skrollr = window.skrollr = {
+	window.skrollr = {
                 instances: [],
 		//Main entry point.
 		init: function(options) {
@@ -259,10 +259,10 @@
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(this._skrollrBody) {
-				_detect3DTransforms();
+				_detect3DTransforms.call(this);
 			}
 
-			_initMobile();
+			_initMobile.call(this);
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS], [NO_SKROLLR_CLASS]);
 		} else {
                         this._skrollrBody = options.skrollrBody || document.getElementById( options.id || 'skrollr-body' ) || document;
@@ -1440,16 +1440,16 @@
 	*/
 
         var _setupVars = function() {
-            this._skrollables;
+//            this._skrollables;
 
-            this._skrollrBody;
+//            this._skrollrBody;
 
-            this._listeners;
-            this._forceHeight;
+//            this._listeners;
+//            this._forceHeight;
             this._maxKeyFrame = 0;
 
             this._scale = 1;
-            this._constants;
+//            this._constants;
 
             //Current direction (up/down).
             this._direction = 'down';
@@ -1461,21 +1461,21 @@
             this._lastRenderCall = _now();
 
             //Will contain data about a running scrollbar animation, if any.
-            this._scrollAnimation;
+//            this._scrollAnimation;
 
-            this._smoothScrollingEnabled;
+//            this._smoothScrollingEnabled;
 
             //Will contain settins for smooth scrolling if enabled.
-            this._smoothScrolling;
+//            this._smoothScrolling;
 
             //Can be set by any operation/event to force rendering even if the scrollbar didn't move.
-            this._forceRender;
+//            this._forceRender;
 
             //Each skrollable gets an unique ID incremented for each skrollable.
             //The ID is the index in the this._skrollables array.
             this._skrollableIdCounter = 0;
 
-            this._edgeStrategy;
+//            this._edgeStrategy;
 
             //Mobile specific vars. Will be stripped by UglifyJS when not in use.
             this._isMobile = false;
@@ -1484,7 +1484,7 @@
             this._mobileOffset = 0;
 
             //If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
-            this._translateZ;
+//            this._translateZ;
         };
 
 }(window, document));
