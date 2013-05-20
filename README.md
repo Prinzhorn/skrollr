@@ -24,6 +24,7 @@ Official plugins
 In the wild
 -----
 
+* http://nclud.com/welcome/
 * http://moto.oakley.com/
 * http://pixeljuice.ru/en
 * http://everylastdrop.co.uk/
@@ -33,7 +34,6 @@ In the wild
 * http://www.officeline.se/kampanj/
 * http://www.direct.tv/thekingsroadmap/
 * http://www.evanshalshaw.com/bondcars/
-* http://www.caavadesign.com/
 * http://www.edel-und-stein.com/
 * http://erikreyna.com/ofthestreet/index.html
 * https://squareup.com/careers/creative
