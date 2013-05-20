@@ -1440,7 +1440,7 @@
 	*/
 
         var _setupVars = function() {
-//            this._skrollables;
+            this._skrollables = [];
 
 //            this._skrollrBody;
 
