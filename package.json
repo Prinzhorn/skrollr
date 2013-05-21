@@ -2,7 +2,7 @@
   "name": "skrollr",
   "title": "skrollr",
   "description": "Stand-alone parallax scrolling library with zero dependencies.",
-  "version": "0.6.3",
+  "version": "0.6.4",
   "homepage": "https://github.com/Prinzhorn/skrollr",
   "author": {
     "name": "Alexander Prinzhorn",

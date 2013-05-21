@@ -489,6 +489,11 @@ Removes the listener for the given event.
 Changelog
 =====
 
+0.6.4 (2013-05-21)
+-----
+
+* Fixed that some elements got the `skrollable-before` **and** `skrollable-after` class at the same time.
+
 0.6.3 (2013-05-19)
 -----
 
