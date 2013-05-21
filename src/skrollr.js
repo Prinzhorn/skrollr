@@ -452,9 +452,6 @@
 				continue;
 			}
 
-			//Make sure they are in order
-			sk.keyFrames.sort(_keyFrameComparator);
-
 			//Parse the property string to objects
 			_parseProps(sk);
 
@@ -760,6 +757,8 @@
 					kf.frame = _maxKeyFrame - kf.offset;
 				}
 			}
+
+			skrollable.keyFrames.sort(_keyFrameComparator);
 		}
 	};
 
@@ -795,7 +794,7 @@
 				}
 
 				//Add the skrollr-before or -after class.
-				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BETWEEN_CLASS]);
+				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_BETWEEN_CLASS, SKROLLABLE_AFTER_CLASS]);
 
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.edge = beforeFirst ? -1 : 1;
@@ -1330,6 +1329,16 @@
 		//Cache current classes. We will work on a string before passing back to DOM.
 		var val = element[prop];
 
+		//All classes to be removed.
+		var classRemoveIndex = 0;
+		var removeLength = remove.length;
+
+		for(; classRemoveIndex < removeLength; classRemoveIndex++) {
+			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
+		}
+
+		val = _trim(val);
+
 		//All classes to be added.
 		var classAddIndex = 0;
 		var addLength = add.length;
@@ -1339,14 +1348,6 @@
 			if(_untrim(val).indexOf(_untrim(add[classAddIndex])) === -1) {
 				val += ' ' + add[classAddIndex];
 			}
-		}
-
-		//All classes to be removed.
-		var classRemoveIndex = 0;
-		var removeLength = remove.length;
-
-		for(; classRemoveIndex < removeLength; classRemoveIndex++) {
-			val = _untrim(val).replace(_untrim(remove[classRemoveIndex]), ' ');
 		}
 
 		element[prop] = _trim(val);
