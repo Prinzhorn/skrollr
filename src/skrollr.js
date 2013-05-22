@@ -115,6 +115,8 @@
 
 		//Did we even detect a prefix?
 		if(!theCSSPrefix) {
+			theCSSPrefix = theDashedCSSPrefix = '';
+
 			return;
 		}
 
