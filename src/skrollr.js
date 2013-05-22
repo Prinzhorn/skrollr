@@ -88,8 +88,8 @@
 	var rxGradient = /[a-z\-]+-gradient/g;
 
 	//Vendor prefix. Will be set once skrollr gets initialized.
-	var theCSSPrefix;
-	var theDashedCSSPrefix;
+	var theCSSPrefix = '';
+	var theDashedCSSPrefix = '';
 
 	//Will be called once (when skrollr gets initialized).
 	var detectCSSPrefix = function() {
