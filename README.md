@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.3
+skrollr 0.6.5
 =====
 
 **This is the cutting edge 0.6 version. For the latest stable check out [0.5.14](https://github.com/Prinzhorn/skrollr/tree/0.5.14).**
@@ -488,6 +488,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.5 (2013-05-22)
+-----
+
+* Fixed crash in IE < 9 because the detected prefix was `null` (#220).
 
 0.6.4 (2013-05-21)
 -----
