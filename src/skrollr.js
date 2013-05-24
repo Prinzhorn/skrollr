@@ -212,7 +212,30 @@
 
 		detectCSSPrefix();
 
-                _setupVars.call(this);
+                this._skrollables = [];
+
+                this._maxKeyFrame = 0;
+
+                this._scale = 1;
+
+                //Current direction (up/down).
+                this._direction = 'down';
+
+                //The last top offset value. Needed to determine direction.
+                this._lastTop = -1;
+
+                //The last time we called the render method (doesn't mean we rendered!).
+                this._lastRenderCall = _now();
+
+                //Each skrollable gets an unique ID incremented for each skrollable.
+                //The ID is the index in the this._skrollables array.
+                this._skrollableIdCounter = 0;
+
+                //Mobile specific vars. Will be stripped by UglifyJS when not in use.
+                this._isMobile = false;
+
+                //The virtual scroll offset when using mobile scrolling.
+                this._mobileOffset = 0;
 
 		options = options || {};
 
@@ -1445,53 +1468,5 @@
 			]
 		};
 	*/
-
-        var _setupVars = function() {
-            this._skrollables = [];
-
-//            this._skrollrBody;
-
-//            this._listeners;
-//            this._forceHeight;
-            this._maxKeyFrame = 0;
-
-            this._scale = 1;
-//            this._constants;
-
-            //Current direction (up/down).
-            this._direction = 'down';
-
-            //The last top offset value. Needed to determine direction.
-            this._lastTop = -1;
-
-            //The last time we called the render method (doesn't mean we rendered!).
-            this._lastRenderCall = _now();
-
-            //Will contain data about a running scrollbar animation, if any.
-//            this._scrollAnimation;
-
-//            this._smoothScrollingEnabled;
-
-            //Will contain settins for smooth scrolling if enabled.
-//            this._smoothScrolling;
-
-            //Can be set by any operation/event to force rendering even if the scrollbar didn't move.
-//            this._forceRender;
-
-            //Each skrollable gets an unique ID incremented for each skrollable.
-            //The ID is the index in the this._skrollables array.
-            this._skrollableIdCounter = 0;
-
-//            this._edgeStrategy;
-
-            //Mobile specific vars. Will be stripped by UglifyJS when not in use.
-            this._isMobile = false;
-
-            //The virtual scroll offset when using mobile scrolling.
-            this._mobileOffset = 0;
-
-            //If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
-//            this._translateZ;
-        };
 
 }(window, document));
