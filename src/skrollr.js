@@ -304,10 +304,12 @@
 
 		var requestAnimFrame = polyfillRAF.call(this);
 
+                var _this = this;
+
                 if (!options.disableAutoStart) {
                     //Let's go.
                     (function animloop(){
-                            _render();
+                            _render.call(_this);
                             requestAnimFrame(animloop);
                     }());
                 }
@@ -774,11 +776,11 @@
 				kf = keyFrames[keyFrameIndex];
 
 				if(kf.mode === 'relative') {
-					_reset(element);
+					_reset.call(this, element);
 
 					kf.frame = this.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 
-					_reset(element, true);
+					_reset.call(this, element, true);
 				}
 
 				//Only search for max key frame when forceHeight is enabled.
@@ -1189,14 +1191,13 @@
 		elements = [].concat(elements);
 
 		var skrollable;
-                var skrollables = typeof this._skrollables !== 'object' ? [] : this._skrollables;
 		var element;
 		var elementsIndex = 0;
 		var elementsLength = elements.length;
 
 		for(; elementsIndex < elementsLength; elementsIndex++) {
 			element = elements[elementsIndex];
-			skrollable = skrollables[element[SKROLLABLE_ID_DOM_PROPERTY]];
+			skrollable = this._skrollables[element[SKROLLABLE_ID_DOM_PROPERTY]];
 
 			//Couldn't find the skrollable for this DOM element.
 			if(!skrollable) {
