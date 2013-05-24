@@ -216,6 +216,8 @@
 
 		options = options || {};
 
+                this.id = options.id || 'skrollr-'+skrollr.instances.length;
+
 		this._constants = options.constants || {};
 
 		//We allow defining custom easings or overwrite existing.
@@ -255,7 +257,7 @@
 		})());
 
 		if(this._isMobile) {
-			this._skrollrBody = document.getElementById( options.id || 'skrollr-body' );
+			this._skrollrBody = options.skrollrBody || document.getElementById( options.id || 'skrollr-body' );
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(this._skrollrBody) {
@@ -629,6 +631,8 @@
 		var lastTouchTime;
 		var deltaTime;
 
+                var _this = this;
+
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
 			e.preventDefault();
 
@@ -655,7 +659,7 @@
 					deltaY = currentTouchY - lastTouchY;
 					deltaTime = currentTouchTime - lastTouchTime;
 
-					this.setScrollTop(this._mobileOffset - deltaY);
+					_this.setScrollTop(_this._mobileOffset - deltaY);
 
 					lastTouchY = currentTouchY;
 					lastTouchTime = currentTouchTime;
@@ -671,7 +675,9 @@
 					if(distance2 < 49) {
 						//It was a tap, click the element.
 						initialElement.focus();
-						initialElement.click();
+                                                if (typeof initialElement.click === 'function') {
+                                                    initialElement.click();
+                                                }
 
 						return;
 					}
@@ -685,16 +691,16 @@
 
 					var duration = Math.abs(speed / MOBILE_DECELERATION);
 					var targetOffset = speed * duration + 0.5 * MOBILE_DECELERATION * duration * duration;
-					var targetTop = this.getScrollTop() - targetOffset;
+					var targetTop = _this.getScrollTop() - targetOffset;
 
 					//Relative duration change for when scrolling above bounds.
 					var targetRatio = 0;
 
 					//Change duration proportionally when scrolling would leave bounds.
-					if(targetTop > this._maxKeyFrame) {
-						targetRatio = (this._maxKeyFrame - targetTop) / targetOffset;
+					if(targetTop > _this._maxKeyFrame) {
+						targetRatio = (_this._maxKeyFrame - targetTop) / targetOffset;
 
-						targetTop = this._maxKeyFrame;
+						targetTop = _this._maxKeyFrame;
 					} else if(targetTop < 0) {
 						targetRatio = -targetTop / targetOffset;
 
@@ -703,7 +709,7 @@
 
 					duration = duration * (1 - targetRatio);
 
-					this.animateTo(targetTop, {easing: 'outCubic', duration: duration});
+					_this.animateTo(targetTop, {easing: 'outCubic', duration: duration});
 					break;
 			}
 		});
@@ -1160,13 +1166,14 @@
 		elements = [].concat(elements);
 
 		var skrollable;
+                var skrollables = this._skrollables;
 		var element;
 		var elementsIndex = 0;
 		var elementsLength = elements.length;
 
 		for(; elementsIndex < elementsLength; elementsIndex++) {
 			element = elements[elementsIndex];
-			skrollable = this._skrollables[element[SKROLLABLE_ID_DOM_PROPERTY]];
+			skrollable = skrollables[element[SKROLLABLE_ID_DOM_PROPERTY]];
 
 			//Couldn't find the skrollable for this DOM element.
 			if(!skrollable) {
