@@ -1189,7 +1189,7 @@
 		elements = [].concat(elements);
 
 		var skrollable;
-                var skrollables = this._skrollables === undefined ? [] : this._skrollables;
+                var skrollables = typeof this._skrollables !== 'object' ? [] : this._skrollables;
 		var element;
 		var elementsIndex = 0;
 		var elementsLength = elements.length;
