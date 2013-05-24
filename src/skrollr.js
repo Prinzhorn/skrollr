@@ -216,7 +216,7 @@
 
 		options = options || {};
 
-                this.id = options.id || 'skrollr-'+skrollr.instances.length;
+                this.id = options.id || 'skrollr-'+window.skrollr.instances.length;
 
 		this._constants = options.constants || {};
 
