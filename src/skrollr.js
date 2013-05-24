@@ -856,7 +856,7 @@
 
 				switch(skrollable.edgeStrategy) {
 					case 'reset':
-						_reset(element);
+						_reset.call(this, element);
 						continue;
 					case 'set':
 						var props = firstOrLastFrame.props;
