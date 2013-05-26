@@ -24,6 +24,7 @@ Official plugins
 In the wild
 -----
 
+* http://www.entropy-thegame.com/
 * http://nclud.com/welcome/
 * http://moto.oakley.com/
 * http://pixeljuice.ru/en
