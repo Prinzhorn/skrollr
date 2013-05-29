@@ -24,6 +24,7 @@ Official plugins
 In the wild
 -----
 
+* http://www.photo-mark.com/funhouse/chess/
 * http://www.entropy-thegame.com/
 * http://nclud.com/welcome/
 * http://moto.oakley.com/
