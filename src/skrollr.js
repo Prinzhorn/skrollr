@@ -48,7 +48,7 @@
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
-	var MOBILE_DECELERATION = 0.0006;//pixel/ms²
+	var MOBILE_DECELERATION = 0.008;//pixel/ms²
 
 	var SMOOTH_SCROLLING_DURATION = 200;
 
