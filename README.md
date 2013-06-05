@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.5
+skrollr 0.6.6
 =====
 
 **This is the cutting edge 0.6 version. For the latest stable check out [0.5.14](https://github.com/Prinzhorn/skrollr/tree/0.5.14).**
@@ -490,6 +490,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.6 (2013-06-05)
+-----
+
+* Fixed IE plugin not working. This was caused by assigning `skrollr.setStyle` to a local variable inside the skrollr core. Since the IE plugin monkey-patches the skrollr.setStyle function, the core didn't notice the change (#199 comment 18986949).
 
 0.6.5 (2013-05-22)
 -----
