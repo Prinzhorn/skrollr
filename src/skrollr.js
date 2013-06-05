@@ -558,7 +558,7 @@
 			//That's were we actually "scroll" on mobile.
 			if(_skrollrBody) {
 				//Set the transform ("scroll it").
-				_setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
+				skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
 			}
 		} else {
 			window.scrollTo(0, top);
@@ -812,7 +812,7 @@
 							if(hasProp.call(props, key)) {
 								value = _interpolateString(props[key].value);
 
-								_setStyle(element, key, value);
+								skrollr.setStyle(element, key, value);
 							}
 						}
 
@@ -852,7 +852,7 @@
 
 							value = _interpolateString(value);
 
-							_setStyle(element, key, value);
+							skrollr.setStyle(element, key, value);
 						}
 					}
 
@@ -1172,7 +1172,7 @@
 	 */
 	var _detect3DTransforms = function() {
 		_translateZ = 'translateZ(0)';
-		_setStyle(_skrollrBody, 'transform', _translateZ);
+		skrollr.setStyle(_skrollrBody, 'transform', _translateZ);
 
 		var computedStyle = getStyle(_skrollrBody);
 		var computedTransform = computedStyle.getPropertyValue('transform');
@@ -1187,7 +1187,7 @@
 	/**
 	 * Set the CSS property on the given element. Sets prefixed properties as well.
 	 */
-	var _setStyle = skrollr.setStyle = function(el, prop, val) {
+	skrollr.setStyle = function(el, prop, val) {
 		var style = el.style;
 
 		//Camel case.
