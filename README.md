@@ -274,26 +274,26 @@ JavaScript
 
 On the JavaScript part there's not much to do (you can, if you want to!). So if you only know CSS and HTML, perfect.
 
-skrollr.init([options])
+skrollr.init({options})
 -----
 
-All there is to do is to call `skrollr.init([options]);` which returns an instance of the singleton skrollr class. Subsequent calls to `init()` will just return the same skrollr instance again.
+All there is to do is to call `skrollr.init({options});` which returns an instance of the singleton skrollr class. Subsequent calls to `init()` will just return the same skrollr instance again.
 
 Possible options for `init()` are
 
-### smoothScrolling=true
+### smoothScrolling:true
 
 Smooth scrolling smoothens your animations. When you scroll down 50 pixel the animations will transition instead of jumping to the new position.
 
 The global setting can be overridden per element by setting `data-smooth-scrolling` to `on` or `off`.
 
-### constants={}
+### constants:{}
 
 An object containing integers as values. The keys can contain `[a-z0-9_]`. They *do not* need a leading underscore.
 
 Example: `data-_myconst-200` and `skrollr.init({constants: {myconst: 300}})` result in `data-500`.
 
-### scale=1
+### scale:1
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
@@ -303,13 +303,13 @@ When `forceHeight` is set to false, `scale` is ignored.
 
 `scale` does only affect key frames in absolute mode, e.g. `data-500` but not `data-top`.
 
-###forceHeight=true
+###forceHeight:true
 
 `true`: Make sure the document is high enough that all key frames fit inside. Example: You use `data-1000`, but the content only makes the document 500px high. skrollr will ensure that you can scroll down the whole 1000px. Or if you use relative mode, e.g. `data-top-bottom`, skrollr will make sure the bottom of the element can actually reach the top of the viewport.
 
 `false`: Don't manipulate the document and just keep the natural scrollbar.
 
-###mobileCheck=function() {...}
+###mobileCheck:function() {...}
 
 This option allows you to pass a function to skrollr overwriting the check for mobile devices. The function should return `true` when mobile scrolling should be used and `false` if not.
 
@@ -321,7 +321,7 @@ function() {
 }
 ```
 
-### edgeStrategy='ease'
+### edgeStrategy:'ease'
 
 This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
 
