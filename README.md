@@ -48,6 +48,7 @@ Further resources (tutorials etc.)
 * http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
 * https://rubygems.org/gems/skrollr-rails
+* https://gist.github.com/Prinzhorn/5796546
 
 _Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
 
