@@ -50,7 +50,7 @@
 	var DEFAULT_DURATION = 1000;//ms
 	var MOBILE_DECELERATION = 0.0006;//pixel/ms²
 
-	var SMOOTH_SCROLLING_DURATION = 200;
+	var DEFAULT_SMOOTH_SCROLLING_DURATION = 200;//ms
 
 	var ANCHOR_START = 'start';
 	var ANCHOR_END = 'end';
@@ -245,6 +245,7 @@
 		}
 
 		_smoothScrollingEnabled = options.smoothScrolling !== false;
+		_smoothScrollingDuration = options.smoothScrollingDuration || DEFAULT_SMOOTH_SCROLLING_DURATION;
 
 		//Dummy object. Will be overwritten in the _render method when smooth scrolling is calculated.
 		_smoothScrolling = {
@@ -901,14 +902,14 @@
 					topDiff: renderTop - _lastTop,
 					targetTop: renderTop,
 					startTime: _lastRenderCall,
-					endTime: _lastRenderCall + SMOOTH_SCROLLING_DURATION
+					endTime: _lastRenderCall + _smoothScrollingDuration
 				};
 			}
 
 			//Interpolate the internal scroll position (not the actual scrollbar).
 			if(now <= _smoothScrolling.endTime) {
 				//Map the current progress to the new progress using easing function.
-				progress = easings.sqrt((now - _smoothScrolling.startTime) / SMOOTH_SCROLLING_DURATION);
+				progress = easings.sqrt((now - _smoothScrolling.startTime) / _smoothScrollingDuration);
 
 				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
 			}
@@ -1437,6 +1438,8 @@
 	var _scrollAnimation;
 
 	var _smoothScrollingEnabled;
+
+	var _smoothScrollingDuration;
 
 	//Will contain settins for smooth scrolling if enabled.
 	var _smoothScrolling;
