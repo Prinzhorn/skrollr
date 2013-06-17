@@ -81,7 +81,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);" data-500="background-color:rgb(255,0,0);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/1.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/1.html)
 
 ##### Lessons learned
 
@@ -93,7 +93,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);transform:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/2.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/2.html)
 
 ##### Lessons learned
 
@@ -104,7 +104,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/3.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/3.html)
 
 #### Lessons learned
 
@@ -117,7 +117,7 @@ Now you may have noticed that using `500` as a keyframe position is kind of rand
 ```html
 <div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-top="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/4.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/4.html)
 
 ##### Lessons learned
 
