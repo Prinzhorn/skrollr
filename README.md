@@ -1,9 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.6
+skrollr 0.6.7
 =====
-
-**This is the cutting edge 0.6 version. For the latest stable check out [0.5.14](https://github.com/Prinzhorn/skrollr/tree/0.5.14).**
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
 
@@ -321,14 +319,14 @@ function() {
 }
 ```
 
-### edgeStrategy='ease'
+### edgeStrategy='set'
 
 This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
 
 One of three options are possible
 
-* `set`: When before/after the first/last keyframe, apply the styles of the first/last keyframe to the element.
-* `ease` _(default)_: Same as set, but the values will be transformed using the given easing function.
+* `set` _(default)_: When before/after the first/last keyframe, apply the styles of the first/last keyframe to the element.
+* `ease`: Same as set, but the values will be transformed using the given easing function.
 * `reset`: When before/after the first/last keyframe, apply the styles which the element had before skrollr did anything. This means resetting the class attribute as well as removing all styles which have been applied to the `style` property. This means the element won't have any `skrollable-*` CSS classes.
 
 Example:
@@ -491,6 +489,11 @@ Removes the listener for the given event.
 Changelog
 =====
 
+0.6.7 (2013-06-17)
+-----
+
+* Changed the default value of `edgeStrategy` from `ease` to `set`. There are too many cases where `ease` was not wanted and unexpected.
+
 0.6.6 (2013-06-05)
 -----
 
@@ -532,7 +535,7 @@ Changelog
 * **[breaking]** The `rendered` and `unrendered` classes where renamed because they were confusing and wrong. They're now called `skrollable-before` and `skrollable-after`, because that's their meaning (the element with these classes is before/after the first/last keyframe).
 	* Added a new class `skrollable-between`, because symmetry. That's why.
 * Easing functions are now applied when exactly at a keyframe (#132).
-* **[possibly breaking]** The behavior changed for the case when the scroll position is before/after the first/last keyframe (I'm just gonna use "before first" from now on, because "after last" is analog). In 0.5 the behavior was not exactly specified and buggy (see item above regarding #132). Skrollr was applying the styles of the first keyframe to the element for all scroll position that were before the first keyframe. E.g. when `data-100="top:200px;"` was the first keyframe, the element had `top:200px;` at all scroll positions before (all from `0` to `99`). From now on you can specify the behavior you want (see `edgeStrategy` option for details, set it to `set` for old behavior).
+* **[possibly breaking]** The behavior changed for the case when the scroll position is before/after the first/last keyframe (I'm just gonna use "before first" from now on, because "after last" is analog). In 0.5 the behavior was not exactly specified and buggy (see item above regarding #132). Skrollr was applying the styles of the first keyframe to the element for all scroll position that were before the first keyframe. E.g. when `data-100="top:200px;"` was the first keyframe, the element had `top:200px;` at all scroll positions before (all from `0` to `99`). From now on you can specify the behavior you want (see `edgeStrategy` option for details, set it to `set` for old behavior). **Note: 0.6.7 and up use `set` as default.**
 
 
 0.5.14

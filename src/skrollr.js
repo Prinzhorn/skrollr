@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.6.6'
+		VERSION: '0.6.7'
 	};
 
 	//Minify optimization.
@@ -227,7 +227,7 @@
 			}
 		}
 
-		_edgeStrategy = options.edgeStrategy || 'ease';
+		_edgeStrategy = options.edgeStrategy || 'set';
 
 		_listeners = {
 			//Function to be called right before rendering.
@@ -805,6 +805,11 @@
 					case 'reset':
 						_reset(element);
 						continue;
+					case 'ease':
+						//Handle this case like it would be exactly at first/last keyframe and just pass it on.
+						frame = firstOrLastFrame.frame;
+						break;
+					default:
 					case 'set':
 						var props = firstOrLastFrame.props;
 
@@ -817,11 +822,6 @@
 						}
 
 						continue;
-					default:
-					case 'ease':
-						//Handle this case like it would be exactly at first/last keyframe and just pass it on.
-						frame = firstOrLastFrame.frame;
-						break;
 				}
 			} else {
 				//Did we handle an edge last time?
