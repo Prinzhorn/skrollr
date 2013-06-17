@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.7
+skrollr 0.6.8
 =====
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
@@ -286,6 +286,10 @@ Smooth scrolling smoothens your animations. When you scroll down 50 pixel the an
 
 The global setting can be overridden per element by setting `data-smooth-scrolling` to `on` or `off`.
 
+### smoothScrollingDuration=200
+
+The number of milliseconds the animations run after the scroll position changed the last time.
+
 ### constants={}
 
 An object containing integers as values. The keys can contain `[a-z0-9_]`. They *do not* need a leading underscore.
@@ -489,6 +493,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.8 (2013-06-17)
+-----
+
+* Added a new option `smoothScrollingDuration`.
 
 0.6.7 (2013-06-17)
 -----
