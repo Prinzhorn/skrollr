@@ -147,7 +147,7 @@
 			requestAnimFrame = function(callback) {
 				//How long did it take to render?
 				var deltaTime = _now() - lastTime;
-				var delay = Math.max(0, 33 - deltaTime);
+				var delay = Math.max(0, 1000 / 60 - deltaTime);
 
 				window.setTimeout(function() {
 					lastTime = _now();
