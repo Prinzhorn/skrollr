@@ -555,12 +555,6 @@
 
 		if(_isMobile) {
 			_mobileOffset = Math.min(Math.max(top, 0), _maxKeyFrame);
-
-			//That's were we actually "scroll" on mobile.
-			if(_skrollrBody) {
-				//Set the transform ("scroll it").
-				skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
-			}
 		} else {
 			window.scrollTo(0, top);
 		}
@@ -622,6 +616,8 @@
 						initialElement.blur();
 					}
 
+					_instance.stopAnimateTo();
+
 					initialElement = e.target;
 					initialTouchY = lastTouchY = currentTouchY;
 					initialTouchX = currentTouchX;
@@ -632,7 +628,7 @@
 					deltaY = currentTouchY - lastTouchY;
 					deltaTime = currentTouchTime - lastTouchTime;
 
-					_instance.setScrollTop(_mobileOffset - deltaY);
+					_instance.setScrollTop(_mobileOffset - deltaY, true);
 
 					lastTouchY = currentTouchY;
 					lastTouchTime = currentTouchTime;
@@ -889,7 +885,7 @@
 				renderTop = (_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0;
 			}
 
-			_instance.setScrollTop(renderTop);
+			_instance.setScrollTop(renderTop, true);
 		}
 		//Smooth scrolling only if there's no animation running and if we're not on mobile.
 		else if(!_isMobile) {
@@ -912,6 +908,12 @@
 				progress = easings.sqrt((now - _smoothScrolling.startTime) / _smoothScrollingDuration);
 
 				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
+			}
+		} else {
+			//That's were we actually "scroll" on mobile.
+			if(_skrollrBody) {
+				//Set the transform ("scroll it").
+				skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
 			}
 		}
 
