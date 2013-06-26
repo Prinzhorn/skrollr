@@ -1,9 +1,7 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.3
+skrollr 0.6.8
 =====
-
-**This is the cutting edge 0.6 version. For the latest stable check out [0.5.14](https://github.com/Prinzhorn/skrollr/tree/0.5.14).**
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
 
@@ -24,6 +22,8 @@ Official plugins
 In the wild
 -----
 
+* http://www.photo-mark.com/funhouse/chess/
+* http://www.entropy-thegame.com/
 * http://nclud.com/welcome/
 * http://moto.oakley.com/
 * http://pixeljuice.ru/en
@@ -48,6 +48,7 @@ Further resources (tutorials etc.)
 * http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
 * http://pepsized.com/merry-scrolling-with-skrollr-js/
 * https://rubygems.org/gems/skrollr-rails
+* https://gist.github.com/Prinzhorn/5796546
 
 _Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
 
@@ -81,7 +82,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);" data-500="background-color:rgb(255,0,0);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/1.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/1.html)
 
 ##### Lessons learned
 
@@ -93,7 +94,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);transform:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/2.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/2.html)
 
 ##### Lessons learned
 
@@ -104,7 +105,7 @@ If you're familiar with CSS, you already know the `style` attribute. In order to
 ```html
 <div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-500="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/3.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/3.html)
 
 #### Lessons learned
 
@@ -117,7 +118,7 @@ Now you may have noticed that using `500` as a keyframe position is kind of rand
 ```html
 <div data-0="background-color:rgb(0,0,255);transform[bounce]:rotate(0deg);" data-top="background-color:rgb(255,0,0);transform[bounce]:rotate(360deg);">WOOOT</div>
 ```
-[View in browser](http://prinzhorn.github.com/skrollr/examples/docu/4.html)
+[View in browser](http://prinzhorn.github.io/skrollr/examples/docu/4.html)
 
 ##### Lessons learned
 
@@ -285,6 +286,10 @@ Smooth scrolling smoothens your animations. When you scroll down 50 pixel the an
 
 The global setting can be overridden per element by setting `data-smooth-scrolling` to `on` or `off`.
 
+### smoothScrollingDuration=200
+
+The number of milliseconds the animations run after the scroll position changed the last time.
+
 ### constants={}
 
 An object containing integers as values. The keys can contain `[a-z0-9_]`. They *do not* need a leading underscore.
@@ -319,14 +324,14 @@ function() {
 }
 ```
 
-### edgeStrategy='ease'
+### edgeStrategy='set'
 
 This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
 
 One of three options are possible
 
-* `set`: When before/after the first/last keyframe, apply the styles of the first/last keyframe to the element.
-* `ease` _(default)_: Same as set, but the values will be transformed using the given easing function.
+* `set` _(default)_: When before/after the first/last keyframe, apply the styles of the first/last keyframe to the element.
+* `ease`: Same as set, but the values will be transformed using the given easing function.
 * `reset`: When before/after the first/last keyframe, apply the styles which the element had before skrollr did anything. This means resetting the class attribute as well as removing all styles which have been applied to the `style` property. This means the element won't have any `skrollable-*` CSS classes.
 
 Example:
@@ -489,6 +494,31 @@ Removes the listener for the given event.
 Changelog
 =====
 
+0.6.8 (2013-06-17)
+-----
+
+* Added a new option `smoothScrollingDuration`.
+
+0.6.7 (2013-06-17)
+-----
+
+* Changed the default value of `edgeStrategy` from `ease` to `set`. There are too many cases where `ease` was not wanted and unexpected.
+
+0.6.6 (2013-06-05)
+-----
+
+* Fixed IE plugin not working. This was caused by assigning `skrollr.setStyle` to a local variable inside the skrollr core. Since the IE plugin monkey-patches the skrollr.setStyle function, the core didn't notice the change (#199 comment 18986949).
+
+0.6.5 (2013-05-22)
+-----
+
+* Fixed crash in IE < 9 because the detected prefix was `null` (#220).
+
+0.6.4 (2013-05-21)
+-----
+
+* Fixed that some elements got the `skrollable-before` **and** `skrollable-after` class at the same time.
+
 0.6.3 (2013-05-19)
 -----
 
@@ -515,7 +545,7 @@ Changelog
 * **[breaking]** The `rendered` and `unrendered` classes where renamed because they were confusing and wrong. They're now called `skrollable-before` and `skrollable-after`, because that's their meaning (the element with these classes is before/after the first/last keyframe).
 	* Added a new class `skrollable-between`, because symmetry. That's why.
 * Easing functions are now applied when exactly at a keyframe (#132).
-* **[possibly breaking]** The behavior changed for the case when the scroll position is before/after the first/last keyframe (I'm just gonna use "before first" from now on, because "after last" is analog). In 0.5 the behavior was not exactly specified and buggy (see item above regarding #132). Skrollr was applying the styles of the first keyframe to the element for all scroll position that were before the first keyframe. E.g. when `data-100="top:200px;"` was the first keyframe, the element had `top:200px;` at all scroll positions before (all from `0` to `99`). From now on you can specify the behavior you want (see `edgeStrategy` option for details, set it to `set` for old behavior).
+* **[possibly breaking]** The behavior changed for the case when the scroll position is before/after the first/last keyframe (I'm just gonna use "before first" from now on, because "after last" is analog). In 0.5 the behavior was not exactly specified and buggy (see item above regarding #132). Skrollr was applying the styles of the first keyframe to the element for all scroll position that were before the first keyframe. E.g. when `data-100="top:200px;"` was the first keyframe, the element had `top:200px;` at all scroll positions before (all from `0` to `99`). From now on you can specify the behavior you want (see `edgeStrategy` option for details, set it to `set` for old behavior). **Note: 0.6.7 and up use `set` as default.**
 
 
 0.5.14
