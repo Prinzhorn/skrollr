@@ -274,7 +274,18 @@
 		//Triggers parsing of elements and a first reflow.
 		_instance.refresh();
 
-		_addEvent(window, 'resize orientationchange', _reflow);
+		_addEvent(window, 'resize orientationchange', function() {
+			var width = documentElement.clientWidth;
+			var height = documentElement.clientHeight;
+
+			//Only reflow if the size actually changed (#271).
+			if(height !== _lastViewportHeight || width !== _lastViewportWidth) {
+				_lastViewportHeight = height;
+				_lastViewportWidth = width;
+
+				_requestReflow = true;
+			}
+		});
 
 		var requestAnimFrame = polyfillRAF();
 
@@ -863,6 +874,11 @@
 	 * Renders all elements.
 	 */
 	var _render = function() {
+		if(_requestReflow) {
+			_requestReflow = false;
+			_reflow();
+		}
+
 		//We may render something else than the actual scrollbar position.
 		var renderTop = _instance.getScrollTop();
 
@@ -1435,6 +1451,12 @@
 
 	//The last time we called the render method (doesn't mean we rendered!).
 	var _lastRenderCall = _now();
+
+	//For detecting if it actually resized (#271).
+	var _lastViewportWidth = 0;
+	var _lastViewportHeight = 0;
+
+	var _requestReflow = false;
 
 	//Will contain data about a running scrollbar animation, if any.
 	var _scrollAnimation;
