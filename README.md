@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.9
+skrollr 0.6.10
 =====
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
@@ -495,6 +495,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.10 (2013-07-30)
+-----
+
+* Fixed bug which caused IE to perform an endless loop (#271).
 
 0.6.9 (2013-07-01)
 -----
