@@ -41,6 +41,15 @@
 	var SKROLLABLE_BETWEEN_CLASS = SKROLLABLE_CLASS + '-between';
 	var SKROLLABLE_AFTER_CLASS = SKROLLABLE_CLASS + '-after';
 
+	var SKROLLABLE_EMIT_EVENTS = false;
+	var SKROLLABLE_OLD_IE_EVENTS = !document.dispatchEvent;
+	var SKROLLABLE_CACHED_EVENTS = {};
+
+	var SKROLLABLE_EVENT = 'skrollr';
+	var SKROLLABLE_EVENT_BEFORE = SKROLLABLE_EVENT + 'Before';
+	var SKROLLABLE_EVENT_BETWEEN = SKROLLABLE_EVENT + 'Between';
+	var SKROLLABLE_EVENT_AFTER = SKROLLABLE_EVENT + 'After';
+
 	var SKROLLR_CLASS = 'skrollr';
 	var NO_SKROLLR_CLASS = 'no-' + SKROLLR_CLASS;
 	var SKROLLR_DESKTOP_CLASS = SKROLLR_CLASS + '-desktop';
@@ -217,6 +226,16 @@
 		_instance = this;
 
 		options = options || {};
+
+		//Set emit events flag and prepare the events
+		if(options.emitEvents === true) {
+			SKROLLABLE_EMIT_EVENTS = options.emitEvents;
+
+			//Cache the events
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BEFORE] = new Event(SKROLLABLE_EVENT_BEFORE);
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BETWEEN] = new Event(SKROLLABLE_EVENT_BETWEEN);
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_AFTER] = new Event(SKROLLABLE_EVENT_AFTER);
+		}
 
 		_constants = options.constants || {};
 
@@ -806,6 +825,9 @@
 				//Add the skrollr-before or -after class.
 				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_BETWEEN_CLASS, SKROLLABLE_AFTER_CLASS]);
 
+				//Emit skrollr event
+				_emitEvent(element, (beforeFirst ? SKROLLABLE_EVENT_BEFORE : SKROLLABLE_EVENT_AFTER));
+
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.edge = beforeFirst ? -1 : 1;
 
@@ -836,6 +858,9 @@
 				if(skrollable.edge !== 0) {
 					_updateClass(element, [SKROLLABLE_CLASS, SKROLLABLE_BETWEEN_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_AFTER_CLASS]);
 					skrollable.edge = 0;
+
+					//Emit skrollr event
+					_emitEvent(element, SKROLLABLE_EVENT_BETWEEN);
 				}
 			}
 
@@ -1372,6 +1397,20 @@
 		}
 
 		element[prop] = _trim(val);
+	};
+
+	var _emitEvent = function(element, eventName) {
+		if(!SKROLLABLE_EMIT_EVENTS) {
+			return;
+		}
+
+		try {
+			if(!SKROLLABLE_OLD_IE_EVENTS) {
+				element.dispatchEvent(SKROLLABLE_CACHED_EVENTS[eventName]);
+			} else {
+				element.fireEvent('on' + eventName, SKROLLABLE_CACHED_EVENTS[eventName]);
+			}
+		} catch (err) { /* Fail silently.. */ }
 	};
 
 	var _trim = function(a) {
