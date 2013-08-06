@@ -42,7 +42,7 @@
 	var SKROLLABLE_AFTER_CLASS = SKROLLABLE_CLASS + '-after';
 
 	var SKROLLABLE_EMIT_EVENTS = false;
-	var SKROLLABLE_OLD_IE_EVENTS = !document.dispatchEvent;
+	var SKROLLABLE_OLD_IE_EVENTS = !document.createEvent;
 	var SKROLLABLE_CACHED_EVENTS = {};
 
 	var SKROLLABLE_EVENT = 'skrollr';
@@ -228,13 +228,18 @@
 		options = options || {};
 
 		//Set emit events flag and prepare the events
-		if(options.emitEvents === true) {
+		if(options.emitEvents === true && !SKROLLABLE_OLD_IE_EVENTS) {
 			SKROLLABLE_EMIT_EVENTS = options.emitEvents;
 
 			//Cache the events
-			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BEFORE] = new Event(SKROLLABLE_EVENT_BEFORE);
-			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BETWEEN] = new Event(SKROLLABLE_EVENT_BETWEEN);
-			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_AFTER] = new Event(SKROLLABLE_EVENT_AFTER);
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BEFORE] = document.createEvent('Event');
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BEFORE].initEvent(SKROLLABLE_EVENT_BEFORE, true, true);
+
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BETWEEN] = document.createEvent('Event');
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_BETWEEN].initEvent(SKROLLABLE_EVENT_BETWEEN, true, true);
+
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_AFTER] = document.createEvent('Event');
+			SKROLLABLE_CACHED_EVENTS[SKROLLABLE_EVENT_AFTER].initEvent(SKROLLABLE_EVENT_AFTER, true, true);
 		}
 
 		_constants = options.constants || {};
@@ -1408,7 +1413,7 @@
 			if(!SKROLLABLE_OLD_IE_EVENTS) {
 				element.dispatchEvent(SKROLLABLE_CACHED_EVENTS[eventName]);
 			} else {
-				element.fireEvent('on' + eventName, SKROLLABLE_CACHED_EVENTS[eventName]);
+				element.fireEvent('on' + eventName);
 			}
 		} catch (err) { /* Fail silently.. */ }
 	};
