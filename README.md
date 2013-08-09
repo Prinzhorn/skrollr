@@ -411,6 +411,37 @@ skrollr ships with some built in functions:
 * easeOutCubic
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
+### Events
+Skrollr is capable of emitting events when the before, between and after classes are applied. This behaviour is optional and disabled by default.
+
+It can however come in handy if you need to run some logic when a given element is at a specific position on the page. This could be lazy loading images, updating the active tab of your menu or playing some video or audio.
+
+To enable the event emitting, simply set `emitEvents: true` in the skrollr instantiation like this
+
+```js
+skrollr.init({
+	emitEvents: true
+});
+
+```
+
+The events are emitted on the dom document itself and are named; `skrollrBefore`, `skrollrBetween` and `skrollrAfter`.
+
+In order to bind an eventListener to the event you would to something like this;
+
+```js
+
+var eventHandler = function(e) {
+	// This is the funky logic that will be run when the event fires
+};
+
+// Native JS
+document.getElementById('element-1').addEventListener('skrollrBefore', eventHandler);
+
+// jQuery
+jQuery('#element-1').on('skrollrBefore', eventHandler);
+```
+
 skrollr.get()
 -----
 
