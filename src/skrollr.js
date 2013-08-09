@@ -830,9 +830,6 @@
 				//Add the skrollr-before or -after class.
 				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_BETWEEN_CLASS, SKROLLABLE_AFTER_CLASS]);
 
-				//Emit skrollr event
-				_emitEvent(element, (beforeFirst ? SKROLLABLE_EVENT_BEFORE : SKROLLABLE_EVENT_AFTER));
-
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.edge = beforeFirst ? -1 : 1;
 
@@ -863,9 +860,6 @@
 				if(skrollable.edge !== 0) {
 					_updateClass(element, [SKROLLABLE_CLASS, SKROLLABLE_BETWEEN_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_AFTER_CLASS]);
 					skrollable.edge = 0;
-
-					//Emit skrollr event
-					_emitEvent(element, SKROLLABLE_EVENT_BETWEEN);
 				}
 			}
 
@@ -1363,6 +1357,35 @@
 	 * or if remove is ommited add is a string and overwrites all classes.
 	 */
 	var _updateClass = function(element, add, remove) {
+		//Emit skrollr event if enabled
+		if (SKROLLABLE_EMIT_EVENTS) {
+			var addIndex = 0;
+			var eventType = null;
+
+			for(; addIndex < add.length; addIndex++) {
+				switch (add[addIndex]) {
+					case SKROLLABLE_BEFORE_CLASS:
+						eventType = SKROLLABLE_EVENT_BEFORE;
+					break;
+					case SKROLLABLE_BETWEEN_CLASS:
+						eventType = SKROLLABLE_EVENT_BETWEEN;
+					break;
+					case SKROLLABLE_AFTER_CLASS:
+						eventType = SKROLLABLE_EVENT_AFTER;
+					break;
+				}
+
+				if (eventType) {
+					break;
+				}
+			}
+
+			if (eventType) {
+				_emitEvent(element, eventType);
+			}
+		}
+
+
 		var prop = 'className';
 
 		//SVG support by using className.baseVal instead of just className.
@@ -1405,10 +1428,6 @@
 	};
 
 	var _emitEvent = function(element, eventName) {
-		if(!SKROLLABLE_EMIT_EVENTS) {
-			return;
-		}
-
 		try {
 			if(!SKROLLABLE_OLD_IE_EVENTS) {
 				element.dispatchEvent(SKROLLABLE_CACHED_EVENTS[eventName]);
