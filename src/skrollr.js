@@ -48,7 +48,7 @@
 
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
-	var MOBILE_DECELERATION = 0.0006;//pixel/ms²
+	var DEFAULT_MOBILE_DECELERATION = 0.004;//pixel/ms²
 
 	var DEFAULT_SMOOTH_SCROLLING_DURATION = 200;//ms
 
@@ -243,6 +243,8 @@
 		if(_forceHeight) {
 			_scale = options.scale || 1;
 		}
+
+		_mobileDeceleration = options.mobileDeceleration || DEFAULT_MOBILE_DECELERATION;
 
 		_smoothScrollingEnabled = options.smoothScrolling !== false;
 		_smoothScrollingDuration = options.smoothScrollingDuration || DEFAULT_SMOOTH_SCROLLING_DURATION;
@@ -667,8 +669,8 @@
 					//Cap speed at 3 pixel/ms.
 					speed = Math.max(Math.min(speed, 3), -3);
 
-					var duration = Math.abs(speed / MOBILE_DECELERATION);
-					var targetOffset = speed * duration + 0.5 * MOBILE_DECELERATION * duration * duration;
+					var duration = Math.abs(speed / _mobileDeceleration);
+					var targetOffset = speed * duration + 0.5 * _mobileDeceleration * duration * duration;
 					var targetTop = _instance.getScrollTop() - targetOffset;
 
 					//Relative duration change for when scrolling above bounds.
@@ -1442,6 +1444,8 @@
 
 	var _scale = 1;
 	var _constants;
+
+	var _mobileDeceleration;
 
 	//Current direction (up/down).
 	var _direction = 'down';

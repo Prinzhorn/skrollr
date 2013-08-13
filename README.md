@@ -326,6 +326,12 @@ function() {
 }
 ```
 
+### mobileDeceleration=0.004
+
+The amount of deceleration for momentum scrolling on mobile devices. This options tells skrollr how fast or slow you want the scrolling to stop after the user lifted his finger.
+
+Set it to `1` to disable momentum scrolling.
+
 ### edgeStrategy='set'
 
 This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
