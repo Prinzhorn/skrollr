@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.10
+skrollr 0.6.11
 =====
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
@@ -501,6 +501,11 @@ Removes the listener for the given event.
 
 Changelog
 =====
+
+0.6.11 (2013-08-13)
+-----
+
+* Made the mobile deceleration configurable and lowered the default (#222, #229).
 
 0.6.10 (2013-07-30)
 -----
