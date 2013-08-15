@@ -42,6 +42,7 @@ In the wild
 * http://happy.is
 * http://www.futuremylove.com/
 * http://jonnyacevedo.com/
+* http://www.dodge.com/en/2014/durango/
 
 Further resources (tutorials etc.)
 -----
