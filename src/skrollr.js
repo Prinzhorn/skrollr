@@ -90,6 +90,9 @@
 	//Vendor prefix. Will be set once skrollr gets initialized.
 	var theCSSPrefix = '';
 	var theDashedCSSPrefix = '';
+	
+	// Specifies whether skrollr is paused or not.
+	var paused = false;
 
 	//Will be called once (when skrollr gets initialized).
 	var detectCSSPrefix = function() {
@@ -595,6 +598,14 @@
 		return _instance;
 	};
 
+	Skrollr.prototype.pause = function() {
+		paused = true;
+	};
+
+	Skrollr.prototype.unpause = function() {
+		paused = false;
+	};
+
 	/*
 		Private methods.
 	*/
@@ -876,6 +887,10 @@
 	 * Renders all elements.
 	 */
 	var _render = function() {
+		if (paused) {
+			return;
+		}
+		
 		if(_requestReflow) {
 			_requestReflow = false;
 			_reflow();
@@ -1243,6 +1258,10 @@
 	 */
 	var _addEvent = skrollr.addEvent = function(element, names, callback) {
 		var intermediate = function(e) {
+			if (paused) {
+				return;
+			}
+			
 			//Normalize IE event stuff.
 			e = e || window.event;
 
