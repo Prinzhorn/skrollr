@@ -78,6 +78,16 @@ If you rather want the keyframes inside a separate file, take a look at [skrollr
 Let's get serious
 ------
 
+First of all you want to include the `skrollr.min.js` file at the bottom of your document (right before the closing `</body>`) and then call `skrollr.init()`. Or you can place it inside the `<head>` if you want to, but make sure to call `init()` once the document has been loaded (e.g. jQuery's `ready` event or even `window.onload`).
+
+```html
+	<script type="text/javascript" src="skrollr.min.js"></script>
+	<script type="text/javascript">
+	var s = skrollr.init();
+	</script>
+</body>
+```
+
 If you're familiar with CSS, you already know the `style` attribute. In order to create an animation you would need several, at least two, of them. That's what skrollr does. You use the HTML5 `data-` attributes to define multiple sets of styles (we call each of them **keyframe**) and skrollr interpolates between them.
 
 #### Let's change the background-color of a `div` starting at `#00f` when the scrollbar is at the top and ending with `#f00` when the user scrolled 500 pixels down
