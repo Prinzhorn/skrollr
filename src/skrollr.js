@@ -90,7 +90,7 @@
 	//Vendor prefix. Will be set once skrollr gets initialized.
 	var theCSSPrefix = '';
 	var theDashedCSSPrefix = '';
-	
+
 	// Specifies whether skrollr is paused or not.
 	var paused = false;
 
@@ -890,7 +890,7 @@
 		if (paused) {
 			return;
 		}
-		
+
 		if(_requestReflow) {
 			_requestReflow = false;
 			_reflow();
@@ -1261,7 +1261,7 @@
 			if (paused) {
 				return;
 			}
-			
+
 			//Normalize IE event stuff.
 			e = e || window.event;
 
