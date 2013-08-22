@@ -91,9 +91,6 @@
 	var theCSSPrefix = '';
 	var theDashedCSSPrefix = '';
 
-	// Specifies whether skrollr is paused or not.
-	var paused = false;
-
 	//Will be called once (when skrollr gets initialized).
 	var detectCSSPrefix = function() {
 		//Only relevant prefixes. May be extended.
@@ -599,11 +596,11 @@
 	};
 
 	Skrollr.prototype.pause = function() {
-		paused = true;
+		_paused = true;
 	};
 
 	Skrollr.prototype.unpause = function() {
-		paused = false;
+		_paused = false;
 	};
 
 	/*
@@ -887,7 +884,7 @@
 	 * Renders all elements.
 	 */
 	var _render = function() {
-		if (paused) {
+		if (_paused) {
 			return;
 		}
 
@@ -1258,7 +1255,7 @@
 	 */
 	var _addEvent = skrollr.addEvent = function(element, names, callback) {
 		var intermediate = function(e) {
-			if (paused) {
+			if (_paused) {
 				return;
 			}
 
@@ -1509,4 +1506,7 @@
 
 	//If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
 	var _translateZ;
+
+	// Specifies whether skrollr is paused or not.
+	var _paused = false;
 }(window, document));
