@@ -158,7 +158,7 @@
 
 		return requestAnimFrame;
 	};
-	
+
 	var polyfillCAF = function() {
 		var cancelAnimFrame = window.cancelAnimationFrame || window[theCSSPrefix.toLowerCase() + 'CancelAnimationFrame'];
 
@@ -463,8 +463,8 @@
 				edgeStrategy: edgeStrategy
 			};
 
-			_updateClass(el, [SKROLLABLE_CLASS], []);
 			_reset(el);
+			_updateClass(el, [SKROLLABLE_CLASS], []);
 		}
 
 		//Reflow for the first time.
@@ -610,7 +610,7 @@
 
 	Skrollr.prototype.reset = function() {
 		var cancelAnimFrame = polyfillCAF();
-		cancelAnimFrame(_animFrame);		
+		cancelAnimFrame(_animFrame);
 		_removeAllEvents();
 
 		if(_isMobile) {
@@ -627,9 +627,9 @@
 		documentElement.style.overflow = body.style.overflow = 'auto';
 		documentElement.style.height = body.style.height = 'auto';
 
-		documentElement = body = _instance = _constants = _edgeStrategy = _listeners = _forceHeight 
-			= _mobileDeceleration = _smoothScrollingEnabled = _smoothScrollingDuration = _smoothScrolling
-			= undefined;
+		documentElement = body = _instance = undefined;
+		_constants = _edgeStrategy = _listeners = _forceHeight = _mobileDeceleration = undefined;
+		_smoothScrollingEnabled = _smoothScrollingDuration = _smoothScrolling = undefined;
 		_scale = 1;
 		_isMobile = false;
 	};
@@ -1354,7 +1354,7 @@
 			var eventsLength = _registeredEvents.length;
 
 			for(; eventCounter < eventsLength; eventCounter++) {
-				var ed = _registeredEvents[eventCounter];				 
+				var ed = _registeredEvents[eventCounter];
 				if(ed.element == eventData.element && ed.name == eventData.name && ed.listener == eventData.listener) {
 					if(el.removeEventListener) {
 						el.removeEventListener(names[nameCounter], callback, false);
@@ -1601,7 +1601,7 @@
 
 	//Will contain data about registered events by skrollr
 	var _registeredEvents = [];
-	
+
 	//Animation frame id returned by RequestAnimationFrame (or timeout when RAF is not supported)
 	var _animFrame;
 }(window, document));
