@@ -655,9 +655,13 @@
 
 					//Check if it was more like a tap (moved less than 7px).
 					if(distance2 < 49) {
+						if ('undefined' === typeof initialElement) {
+							return false;
+						}
 						//It was a tap, click the element.
-						initialElement.focus();
-						initialElement.click();
+						var clickEvent = document.createEvent("MouseEvent");
+						clickEvent.initEvent("click", true /* bubble */, true /* cancelable */);
+						initialElement.dispatchEvent(clickEvent);
 
 						return;
 					}
