@@ -19,6 +19,33 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
+		destroy: function() {
+			var cancelAnimFrame = polyfillCAF();
+			cancelAnimFrame(_animFrame);
+			_removeAllEvents();
+
+			_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS, SKROLLR_MOBILE_CLASS]);
+
+			var skrollableIndex = 0;
+			for(; skrollableIndex < _skrollables.length; skrollableIndex++) {
+				_reset(_skrollables[skrollableIndex].element, true);
+			}
+
+			documentElement.style.overflow = body.style.overflow = 'auto';
+			documentElement.style.height = body.style.height = 'auto';
+
+			_instance = undefined;
+			_constants = undefined;
+			_edgeStrategy = undefined;
+			_listeners = undefined;
+			_forceHeight = undefined;
+			_mobileDeceleration = undefined;
+			_smoothScrollingEnabled = undefined;
+			_smoothScrollingDuration = undefined;
+			_smoothScrolling = undefined;
+			_scale = 1;
+			_isMobile = false;
+		},
 		VERSION: '0.6.11'
 	};
 
@@ -606,32 +633,6 @@
 		delete _listeners[name];
 
 		return _instance;
-	};
-
-	Skrollr.prototype.reset = function() {
-		var cancelAnimFrame = polyfillCAF();
-		cancelAnimFrame(_animFrame);
-		_removeAllEvents();
-
-		if(_isMobile) {
-			_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS]);
-		} else {
-			_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS]);
-		}
-
-		var skrollableIndex = 0;
-		for(; skrollableIndex < _skrollables.length; skrollableIndex++) {
-			_reset(_skrollables[skrollableIndex].element, true);
-		}
-
-		documentElement.style.overflow = body.style.overflow = 'auto';
-		documentElement.style.height = body.style.height = 'auto';
-
-		documentElement = body = _instance = undefined;
-		_constants = _edgeStrategy = _listeners = _forceHeight = _mobileDeceleration = undefined;
-		_smoothScrollingEnabled = _smoothScrollingDuration = _smoothScrolling = undefined;
-		_scale = 1;
-		_isMobile = false;
 	};
 
 	/*
@@ -1350,22 +1351,13 @@
 				listener: callback
 			};
 
-			var eventCounter = 0;
-			var eventsLength = _registeredEvents.length;
-
-			for(; eventCounter < eventsLength; eventCounter++) {
-				var ed = _registeredEvents[eventCounter];
-				if(ed.element == eventData.element && ed.name == eventData.name && ed.listener == eventData.listener) {
-					if(el.removeEventListener) {
-						el.removeEventListener(names[nameCounter], callback, false);
-					} else {
-						el.detachEvent('on' + names[nameCounter], intermediate);
-					}
-
-					_registeredEvents.pop(ed);
-					break;
-				}
+			if(el.removeEventListener) {
+				el.removeEventListener(names[nameCounter], callback, false);
+			} else {
+				el.detachEvent('on' + names[nameCounter], intermediate);
 			}
+
+			_registeredEvents.pop(eventData);
 		}
 	};
 
