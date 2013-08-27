@@ -22,6 +22,7 @@ Official plugins
 In the wild
 -----
 
+* http://lordandtaylorfirstlook.com/
 * http://www.cabletv.com/the-walking-dead
 * http://hypervenom.nike.com/
 * http://www.photo-mark.com/funhouse/chess/
