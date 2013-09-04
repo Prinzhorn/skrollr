@@ -12,12 +12,18 @@ _Actually, skrollr is much more than "just" **parallax scrolling**. It's a full-
 Resources
 =====
 
-Official plugins
+Plugins
 -----
+
+### Official
 
 * [skrollr-menu](https://github.com/Prinzhorn/skrollr-menu) - Hash navigation
 * [skrollr-ie](https://github.com/Prinzhorn/skrollr-ie) - IE < 9 CSS fixes
 * [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets) - Keyframes inside CSS files
+
+### Third party
+
+* [skrollr-colors](https://github.com/FezVrasta/skrollr-colors) - Mix and match hex, rgb and hsl colors.
 
 In the wild
 -----
