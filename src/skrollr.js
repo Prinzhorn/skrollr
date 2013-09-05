@@ -35,16 +35,28 @@
 			documentElement.style.height = body.style.height = 'auto';
 
 			_instance = undefined;
-			_constants = undefined;
-			_edgeStrategy = undefined;
+			_skrollrBody = undefined;
 			_listeners = undefined;
 			_forceHeight = undefined;
+			_maxKeyFrame = 0;
+			_scale = 1;
+			_constants = undefined;
 			_mobileDeceleration = undefined;
+			_direction = 'down';
+			_lastTop = -1;
+			_lastViewportWidth = 0;
+			_lastViewportHeight = 0;
+			_requestReflow = false;
+			_scrollAnimation = undefined;
 			_smoothScrollingEnabled = undefined;
 			_smoothScrollingDuration = undefined;
 			_smoothScrolling = undefined;
-			_scale = 1;
+			_forceRender = undefined;
+			_skrollableIdCounter = 0;
+			_edgeStrategy = undefined;
 			_isMobile = false;
+			_mobileOffset = 0;
+			_translateZ = undefined;
 		},
 		VERSION: '0.6.11'
 	};
@@ -1281,7 +1293,7 @@
 	/**
 	 * Cross browser event handling.
 	 */
-	var _addEvent = skrollr.addEvent = function(el, names, callback) {
+	var _addEvent = skrollr.addEvent = function(element, names, callback) {
 		var intermediate = function(e) {
 			//Normalize IE event stuff.
 			e = e || window.event;
@@ -1306,15 +1318,15 @@
 
 		for(; nameCounter < namesLength; nameCounter++) {
 			var eventData = {
-				element: el,
+				element: element,
 				name: names[nameCounter],
 				listener: callback
 			};
 
-			if(el.addEventListener) {
-				el.addEventListener(names[nameCounter], callback, false);
+			if(element.addEventListener) {
+				element.addEventListener(names[nameCounter], callback, false);
 			} else {
-				el.attachEvent('on' + names[nameCounter], intermediate);
+				element.attachEvent('on' + names[nameCounter], intermediate);
 			}
 
 			_registeredEvents.push(eventData);
@@ -1345,19 +1357,11 @@
 		var namesLength = names.length;
 
 		for(; nameCounter < namesLength; nameCounter++) {
-			var eventData = {
-				element: el,
-				name: names[nameCounter],
-				listener: callback
-			};
-
 			if(el.removeEventListener) {
 				el.removeEventListener(names[nameCounter], callback, false);
 			} else {
 				el.detachEvent('on' + names[nameCounter], intermediate);
 			}
-
-			_registeredEvents.pop(eventData);
 		}
 	};
 
@@ -1371,6 +1375,7 @@
 
 			_removeEvent(el, name, listener);
 		}
+		_registeredEvents = [];
 	};
 
 	var _reflow = function() {
