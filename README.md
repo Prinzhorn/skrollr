@@ -283,7 +283,7 @@ Limitations
 
 There are some limitations of skrollr you should be aware of.
 
-* All numeric values have to have the same unit. It's not possible to animate from `0%` to `100px`. skrollr won't complain, but results are undefined.
+* All numeric values have to have the same unit, even `0` needs a unit. It's not possible to animate from `5%` to `100px`. skrollr won't complain, but results are undefined.
 * Animations between values which are composed of multiple numeric values like `margin:0 0 0 0;` are only possible for the same number of values. `margin:0px 0px 0px 0px;` to `margin:0px 100px 50px 3px;` is fine, but not `margin:10px;` to `margin:5px 10px;`.
 * Animations between CSS transforms only work when they use the same functions in same order. From `rotate(0deg) scale(1)` to `rotate(1000deg) scale(5)` is fine.
 * Color animations don't support named values like "red" or hex values like "#ff0000". Instead, you have to use `rgb()`, `rgba()`, `hsl()` and `hsla()`. Don't worry, there's a skrollr plugin for IE < 9 to support `hsl()` (without "a"!) and to fall rgba back to rgb.
