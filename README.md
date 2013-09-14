@@ -29,6 +29,7 @@ In the wild
 -----
 
 * http://kitkat.com/
+* http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
 * http://michael2023.com/
 * http://lordandtaylorfirstlook.com/
 * http://www.cabletv.com/the-walking-dead
