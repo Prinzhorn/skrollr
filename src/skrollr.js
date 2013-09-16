@@ -19,6 +19,45 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
+		destroy: function() {
+			var cancelAnimFrame = polyfillCAF();
+			cancelAnimFrame(_animFrame);
+			_removeAllEvents();
+
+			_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS, SKROLLR_MOBILE_CLASS]);
+
+			var skrollableIndex = 0;
+			for(; skrollableIndex < _skrollables.length; skrollableIndex++) {
+				_reset(_skrollables[skrollableIndex].element, true);
+			}
+
+			documentElement.style.overflow = body.style.overflow = 'auto';
+			documentElement.style.height = body.style.height = 'auto';
+
+			_instance = undefined;
+			_skrollrBody = undefined;
+			_listeners = undefined;
+			_forceHeight = undefined;
+			_maxKeyFrame = 0;
+			_scale = 1;
+			_constants = undefined;
+			_mobileDeceleration = undefined;
+			_direction = 'down';
+			_lastTop = -1;
+			_lastViewportWidth = 0;
+			_lastViewportHeight = 0;
+			_requestReflow = false;
+			_scrollAnimation = undefined;
+			_smoothScrollingEnabled = undefined;
+			_smoothScrollingDuration = undefined;
+			_smoothScrolling = undefined;
+			_forceRender = undefined;
+			_skrollableIdCounter = 0;
+			_edgeStrategy = undefined;
+			_isMobile = false;
+			_mobileOffset = 0;
+			_translateZ = undefined;
+		},
 		VERSION: '0.6.11'
 	};
 
@@ -149,7 +188,7 @@
 				var deltaTime = _now() - lastTime;
 				var delay = Math.max(0, 1000 / 60 - deltaTime);
 
-				window.setTimeout(function() {
+				return window.setTimeout(function() {
 					lastTime = _now();
 					callback();
 				}, delay);
@@ -157,6 +196,18 @@
 		}
 
 		return requestAnimFrame;
+	};
+
+	var polyfillCAF = function() {
+		var cancelAnimFrame = window.cancelAnimationFrame || window[theCSSPrefix.toLowerCase() + 'CancelAnimationFrame'];
+
+		if(_isMobile || !cancelAnimFrame) {
+			cancelAnimFrame = function(timeout) {
+				return window.clearTimeout(timeout);
+			};
+		}
+
+		return cancelAnimFrame;
 	};
 
 	//Built-in easing functions.
@@ -294,7 +345,7 @@
 		//Let's go.
 		(function animloop(){
 			_render();
-			requestAnimFrame(animloop);
+			_animFrame = requestAnimFrame(animloop);
 		}());
 
 		return _instance;
@@ -451,6 +502,7 @@
 				edgeStrategy: edgeStrategy
 			};
 
+			_reset(el);
 			_updateClass(el, [SKROLLABLE_CLASS], []);
 		}
 
@@ -1265,12 +1317,65 @@
 		var namesLength = names.length;
 
 		for(; nameCounter < namesLength; nameCounter++) {
+			var eventData = {
+				element: element,
+				name: names[nameCounter],
+				listener: callback
+			};
+
 			if(element.addEventListener) {
 				element.addEventListener(names[nameCounter], callback, false);
 			} else {
 				element.attachEvent('on' + names[nameCounter], intermediate);
 			}
+
+			_registeredEvents.push(eventData);
 		}
+	};
+
+	var _removeEvent = skrollr.removeEvent = function(el, names, callback) {
+		var intermediate = function(e) {
+			//Normalize IE event stuff.
+			e = e || window.event;
+
+			if(!e.target) {
+				e.target = e.srcElement;
+			}
+
+			if(!e.preventDefault) {
+				e.preventDefault = function() {
+					e.returnValue = false;
+				};
+			}
+
+			return callback.call(this, e);
+		};
+
+		names = names.split(' ');
+
+		var nameCounter = 0;
+		var namesLength = names.length;
+
+		for(; nameCounter < namesLength; nameCounter++) {
+			if(el.removeEventListener) {
+				el.removeEventListener(names[nameCounter], callback, false);
+			} else {
+				el.detachEvent('on' + names[nameCounter], intermediate);
+			}
+		}
+	};
+
+	var _removeAllEvents = skrollr.removeEvent = function() {
+		var eventCounter = 0;
+		for(; eventCounter < _registeredEvents.length; eventCounter++) {
+			var eventData = _registeredEvents[eventCounter];
+			var el = eventData.element;
+			var name = eventData.name;
+			var listener = eventData.listener;
+
+			_removeEvent(el, name, listener);
+		}
+		_registeredEvents = [];
 	};
 
 	var _reflow = function() {
@@ -1490,4 +1595,10 @@
 
 	//If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
 	var _translateZ;
+
+	//Will contain data about registered events by skrollr
+	var _registeredEvents = [];
+
+	//Animation frame id returned by RequestAnimationFrame (or timeout when RAF is not supported)
+	var _animFrame;
 }(window, document));
