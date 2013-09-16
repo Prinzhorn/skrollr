@@ -63,7 +63,7 @@
 	var rxTrim = /^\s+|\s+$/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
-	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
+	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?(?:\d+|[0-9]*\.?[0-9]+p)))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
 	var rxPropValue = /\s*([\w\-\[\]]+)\s*:\s*(.+?)\s*(?:;|$)/gi;
 
@@ -381,6 +381,13 @@
 
 				//If there is a constant, get it's value or fall back to 0.
 				constant = constant && _constants[constant.substr(1)] || 0;
+
+        //If the offset contains the letter 'p' then it is a
+        //percentage of the viewport height, convert to pixel value now.
+        if (match[2] && match[2].match('p$') !== null) {
+          match[2] = match[2].substring(0, match[2].length - 1);
+          match[2] = match[2] * window.innerHeight / 100;
+        }
 
 				//Parse key frame offset. If undefined will be casted to 0.
 				var offset = (match[2] | 0) + constant;
