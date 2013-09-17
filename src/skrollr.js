@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.6.11'
+		VERSION: '0.6.12'
 	};
 
 	//Minify optimization.
