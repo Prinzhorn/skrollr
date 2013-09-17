@@ -19,45 +19,6 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		destroy: function() {
-			var cancelAnimFrame = polyfillCAF();
-			cancelAnimFrame(_animFrame);
-			_removeAllEvents();
-
-			_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS, SKROLLR_MOBILE_CLASS]);
-
-			var skrollableIndex = 0;
-			for(; skrollableIndex < _skrollables.length; skrollableIndex++) {
-				_reset(_skrollables[skrollableIndex].element, true);
-			}
-
-			documentElement.style.overflow = body.style.overflow = 'auto';
-			documentElement.style.height = body.style.height = 'auto';
-
-			_instance = undefined;
-			_skrollrBody = undefined;
-			_listeners = undefined;
-			_forceHeight = undefined;
-			_maxKeyFrame = 0;
-			_scale = 1;
-			_constants = undefined;
-			_mobileDeceleration = undefined;
-			_direction = 'down';
-			_lastTop = -1;
-			_lastViewportWidth = 0;
-			_lastViewportHeight = 0;
-			_requestReflow = false;
-			_scrollAnimation = undefined;
-			_smoothScrollingEnabled = undefined;
-			_smoothScrollingDuration = undefined;
-			_smoothScrolling = undefined;
-			_forceRender = undefined;
-			_skrollableIdCounter = 0;
-			_edgeStrategy = undefined;
-			_isMobile = false;
-			_mobileOffset = 0;
-			_translateZ = undefined;
-		},
 		VERSION: '0.6.11'
 	};
 
@@ -502,7 +463,6 @@
 				edgeStrategy: edgeStrategy
 			};
 
-			_reset(el);
 			_updateClass(el, [SKROLLABLE_CLASS], []);
 		}
 
@@ -645,6 +605,52 @@
 		delete _listeners[name];
 
 		return _instance;
+	};
+
+	Skrollr.prototype.destroy = function() {
+		var cancelAnimFrame = polyfillCAF();
+		cancelAnimFrame(_animFrame);
+		_removeAllEvents();
+
+		_updateClass(documentElement, [NO_SKROLLR_CLASS], [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS, SKROLLR_MOBILE_CLASS]);
+
+		var skrollableIndex = 0;
+		var skrollablesLength = _skrollables.length;
+
+		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
+			_reset(_skrollables[skrollableIndex].element);
+		}
+
+		documentElement.style.overflow = body.style.overflow = 'auto';
+		documentElement.style.height = body.style.height = 'auto';
+
+		if(_skrollrBody) {
+			skrollr.setStyle(_skrollrBody, 'transform', 'none');
+		}
+
+		_instance = undefined;
+		_skrollrBody = undefined;
+		_listeners = undefined;
+		_forceHeight = undefined;
+		_maxKeyFrame = 0;
+		_scale = 1;
+		_constants = undefined;
+		_mobileDeceleration = undefined;
+		_direction = 'down';
+		_lastTop = -1;
+		_lastViewportWidth = 0;
+		_lastViewportHeight = 0;
+		_requestReflow = false;
+		_scrollAnimation = undefined;
+		_smoothScrollingEnabled = undefined;
+		_smoothScrollingDuration = undefined;
+		_smoothScrolling = undefined;
+		_forceRender = undefined;
+		_skrollableIdCounter = 0;
+		_edgeStrategy = undefined;
+		_isMobile = false;
+		_mobileOffset = 0;
+		_translateZ = undefined;
 	};
 
 	/*
@@ -1313,68 +1319,54 @@
 
 		names = names.split(' ');
 
+		var name;
 		var nameCounter = 0;
 		var namesLength = names.length;
 
 		for(; nameCounter < namesLength; nameCounter++) {
-			var eventData = {
-				element: element,
-				name: names[nameCounter],
-				listener: callback
-			};
+			name = names[nameCounter];
 
 			if(element.addEventListener) {
-				element.addEventListener(names[nameCounter], callback, false);
+				element.addEventListener(name, callback, false);
 			} else {
-				element.attachEvent('on' + names[nameCounter], intermediate);
+				element.attachEvent('on' + name, intermediate);
 			}
 
-			_registeredEvents.push(eventData);
+			//Remember the events to be able to flush them later.
+			_registeredEvents.push({
+				element: element,
+				name: name,
+				listener: callback
+			});
 		}
 	};
 
-	var _removeEvent = skrollr.removeEvent = function(el, names, callback) {
-		var intermediate = function(e) {
-			//Normalize IE event stuff.
-			e = e || window.event;
-
-			if(!e.target) {
-				e.target = e.srcElement;
-			}
-
-			if(!e.preventDefault) {
-				e.preventDefault = function() {
-					e.returnValue = false;
-				};
-			}
-
-			return callback.call(this, e);
-		};
-
+	var _removeEvent = skrollr.removeEvent = function(element, names, callback) {
 		names = names.split(' ');
 
 		var nameCounter = 0;
 		var namesLength = names.length;
 
 		for(; nameCounter < namesLength; nameCounter++) {
-			if(el.removeEventListener) {
-				el.removeEventListener(names[nameCounter], callback, false);
+			if(element.removeEventListener) {
+				element.removeEventListener(names[nameCounter], callback, false);
 			} else {
-				el.detachEvent('on' + names[nameCounter], intermediate);
+				element.detachEvent('on' + names[nameCounter], callback);
 			}
 		}
 	};
 
-	var _removeAllEvents = skrollr.removeEvent = function() {
+	var _removeAllEvents = function() {
+		var eventData;
 		var eventCounter = 0;
-		for(; eventCounter < _registeredEvents.length; eventCounter++) {
-			var eventData = _registeredEvents[eventCounter];
-			var el = eventData.element;
-			var name = eventData.name;
-			var listener = eventData.listener;
+		var eventsLength = _registeredEvents.length;
 
-			_removeEvent(el, name, listener);
+		for(; eventCounter < eventsLength; eventCounter++) {
+			eventData = _registeredEvents[eventCounter];
+
+			_removeEvent(eventData.element, eventData.name, eventData.listener);
 		}
+
 		_registeredEvents = [];
 	};
 
@@ -1596,9 +1588,9 @@
 	//If the browser supports 3d transforms, this will be filled with 'translateZ(0)' (empty string otherwise).
 	var _translateZ;
 
-	//Will contain data about registered events by skrollr
+	//Will contain data about registered events by skrollr.
 	var _registeredEvents = [];
 
-	//Animation frame id returned by RequestAnimationFrame (or timeout when RAF is not supported)
+	//Animation frame id returned by RequestAnimationFrame (or timeout when RAF is not supported).
 	var _animFrame;
 }(window, document));
