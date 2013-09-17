@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.11
+skrollr 0.6.12
 =====
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
@@ -520,6 +520,11 @@ Set a listener function for one of the events described in the options section (
 ### off(name)
 
 Removes the listener for the given event.
+
+
+### destroy()
+
+Destroys skrollr. All `class` and `style` attributes will be set to the values they had before.
 
 Changelog
 =====
