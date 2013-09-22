@@ -31,6 +31,7 @@ In the wild
 * http://coolnycprogram.com/2013/
 * http://kitkat.com/
 * http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
+* http://moments.amag.ch/
 * http://michael2023.com/
 * http://lordandtaylorfirstlook.com/
 * http://www.cabletv.com/the-walking-dead
