@@ -63,7 +63,7 @@
 	var rxTrim = /^\s+|\s+$/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
-	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d+))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
+	var rxKeyframeAttribute = /^data(?:-(_\w+))?(?:-?(-?\d*\.?\d+p?))?(?:-?(start|end|top|center|bottom))?(?:-?(top|center|bottom))?$/;
 
 	var rxPropValue = /\s*([\w\-\[\]]+)\s*:\s*(.+?)\s*(?:;|$)/gi;
 
@@ -389,19 +389,7 @@
 					continue;
 				}
 
-				var constant = match[1];
-
-				//If there is a constant, get it's value or fall back to 0.
-				constant = constant && _constants[constant.substr(1)] || 0;
-
-				//Parse key frame offset. If undefined will be casted to 0.
-				var offset = (match[2] | 0) + constant;
-				var anchor1 = match[3];
-				//If second anchor is not set, the first will be taken for both.
-				var anchor2 = match[4] || anchor1;
-
 				var kf = {
-					offset: offset,
 					props: attr.value,
 					//Point back to the element as well.
 					element: el
@@ -409,17 +397,39 @@
 
 				keyFrames.push(kf);
 
+				var constant = match[1];
+
+				//If there is a constant, get it's value or fall back to 0.
+				constant = constant && _constants[constant.substr(1)] || 0;
+
+				//Parse key frame offset. If undefined will be casted to 0.
+				var offset = match[2];
+
+				//Is it a percentage offset?
+				if(/p$/.test(offset)) {
+					kf.mode = 'percentage';
+					kf.offset = (offset.slice(0, -1) | 0) + constant;
+					continue;
+				}
+
+				kf.offset = (offset | 0) + constant;
+
+				var anchor1 = match[3];
+
+				//If second anchor is not set, the first will be taken for both.
+				var anchor2 = match[4] || anchor1;
+
 				//"absolute" (or "classic") mode, where numbers mean absolute scroll offset.
 				if(!anchor1 || anchor1 === ANCHOR_START || anchor1 === ANCHOR_END) {
 					kf.mode = 'absolute';
 
-					//data-end needs to be calculated after all key frames are know.
+					//data-end needs to be calculated after all key frames are known.
 					if(anchor1 === ANCHOR_END) {
 						kf.isEnd = true;
 					} else {
 						//For data-start we can already set the key frame w/o calculations.
 						//#59: "scale" options should only affect absolute mode.
-						kf.frame = offset * _scale;
+						kf.frame = kf.offset * _scale;
 
 						delete kf.offset;
 					}
@@ -794,6 +804,8 @@
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
 
 					_reset(element, true);
+				} else if(kf.mode === 'percentage') {
+					kf.frame = documentElement.clientHeight * (kf.offset / 100);
 				}
 
 				//Only search for max key frame when forceHeight is enabled.

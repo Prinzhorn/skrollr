@@ -1,6 +1,5 @@
 $(window).on('load', function() {
 
-
 //Initialize skrollr and save the instance.
 var s = skrollr.init({
 	edgeStrategy: 'set',
@@ -85,7 +84,7 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 19, 'All elements have the .skrollable class');
+	strictEqual($('.skrollable').length, 20, 'All elements have the .skrollable class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -314,6 +313,26 @@ scrollTests(250, [
 		element: $('#float'),
 		styles: {
 			float: 'none'
+		}
+	}
+]);
+
+//200%
+scrollTests(600, [
+	{
+		element: $('#percentage-offset'),
+		styles: {
+			left: '500px'
+		}
+	}
+]);
+
+//100%
+scrollTests(300, [
+	{
+		element: $('#percentage-offset'),
+		styles: {
+			left: '250px'
 		}
 	}
 ]);
