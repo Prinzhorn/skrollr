@@ -33,6 +33,7 @@ In the wild
 * http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
 * http://moments.amag.ch/
 * http://michael2023.com/
+* http://11septiembre1973.latercera.com/
 * http://lordandtaylorfirstlook.com/
 * http://www.cabletv.com/the-walking-dead
 * http://hypervenom.nike.com/
