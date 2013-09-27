@@ -28,6 +28,7 @@ Plugins
 In the wild
 -----
 
+* http://on-moon.ru/
 * http://coolnycprogram.com/2013/
 * http://kitkat.com/
 * http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
