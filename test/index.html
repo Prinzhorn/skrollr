@@ -32,6 +32,10 @@
 		position:fixed;
 	}
 
+	#relative-percentage-offset {
+		top:100%;
+	}
+
 	#float {
 		position:static !important;
 	}
@@ -69,6 +73,10 @@
 	<div id="easing_with_easing_strategy" data-0="left[half1]:0px;" data-500="left[half1]:50px;" data-edge-strategy="ease">TEST</div>
 
 	<div id="reset-strategy" data-0="left:0px;" data-500="left:50px;" data-edge-strategy="reset" style="left:1337px;">TEST</div>
+
+	<div id="percentage-offset" data-0="left:0px;" data-200p="left:500px;">TEST</div>
+
+	<div id="relative-percentage-offset" data-0="left:0px;" data--100p-bottom-top="left:500px;">TEST</div>
 
 	<div id="qunit"></div>
 

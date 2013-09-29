@@ -1,6 +1,6 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
-skrollr 0.6.12
+skrollr 0.6.13
 =====
 
 Stand-alone **parallax scrolling** JavaScript library for **mobile (Android, iOS, etc.) and desktop** in just over **9.6k** (minified) or **4.5k** (minified + gzipped).
@@ -28,6 +28,7 @@ Plugins
 In the wild
 -----
 
+* http://on-moon.ru/
 * http://coolnycprogram.com/2013/
 * http://kitkat.com/
 * http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
@@ -214,6 +215,13 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 
 **Important**: All those values will be calculated up-front and transformed to `absolute` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call `refresh()` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
+
+Percentage offsets
+------------------
+
+All offsets shown above are given in absolute pixel values, e.g. `data-300` for `300px` from the top or `data-13-top-bottom` for a `13px` offset to the `top-bottom` anchor. As of skrollr `0.6.13` you can also have offset as percentags of the viewport by appending a `p` to the number. For example `data-75p` for when you scrolled down `75%` of the viewport or `data-10p-center` to have a `10%` offset from the `center` anchor.
+
+
 Hash navigation
 -----
 
@@ -326,6 +334,8 @@ Example: `data-_myconst-200` and `skrollr.init({constants: {myconst: 300}})` res
 ### scale=1
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
+
+`scale` only affects keyframes in absolute mode.
 
 When `forceHeight` is set to false, `scale` is ignored.
 

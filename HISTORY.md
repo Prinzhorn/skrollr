@@ -1,3 +1,8 @@
+0.6.13 (2013-09-29)
+-----
+
+* Added support for percentage offsets (#185).
+
 0.6.12 (2013-09-17)
 -----
 
