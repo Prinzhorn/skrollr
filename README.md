@@ -219,7 +219,7 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 Percentage offsets
 ------------------
 
-All offsets shown above are given in absolute pixel values, e.g. `data-300` for `300px` from the top or `data-13-top-bottom` for a `13px` offset to the `top-bottom` anchor. As of skrollr `0.6.13` you can also have offset as percentags of the viewport by appending a `p` to the number. For example `data-75p` for when you scrolled down `75%` of the viewport or `data-10p-center` to have a `10%` offset from the `center` anchor.
+All offsets shown above are given in absolute pixel values, e.g. `data-300` for `300px` from the top or `data-13-top-bottom` for a `13px` offset to the `top-bottom` anchor. As of skrollr `0.6.13` you can also have offsets as percentages of the viewport by appending a `p` to the number. For example `data-75p` for when you scrolled down `75%` of the viewport or `data-10p-center` to have a `10%` offset from the `center` anchor.
 
 
 Hash navigation
