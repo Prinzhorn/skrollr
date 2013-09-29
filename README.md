@@ -327,6 +327,8 @@ Example: `data-_myconst-200` and `skrollr.init({constants: {myconst: 300}})` res
 
 By default skrollr uses the largest key frame and makes document height + viewport height this high, thus the max possible scroll top offset. If your animation runs too fast or too slow, just adjust the scale value.
 
+`scale` only affects keyframes in absolute mode.
+
 When `forceHeight` is set to false, `scale` is ignored.
 
 `scale` affects `constants` as well.

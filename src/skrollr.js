@@ -407,12 +407,11 @@
 
 				//Is it a percentage offset?
 				if(/p$/.test(offset)) {
-					kf.mode = 'percentage';
-					kf.offset = (offset.slice(0, -1) | 0) + constant;
-					continue;
+					kf.isPercentage = true;
+					kf.offset = ((offset.slice(0, -1) | 0) + constant) / 100;
+				} else {
+					kf.offset = (offset | 0) + constant;
 				}
-
-				kf.offset = (offset | 0) + constant;
 
 				var anchor1 = match[3];
 
@@ -426,7 +425,7 @@
 					//data-end needs to be calculated after all key frames are known.
 					if(anchor1 === ANCHOR_END) {
 						kf.isEnd = true;
-					} else {
+					} else if(!kf.isPercentage) {
 						//For data-start we can already set the key frame w/o calculations.
 						//#59: "scale" options should only affect absolute mode.
 						kf.frame = kf.offset * _scale;
@@ -798,14 +797,22 @@
 			for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
+				var offset = kf.offset;
+
+				if(kf.isPercentage) {
+					//Convert the offset to percentage of the viewport height.
+					offset = offset * documentElement.clientHeight;
+
+					//Absolute + percentage mode.
+					kf.frame = offset;
+				}
+
 				if(kf.mode === 'relative') {
 					_reset(element);
 
-					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - kf.offset;
+					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - offset;
 
 					_reset(element, true);
-				} else if(kf.mode === 'percentage') {
-					kf.frame = documentElement.clientHeight * (kf.offset / 100);
 				}
 
 				//Only search for max key frame when forceHeight is enabled.

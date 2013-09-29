@@ -84,7 +84,7 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 20, 'All elements have the .skrollable class');
+	strictEqual($('.skrollable').length, 21, 'All elements have the .skrollable class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -313,6 +313,16 @@ scrollTests(250, [
 		element: $('#float'),
 		styles: {
 			float: 'none'
+		}
+	}
+]);
+
+//bottom-top + 50%
+scrollTests(150, [
+	{
+		element: $('#relative-percentage-offset'),
+		styles: {
+			left: '250px'
 		}
 	}
 ]);
