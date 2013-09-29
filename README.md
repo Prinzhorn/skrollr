@@ -214,6 +214,13 @@ Here's an infographic for better understanding of anchors (click to open PDF):
 
 **Important**: All those values will be calculated up-front and transformed to `absolute` mode. So if either the element's box height changes (height, padding, border) or the elements position within the document, you probably need to call `refresh()` (see documentation in JavaScript section below). **Window resizing is handled by skrollr.**
 
+
+Percentage offsets
+------------------
+
+All offsets shown above are given in absolute pixel values, e.g. `data-300` for `300px` from the top or `data-13-top-bottom` for a `13px` offset to the `top-bottom` anchor. As of skrollr `0.6.13` you can also have offset as percentags of the viewport by appending a `p` to the number. For example `data-75p` for when you scrolled down `75%` of the viewport or `data-10p-center` to have a `10%` offset from the `center` anchor.
+
+
 Hash navigation
 -----
 
