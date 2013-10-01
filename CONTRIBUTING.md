@@ -1,7 +1,7 @@
 Questions belong to StackOverflow
 =====
 
-GitHub is for issues and feature requests. Anything else belongs to [StackOverflow](http://stackoverflow.com/questions/ask).
+GitHub is for issues and feature requests. Anything else belongs to [StackOverflow](http://stackoverflow.com/questions/ask?tags=skrollr).
 
 Pull requests
 =====
