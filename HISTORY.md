@@ -1,3 +1,8 @@
+0.6.14 (2013-10-03)
+------
+
+* Fixed the `direction` parameter that's passed to the render events (#339).
+
 0.6.13 (2013-09-29)
 -----
 
