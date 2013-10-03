@@ -496,6 +496,11 @@ var offset = s.relativeToAbsolute(document.getElementById('foo'), 'top', 'bottom
 ### getScrollTop()
 
 Returns the current scroll offset in pixels. Normalizes different browser quirks and handles mobile scrolling.
+
+### getMaxScrollTop()
+
+Returns the number of pixels that can be scrolled down in total. If `forceHeight` is true, that's usually the largest keyframe. Otherwise it's the height of the document minus the viewport height.
+
 ### setScrollTop(top[, force = false])
 
 Sets the top offset using `window.scrollTo(0, top)` on dektop or updating the internal state in case of mobile scrolling.

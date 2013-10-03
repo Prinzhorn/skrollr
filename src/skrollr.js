@@ -600,6 +600,10 @@
 		}
 	};
 
+	Skrollr.prototype.getMaxScrollTop = function() {
+		return _maxKeyFrame;
+	};
+
 	Skrollr.prototype.on = function(name, fn) {
 		_listeners[name] = fn;
 
