@@ -1,3 +1,8 @@
+0.6.15 (2013-10-03)
+
+* Fixed clicking on links (and other elements) on mobile (#263, #303, #338).
+* Added `getMaxScrollTop` method (#238).
+
 0.6.14 (2013-10-03)
 ------
 
