@@ -581,11 +581,7 @@
 	};
 
 	Skrollr.prototype.setScrollTop = function(top, force) {
-		//Don't do smooth scrolling (last top === new top).
-		if(force === true) {
-			_lastTop = top;
-			_forceRender = true;
-		}
+		_forceRender = (force === true);
 
 		if(_isMobile) {
 			_mobileOffset = Math.min(Math.max(top, 0), _maxKeyFrame);
@@ -756,7 +752,7 @@
 
 					duration = duration * (1 - targetRatio);
 
-					_instance.animateTo(targetTop, {easing: 'outCubic', duration: duration});
+					_instance.animateTo((targetTop + 0.5) | 0, {easing: 'outCubic', duration: duration});
 					break;
 			}
 		});
@@ -982,8 +978,8 @@
 
 			_instance.setScrollTop(renderTop, true);
 		}
-		//Smooth scrolling only if there's no animation running and if we're not on mobile.
-		else if(!_isMobile) {
+		//Smooth scrolling only if there's no animation running and if we're not forcing the rendering.
+		else if(!_forceRender) {
 			var smoothScrollingDiff = _smoothScrolling.targetTop - renderTop;
 
 			//The user scrolled, start new smooth scrolling.
@@ -1015,7 +1011,7 @@
 		//Did the scroll position even change?
 		if(_forceRender || _lastTop !== renderTop) {
 			//Remember in which direction are we scrolling?
-			_direction = (renderTop >= _lastTop) ? 'down' : 'up';
+			_direction = (renderTop > _lastTop) ? 'down' : (renderTop < _lastTop ? 'up' : _direction);
 
 			_forceRender = false;
 
