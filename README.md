@@ -28,6 +28,7 @@ Plugins
 In the wild
 -----
 
+* http://www.fontwalk.de/
 * http://on-moon.ru/
 * http://coolnycprogram.com/2013/
 * http://kitkat.com/
