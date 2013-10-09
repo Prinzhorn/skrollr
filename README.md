@@ -450,7 +450,7 @@ skrollr ships with some built in functions:
 * begin/end: They always return 0 or 1 respectively. No animation.
 * swing: Slow at the beginning and accelerates at the end. So 25% -> 14.6%, 50% -> 50%, 75% -> 85.3%
 * sqrt: Square root. Starts fast, slows down at the end.
-* easeOutCubic
+* outCubic
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
 skrollr.get()
