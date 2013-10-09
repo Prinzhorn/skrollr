@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Anchors</title>
+
+	<style type="text/css">
+	* {
+		margin:0;
+		padding:0;
+	}
+
+	html, body {
+		width:100%;
+		height:100%;
+	}
+
+	body {font-family:sans-serif;}
+
+	body > div {
+		position:fixed;
+		top:0;
+		left:0;
+		width:100%;
+		height:100%;
+		background:transparent center no-repeat;
+		background-size:cover;
+	}
+
+	body > div:nth-child(1) {
+		background-image:url(http://placekitten.com/800/600?image=1);
+	}
+
+	body > div:nth-child(2) {
+		background:#f0f0f0;
+		overflow:hidden;
+	}
+
+	body > div:nth-child(3) {
+		background-image:url(http://placekitten.com/800/600?image=3);
+	}
+
+	.box {
+		position:absolute;
+		left:0;
+		height:100%;
+		background:#09f;
+	}
+
+	p {margin:1em 0;}
+	</style>
+</head>
+
+<body>
+	<div data-0="transform:translate(0,0%);" data-100p="transform:translate(0,-100%);"></div>
+
+	<div data-0="transform:translate(0,100%);" data-100p="transform:translate(0,0%)" data-_box-100p="" data-_box-200p="transform:translate(0,-100%)">
+		<div class="box" data-100p="width:0%;" data-_box-100p="width:100%"></div>
+	</div>
+
+	<div data-_box-100p="transform:translate(0,100%);" data-_box-200p="transform:translate(0,0%);"></div>
+
+	<script type="text/javascript" src="../dist/skrollr.min.js"></script>
+
+	<script type="text/javascript">
+	skrollr.init({
+		constants: {
+			//fill the box for a "duration" of 150% of the viewport (pause for 150%)
+			//adjust for shorter/longer pause
+			box: 150
+		}
+	});
+	</script>
+</body>
+
+</html>
