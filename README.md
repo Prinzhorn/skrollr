@@ -29,47 +29,20 @@ In the wild
 -----
 
 * http://www.fontwalk.de/
-* http://on-moon.ru/
-* http://coolnycprogram.com/2013/
 * http://kitkat.com/
 * http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
-* http://moments.amag.ch/
-* http://michael2023.com/
-* http://11septiembre1973.latercera.com/
-* http://lordandtaylorfirstlook.com/
 * http://www.cabletv.com/the-walking-dead
 * http://hypervenom.nike.com/
-* http://shop.bigcartel.com
-* http://www.photo-mark.com/funhouse/chess/
-* http://www.entropy-thegame.com/
-* http://nclud.com/welcome/
-* http://moto.oakley.com/
-* http://pixeljuice.ru/en
-* http://everylastdrop.co.uk/
-* http://erfgenaam.submarinechannel.com/en/
-* http://www.guardian.co.uk/world/interactive/2012/dec/21/2012-america-year-review
 * http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
-* http://www.officeline.se/kampanj/
-* http://www.direct.tv/thekingsroadmap/
 * http://www.evanshalshaw.com/bondcars/
-* http://www.edel-und-stein.com/
-* http://erikreyna.com/ofthestreet/index.html
-* https://squareup.com/careers/creative
-* http://happy.is
-* http://www.futuremylove.com/
-* http://jonnyacevedo.com/
-* http://www.dodge.com/en/2014/durango/
+
+This list only contains some of the latest and most notable websites that use skrollr, hand picked by [@Prinzhorn](http://twitter.com/Prinzhorn).
+For a much longer and unopinionated list, take a look at the [wiki page](https://github.com/Prinzhorn/skrollr/wiki/In-the-wild).
 
 Further resources (tutorials etc.)
 -----
 
-* http://www.guardian.co.uk/info/developer-blog/2012/nov/20/how-we-built-america-elect-graphic-novel-interactive
-* http://webdesign.tutsplus.com/tutorials/htmlcss-tutorials/jazz-up-a-static-webpage-with-subtle-parallax/
-* http://pepsized.com/merry-scrolling-with-skrollr-js/
-* https://rubygems.org/gems/skrollr-rails
-* https://gist.github.com/Prinzhorn/5796546
-
-_Want to get added? Just fork & pull request or tweet me [@Prinzhorn](https://twitter.com/Prinzhorn)_
+Moved to the [wiki](https://github.com/Prinzhorn/skrollr/wiki/Resources).
 
 
 Documentation
@@ -549,18 +522,3 @@ Changelog
 =====
 
 See [HISTORY.md](https://github.com/Prinzhorn/skrollr/blob/master/HISTORY.md).
-
-Contributors
-=====
-
-* [Alexander Prinzhorn, repo owner, main contributor](https://github.com/Prinzhorn)
-* [Ali Karbassi](https://github.com/karbassi)
-* [Tri Nguyen](https://github.com/idlesysop)
-* [Charles J Hardy](https://github.com/ChuckJHardy)
-* [Oscar Otero](https://github.com/oscarotero)
-* [Jim Osborn](https://github.com/ThinkTherefore)
-* [Dowon Kang](https://github.com/dowonkang)
-* [rbeitra](https://github.com/rbeitra)
-* Everyone giving feedback on Twitter and through other channels.
-
-Special thanks to [cubiq](https://github.com/cubiq) for creating [iScroll](https://github.com/cubiq/iscroll) which powered mobile support prior to skrollr 0.6.
