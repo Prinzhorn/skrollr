@@ -253,6 +253,31 @@ skrollr.init({
 
 Valid characters for a constant are `[a-z0-9_]`.
 
+Handy for development
+-----
+
+Put a little scroll position indicator top right.
+
+```css
+.scrollpos{
+	position: fixed;
+	z-index: 100;
+	background: #ffffff;
+	top: 0;
+	right: 0;
+}
+```
+
+```html
+<div class="scrollpos"></div>
+```
+
+```js
+$(window).on("mousewheel", function() {
+    $('.scrollpos').text($(document).scrollTop());
+});
+```
+
 CSS classes
 -----
 
