@@ -391,7 +391,18 @@ Returning `false` will prevent rendering.
 
 ### render
 
-A listener function getting called right after we finished rendering everything. The function will be passed the same parameters as `beforerender`
+A listener function getting called right after we finished rendering everything. The function will be passed the same parameters as `beforerender`.
+
+Example
+
+```js
+skrollr.init({
+	render: function(data) {
+		//Log the current scroll position.
+		console.log(data.curTop);
+	}
+});
+```
 
 ### easing
 
