@@ -1,3 +1,8 @@
+0.6.16 (2013-10-18)
+------
+
+* Fixed `z-index:auto;` not working because it was always coerced to an integer (#351).
+
 0.6.15 (2013-10-03)
 ------
 
