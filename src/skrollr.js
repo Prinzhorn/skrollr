@@ -1303,8 +1303,14 @@
 		//Make sure z-index gets a <integer>.
 		//This is the only <integer> case we need to handle.
 		if(prop === 'zIndex') {
-			//Floor
-			style[prop] = '' + (val | 0);
+			if(isNaN(val)) {
+				//If it's not a number, don't touch it.
+				//It could for example be "auto" (#351).
+				style[prop] = val;
+			} else {
+				//Floor the number.
+				style[prop] = '' + (val | 0);
+			}
 		}
 		//#64: "float" can't be set across browsers. Needs to use "cssFloat" for all except IE.
 		else if(prop === 'float') {

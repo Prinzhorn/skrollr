@@ -84,7 +84,7 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 21, 'All elements have the .skrollable class');
+	strictEqual($('.skrollable').length, 22, 'All elements have the .skrollable class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -171,6 +171,13 @@ scrollTests(500, [
 		styles: {
 			float: 'left'
 		}
+	},
+	{
+		message: 'z-index "auto" is no converted to a number (#351)',
+		element: $('#auto-z-index'),
+		styles: {
+			zIndex: 'auto'
+		}
 	}
 ]);
 
@@ -237,6 +244,13 @@ scrollTests(0, [
 		element: $('#float'),
 		styles: {
 			float: 'none'
+		}
+	},
+	{
+		message: 'z-index "auto" is no converted to a number (#351)',
+		element: $('#auto-z-index'),
+		styles: {
+			zIndex: '1'
 		}
 	}
 ]);
