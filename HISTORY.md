@@ -1,3 +1,8 @@
+0.6.17 (2013-10-19)
+------
+
+* Fixed keyboard not appearing on some mobile browsers when an input was focused (#349).
+
 0.6.16 (2013-10-18)
 ------
 
