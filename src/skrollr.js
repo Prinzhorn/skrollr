@@ -60,6 +60,8 @@
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
 
+	var rxTouchIgnoreTags = /^(?:input|textarea|button|select)$/i;
+
 	var rxTrim = /^\s+|\s+$/g;
 
 	//Find all data-attributes. data-[_constant]-[offset]-[anchor]-[anchor].
@@ -670,6 +672,7 @@
 		var initialElement;
 		var initialTouchY;
 		var initialTouchX;
+		var currentElement;
 		var currentTouchY;
 		var currentTouchX;
 		var lastTouchY;
@@ -681,13 +684,22 @@
 		var deltaTime;
 
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
-			e.preventDefault();
-
 			var touch = e.changedTouches[0];
+
+			currentElement = e.target;
+
+			//We don't want text nodes.
+			while(currentElement.nodeType === 3) {
+				currentElement = currentElement.parentNode;
+			}
 
 			currentTouchY = touch.clientY;
 			currentTouchX = touch.clientX;
 			currentTouchTime = e.timeStamp;
+
+			if(!rxTouchIgnoreTags.test(currentElement.tagName)) {
+				e.preventDefault();
+			}
 
 			switch(e.type) {
 				case EVENT_TOUCHSTART:
@@ -698,12 +710,7 @@
 
 					_instance.stopAnimateTo();
 
-					initialElement = e.target;
-
-					//We don't want text nodes.
-					while(initialElement.nodeType === 3) {
-						initialElement = initialElement.parentNode;
-					}
+					initialElement = currentElement;
 
 					initialTouchY = lastTouchY = currentTouchY;
 					initialTouchX = currentTouchX;
@@ -728,12 +735,14 @@
 
 					//Check if it was more like a tap (moved less than 7px).
 					if(distance2 < 49) {
-						initialElement.focus();
+						if(!rxTouchIgnoreTags.test(initialElement.tagName)) {
+							initialElement.focus();
 
-						//It was a tap, click the element.
-						var clickEvent = document.createEvent('MouseEvent');
-						clickEvent.initEvent('click', true, true);
-						initialElement.dispatchEvent(clickEvent);
+							//It was a tap, click the element.
+							var clickEvent = document.createEvent('MouseEvents');
+							clickEvent.initMouseEvent('click', true, true, e.view, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, 0, null);
+							initialElement.dispatchEvent(clickEvent);
+						}
 
 						return;
 					}
