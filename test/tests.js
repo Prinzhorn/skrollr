@@ -22,9 +22,15 @@ var countAssertions = function(tests) {
 		var curTest = tests[i];
 
 		if(curTest.styles) {
-			for(var k in curTest.styles) {
-				counter += Object.prototype.hasOwnProperty.call(curTest.styles, k);
-			}
+			$.each(curTest.styles, function() {
+				counter++;
+			});
+		}
+
+		if(curTest.attributes) {
+			$.each(curTest.attributes, function() {
+				counter++;
+			});
 		}
 
 		counter += !!curTest.selector;
@@ -56,11 +62,16 @@ var scrollTests = function(offset, tests) {
 				var curTest = tests[i];
 
 				if(curTest.styles) {
-					for(var k in curTest.styles) {
-						if(Object.prototype.hasOwnProperty.call(curTest.styles, k)) {
-							QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct');
-						}
-					}
+					$.each(curTest.styles, function(k) {
+						QUnit.numericCSSPropertyEquals(curTest.element.css(k), curTest.styles[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" CSS property is correct');
+					});
+				}
+
+				if(curTest.attributes) {
+					$.each(curTest.attributes, function(k, value) {
+						console.log(curTest.element.prop(k));
+						QUnit.numericCSSPropertyEquals(curTest.element.attr(k), curTest.attributes[k], curTest.message || 'element\'s (#' + curTest.element[0].id + ') "' + k + '" attribute is correct');
+					});
 				}
 
 				if(curTest.selector) {
@@ -84,7 +95,7 @@ s.refresh(newElement[0]);
 module('basic stuff');
 
 test('CSS classes present', function() {
-	strictEqual($('.skrollable').length, 22, 'All elements have the .skrollable class');
+	strictEqual($('.skrollable').length, 23, 'All elements have the .skrollable class');
 
 	ok($('html').is('.skrollr'), 'HTML element has skrollr class');
 	ok($('html').is(':not(.no-skrollr)'), 'HTML element does not have no-skrollr class');
@@ -178,6 +189,13 @@ scrollTests(500, [
 		styles: {
 			zIndex: 'auto'
 		}
+	},
+	{
+		message: 'attribute interpolation',
+		element: $('#attr'),
+		attributes: {
+			title: '0'
+		}
 	}
 ]);
 
@@ -251,6 +269,14 @@ scrollTests(0, [
 		element: $('#auto-z-index'),
 		styles: {
 			zIndex: '1'
+		}
+	},
+	{
+		message: 'attribute interpolation',
+		element: $('#attr'),
+		attributes: {
+			title: '500',
+			'data-test': 'skrollr'
 		}
 	}
 ]);
@@ -328,6 +354,14 @@ scrollTests(250, [
 		styles: {
 			float: 'none'
 		}
+	},
+	{
+		message: 'attribute interpolation',
+		element: $('#attr'),
+		attributes: {
+			title: '250',
+			'data-test': 'skrollr'
+		}
 	}
 ]);
 
@@ -347,6 +381,13 @@ scrollTests(600, [
 		element: $('#percentage-offset'),
 		styles: {
 			left: '500px'
+		}
+	},
+	{
+		message: 'attribute interpolation',
+		element: $('#attr'),
+		attributes: {
+			'data-test': 'skrollr-test'
 		}
 	}
 ]);
