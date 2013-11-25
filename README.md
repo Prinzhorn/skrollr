@@ -341,6 +341,12 @@ The amount of deceleration for momentum scrolling on mobile devices. This option
 
 Set it to `1` to disable momentum scrolling.
 
+### disableMobile=false
+
+Disable skrllr when a mobile device is detected.
+
+Set it to true to disable skrllr on a mobile device.
+
 ### edgeStrategy='set'
 
 This option specifies how to handle animations when the scroll position is outside the range on the keyframes (i.e. before the first or after the last keyframe).
