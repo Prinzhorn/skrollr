@@ -273,7 +273,10 @@
 			return (/Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i).test(navigator.userAgent || navigator.vendor || window.opera);
 		})());
 
-		if(_isMobile) {
+		//disableMobile is false by default
+		_disableMobile = options.disableMobile || false;
+
+		if(_isMobile && !_disableMobile) {
 			_skrollrBody = document.getElementById('skrollr-body');
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
@@ -283,7 +286,7 @@
 
 			_initMobile();
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_MOBILE_CLASS], [NO_SKROLLR_CLASS]);
-		} else {
+		} else if(!_isMobile) {
 			_updateClass(documentElement, [SKROLLR_CLASS, SKROLLR_DESKTOP_CLASS], [NO_SKROLLR_CLASS]);
 		}
 
@@ -1624,6 +1627,9 @@
 
 	//Mobile specific vars. Will be stripped by UglifyJS when not in use.
 	var _isMobile = false;
+
+	//Disable skrllr if is a mobile device
+	var _disableMobile = false;
 
 	//The virtual scroll offset when using mobile scrolling.
 	var _mobileOffset = 0;
