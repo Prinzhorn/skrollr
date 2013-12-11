@@ -718,6 +718,9 @@
 
 					break;
 				case EVENT_TOUCHMOVE:
+					if(rxTouchIgnoreTags.test(currentElement.tagName) && document.activeElement != currentElement) {
+						e.preventDefault();
+					}
 					deltaY = currentTouchY - lastTouchY;
 					deltaTime = currentTouchTime - lastTouchTime;
 
