@@ -718,8 +718,8 @@
 
 					break;
 				case EVENT_TOUCHMOVE:
-					// Prevent default event on touchIgnore elements in case they don't have a focus yet
-					if(rxTouchIgnoreTags.test(currentElement.tagName) && document.activeElement != currentElement) {
+					//Prevent default event on touchIgnore elements in case they don't have focus yet.
+					if(rxTouchIgnoreTags.test(currentElement.tagName) && document.activeElement !== currentElement) {
 						e.preventDefault();
 					}
 
