@@ -56,6 +56,7 @@
 	var ANCHOR_END = 'end';
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
+	var ANCHOR_RIGHT = 'right'
 
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
@@ -125,7 +126,7 @@
 		theCSSPrefix = theCSSPrefix[0];
 
 		//We could have detected either a dashed prefix or this camelCaseish-inconsistent stuff.
-		if(theCSSPrefix.slice(0,1) === '-') {
+		if(theCSSPrefix.slice(0, 1) === '-') {
 			theDashedCSSPrefix = theCSSPrefix;
 
 			//There's no logic behind these. Need a look up.
@@ -243,6 +244,8 @@
 
 		_edgeStrategy = options.edgeStrategy || 'set';
 
+		_scrollDirection = options.scrollDirection || 'vertical';
+
 		_listeners = {
 			//Function to be called right before rendering.
 			beforerender: options.beforerender,
@@ -253,10 +256,10 @@
 
 		//forceHeight is true by default
 		_forceHeight = options.forceHeight !== false;
+		_forceWidth = options.forceWidth !== false;
 
-		if(_forceHeight) {
+		if(_forceHeight || _forceWidth)
 			_scale = options.scale || 1;
-		}
 
 		_mobileDeceleration = options.mobileDeceleration || DEFAULT_MOBILE_DECELERATION;
 
@@ -265,7 +268,8 @@
 
 		//Dummy object. Will be overwritten in the _render method when smooth scrolling is calculated.
 		_smoothScrolling = {
-			targetTop: _instance.getScrollTop()
+			targetTop: _instance.getScrollTop(),
+			targetLeft: _instance.getScrollLeft()
 		};
 
 		//A custom check function may be passed.
@@ -306,7 +310,7 @@
 		var requestAnimFrame = polyfillRAF();
 
 		//Let's go.
-		(function animloop(){
+		(function animloop() {
 			_render();
 			_animFrame = requestAnimFrame(animloop);
 		}());
@@ -358,7 +362,7 @@
 			var attributeIndex = 0;
 			var attributesLength = el.attributes.length;
 
-			for (; attributeIndex < attributesLength; attributeIndex++) {
+			for(; attributeIndex < attributesLength; attributeIndex++) {
 				var attr = el.attributes[attributeIndex];
 
 				if(attr.name === 'data-anchor-target') {
@@ -506,29 +510,55 @@
 	 * That is, calculate anchor position and offset of element.
 	 */
 	Skrollr.prototype.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
-		var viewportHeight = documentElement.clientHeight;
-		var box = element.getBoundingClientRect();
-		var absolute = box.top;
+		if(_scrollDirection == 'vertical') {
+			var viewportHeight = documentElement.clientHeight;
+			var box = element.getBoundingClientRect();
+			var absolute = box.top;
 
-		//#100: IE doesn't supply "height" with getBoundingClientRect.
-		var boxHeight = box.bottom - box.top;
+			//#100: IE doesn't supply "height" with getBoundingClientRect.
+			var boxHeight = box.bottom - box.top;
 
-		if(viewportAnchor === ANCHOR_BOTTOM) {
-			absolute -= viewportHeight;
-		} else if(viewportAnchor === ANCHOR_CENTER) {
-			absolute -= viewportHeight / 2;
+			if(viewportAnchor === ANCHOR_BOTTOM) {
+				absolute -= viewportHeight;
+			} else if(viewportAnchor === ANCHOR_CENTER) {
+				absolute -= viewportHeight / 2;
+			}
+
+			if(elementAnchor === ANCHOR_BOTTOM) {
+				absolute += boxHeight;
+			} else if(elementAnchor === ANCHOR_CENTER) {
+				absolute += boxHeight / 2;
+			}
+
+			//Compensate scrolling since getBoundingClientRect is relative to viewport.
+			absolute += _instance.getScrollTop();
+
+			return (absolute + 0.5) | 0;
+		} else {
+			var viewportWidth = documentElement.clientWidth;
+			var box = element.getBoundingClientRect();
+			var absolute = box.left;
+
+			//#100: IE doesn't supply "width" with getBoundingClientRect.
+			var boxWidth = box.right - box.left;
+
+			if(viewportAnchor === ANCHOR_BOTTOM) {
+				absolute -= viewportWidth;
+			} else if(viewportAnchor === ANCHOR_CENTER) {
+				absolute -= viewportWidth / 2;
+			}
+
+			if(elementAnchor === ANCHOR_BOTTOM) {
+				absolute += boxWidth;
+			} else if(elementAnchor === ANCHOR_CENTER) {
+				absolute += boxWidth / 2;
+			}
+
+			//Compensate scrolling since getBoundingClientRect is relative to viewport.
+			absolute += _instance.getScrollLeft();
+
+			return (absolute + 0.5) | 0;
 		}
-
-		if(elementAnchor === ANCHOR_BOTTOM) {
-			absolute += boxHeight;
-		} else if(elementAnchor === ANCHOR_CENTER) {
-			absolute += boxHeight / 2;
-		}
-
-		//Compensate scrolling since getBoundingClientRect is relative to viewport.
-		absolute += _instance.getScrollTop();
-
-		return (absolute + 0.5) | 0;
 	};
 
 	/**
@@ -538,27 +568,53 @@
 		options = options || {};
 
 		var now = _now();
-		var scrollTop = _instance.getScrollTop();
 
-		//Setting this to a new value will automatically cause the current animation to stop, if any.
-		_scrollAnimation = {
-			startTop: scrollTop,
-			topDiff: top - scrollTop,
-			targetTop: top,
-			duration: options.duration || DEFAULT_DURATION,
-			startTime: now,
-			endTime: now + (options.duration || DEFAULT_DURATION),
-			easing: easings[options.easing || DEFAULT_EASING],
-			done: options.done
-		};
+		if(_scrollDirection === 'vertical') {
+			var scrollTop = _instance.getScrollTop();
 
-		//Don't queue the animation if there's nothing to animate.
-		if(!_scrollAnimation.topDiff) {
-			if(_scrollAnimation.done) {
-				_scrollAnimation.done.call(_instance, false);
+			//Setting this to a new value will automatically cause the current animation to stop, if any.
+			_scrollAnimation = {
+				startTop: scrollTop,
+				topDiff: top - scrollTop,
+				targetTop: top,
+				duration: options.duration || DEFAULT_DURATION,
+				startTime: now,
+				endTime: now + (options.duration || DEFAULT_DURATION),
+				easing: easings[options.easing || DEFAULT_EASING],
+				done: options.done
+			};
+
+			//Don't queue the animation if there's nothing to animate.
+			if(!_scrollAnimation.topDiff) {
+				if(_scrollAnimation.done) {
+					_scrollAnimation.done.call(_instance, false);
+				}
+
+				_scrollAnimation = undefined;
 			}
+		} else {
+			var scrollLeft = _instance.getScrollTop();
 
-			_scrollAnimation = undefined;
+			//Setting this to a new value will automatically cause the current animation to stop, if any.
+			_scrollAnimation = {
+				startLeft: scrollLeft,
+				leftDiff: left - scrollLeft,
+				targetLeft: left,
+				duration: options.duration || DEFAULT_DURATION,
+				startTime: now,
+				endTime: now + (options.duration || DEFAULT_DURATION),
+				easing: easings[options.easing || DEFAULT_EASING],
+				done: options.done
+			};
+
+			//Don't queue the animation if there's nothing to animate.
+			if(!_scrollAnimation.leftDiff) {
+				if(_scrollAnimation.done) {
+					_scrollAnimation.done.call(_instance, false);
+				}
+
+				_scrollAnimation = undefined;
+			}
 		}
 
 		return _instance;
@@ -606,6 +662,30 @@
 		return _maxKeyFrame;
 	};
 
+	Skrollr.prototype.setScrollLeft = function(left, force) {
+		_forceRender = (force === true);
+
+		if(_isMobile) {
+			_mobileOffset = Math.min(Math.max(left, 0), _maxKeyFrame);
+		} else {
+			window.scrollTo(left, 0);
+		}
+
+		return _instance;
+	};
+
+	Skrollr.prototype.getScrollLeft = function() {
+		if(_isMobile) {
+			return _mobileOffset;
+		} else {
+			return window.pageXOffset || documentElement.scrollLeft || body.scrollLeft || 0;
+		}
+	};
+
+	Skrollr.prototype.getMaxScrollLeft = function() {
+		return _maxKeyFrame;
+	};
+
 	Skrollr.prototype.on = function(name, fn) {
 		_listeners[name] = fn;
 
@@ -634,6 +714,7 @@
 
 		documentElement.style.overflow = body.style.overflow = 'auto';
 		documentElement.style.height = body.style.height = 'auto';
+		documentElement.style.width = body.style.width = 'auto';
 
 		if(_skrollrBody) {
 			skrollr.setStyle(_skrollrBody, 'transform', 'none');
@@ -676,7 +757,9 @@
 		var currentTouchY;
 		var currentTouchX;
 		var lastTouchY;
+		var lastTouchX;
 		var deltaY;
+		var deltaX;
 
 		var initialTouchTime;
 		var currentTouchTime;
@@ -713,7 +796,7 @@
 					initialElement = currentElement;
 
 					initialTouchY = lastTouchY = currentTouchY;
-					initialTouchX = currentTouchX;
+					initialTouchX = lastTouchX = currentTouchX;
 					initialTouchTime = currentTouchTime;
 
 					break;
@@ -723,12 +806,21 @@
 						e.preventDefault();
 					}
 
-					deltaY = currentTouchY - lastTouchY;
-					deltaTime = currentTouchTime - lastTouchTime;
+					if(_scrollDirection === 'vertical') {
+						deltaY = currentTouchY - lastTouchY;
+						deltaTime = currentTouchTime - lastTouchTime;
 
-					_instance.setScrollTop(_mobileOffset - deltaY, true);
+						_instance.setScrollTop(_mobileOffset - deltaY, true);
 
-					lastTouchY = currentTouchY;
+						lastTouchY = currentTouchY;
+					} else {
+						deltaX = currentTouchX - lastTouchX;
+						deltaTime = currentTouchTime - lastTouchTime;
+
+						_instance.setScrollLeft(_mobileOffset - deltaX, true);
+
+						lastTouchX = currentTouchX;
+					}
 					lastTouchTime = currentTouchTime;
 					break;
 				default:
@@ -754,32 +846,56 @@
 
 					initialElement = undefined;
 
-					var speed = deltaY / deltaTime;
+					var speed = _scrollDirection === 'vertical' ? deltaY / deltaTime : deltaX / deltaTime;
 
 					//Cap speed at 3 pixel/ms.
 					speed = Math.max(Math.min(speed, 3), -3);
 
 					var duration = Math.abs(speed / _mobileDeceleration);
 					var targetOffset = speed * duration + 0.5 * _mobileDeceleration * duration * duration;
-					var targetTop = _instance.getScrollTop() - targetOffset;
 
-					//Relative duration change for when scrolling above bounds.
-					var targetRatio = 0;
+					if(_scrollDirection === 'vertical') {
+						var targetTop = _instance.getScrollTop() - targetOffset;
 
-					//Change duration proportionally when scrolling would leave bounds.
-					if(targetTop > _maxKeyFrame) {
-						targetRatio = (_maxKeyFrame - targetTop) / targetOffset;
+						//Relative duration change for when scrolling above bounds.
+						var targetRatio = 0;
 
-						targetTop = _maxKeyFrame;
-					} else if(targetTop < 0) {
-						targetRatio = -targetTop / targetOffset;
+						//Change duration proportionally when scrolling would leave bounds.
+						if(targetTop > _maxKeyFrame) {
+							targetRatio = (_maxKeyFrame - targetTop) / targetOffset;
 
-						targetTop = 0;
+							targetTop = _maxKeyFrame;
+						} else if(targetTop < 0) {
+							targetRatio = -targetTop / targetOffset;
+
+							targetTop = 0;
+						}
+
+						duration = duration * (1 - targetRatio);
+
+						_instance.animateTo((targetTop + 0.5) | 0, { easing: 'outCubic', duration: duration });
+					} else {
+						var targetLeft = _instance.getScrollLeft() - targetOffset;
+
+						//Relative duration change for when scrolling above bounds.
+						var targetRatio = 0;
+
+						//Change duration proportionally when scrolling would leave bounds.
+						if(targetTop > _maxKeyFrame) {
+							targetRatio = (_maxKeyFrame - targetLeft) / targetOffset;
+
+							targetLeft = _maxKeyFrame;
+						} else if(targetLeft < 0) {
+							targetRatio = -targetLeft / targetOffset;
+
+							targetLeft = 0;
+						}
+
+						duration = duration * (1 - targetRatio);
+
+						_instance.animateTo((targetLeft + 0.5) | 0, { easing: 'outCubic', duration: duration });
 					}
 
-					duration = duration * (1 - targetRatio);
-
-					_instance.animateTo((targetTop + 0.5) | 0, {easing: 'outCubic', duration: duration});
 					break;
 			}
 		});
@@ -796,6 +912,7 @@
 	 */
 	var _updateDependentKeyFrames = function() {
 		var viewportHeight = documentElement.clientHeight;
+		var viewportWidth = documentElement.clientWidth;
 		var processedConstants = _processConstants();
 		var skrollable;
 		var element;
@@ -832,7 +949,7 @@
 
 				if(kf.isPercentage) {
 					//Convert the offset to percentage of the viewport height.
-					offset = offset * viewportHeight;
+					offset = offset * (_scrollDirection === 'vertical') ? viewportHeight : viewportWidth;
 
 					//Absolute + percentage mode.
 					kf.frame = offset;
@@ -859,7 +976,7 @@
 		}
 
 		//#133: The document can be larger than the maxKeyFrame we found.
-		_maxKeyFrame = Math.max(_maxKeyFrame, _getDocumentHeight());
+		_maxKeyFrame = Math.max(_maxKeyFrame, _scrollDirection === 'vertical' ? _getDocumentHeight() : _getDocumentWidth());
 
 		//Now process all data-end keyframes.
 		skrollableIndex = 0;
@@ -994,7 +1111,10 @@
 		}
 
 		//We may render something else than the actual scrollbar position.
-		var renderTop = _instance.getScrollTop();
+		if(_scrollDirection === 'vertical')
+			var renderTop = _instance.getScrollTop();
+		else
+			var renderLeft = _instance.getScrollLeft();
 
 		//If there's an animation, which ends in current render call, call the callback after rendering.
 		var afterAnimationCallback;
@@ -1005,31 +1125,47 @@
 		if(_scrollAnimation) {
 			//It's over
 			if(now >= _scrollAnimation.endTime) {
-				renderTop = _scrollAnimation.targetTop;
+				if(_scrollDirection === 'vertical')
+					renderTop = _scrollAnimation.targetTop;
+				else
+					renderLeft = _scrollAnimation.targetLeft;
 				afterAnimationCallback = _scrollAnimation.done;
 				_scrollAnimation = undefined;
 			} else {
 				//Map the current progress to the new progress using given easing function.
 				progress = _scrollAnimation.easing((now - _scrollAnimation.startTime) / _scrollAnimation.duration);
 
-				renderTop = (_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0;
+				if(_scrollDirection === 'vertical')
+					renderTop = (_scrollAnimation.startTop + progress * _scrollAnimation.topDiff) | 0;
+				else
+					renderTLeft = (_scrollAnimation.startLeft + progress * _scrollAnimation.leftDiff) | 0;
 			}
 
-			_instance.setScrollTop(renderTop, true);
+			_scrollDirection === 'vertical' ? _instance.setScrollTop(renderTop, true) : _instance.setScrollLeft(renderLeft, true);
 		}
-		//Smooth scrolling only if there's no animation running and if we're not forcing the rendering.
+			//Smooth scrolling only if there's no animation running and if we're not forcing the rendering.
 		else if(!_forceRender) {
-			var smoothScrollingDiff = _smoothScrolling.targetTop - renderTop;
+			var smoothScrollingDiff = _scrollDirection === 'vertical' ? _smoothScrolling.targetTop - renderTop : _smoothScrolling.targetLeft - renderLeft;
 
 			//The user scrolled, start new smooth scrolling.
 			if(smoothScrollingDiff) {
-				_smoothScrolling = {
-					startTop: _lastTop,
-					topDiff: renderTop - _lastTop,
-					targetTop: renderTop,
-					startTime: _lastRenderCall,
-					endTime: _lastRenderCall + _smoothScrollingDuration
-				};
+				if(_scrollDirection === 'vertical') {
+					_smoothScrolling = {
+						startTop: _lastTop,
+						topDiff: renderTop - _lastTop,
+						targetTop: renderTop,
+						startTime: _lastRenderCall,
+						endTime: _lastRenderCall + _smoothScrollingDuration
+					};
+				} else {
+					_smoothScrolling = {
+						startLeft: _lastLeft,
+						leftDiff: renderLeft - _lastLeft,
+						targetLeft: renderLeft,
+						startTime: _lastRenderCall,
+						endTime: _lastRenderCall + _smoothScrollingDuration
+					};
+				}
 			}
 
 			//Interpolate the internal scroll position (not the actual scrollbar).
@@ -1037,7 +1173,10 @@
 				//Map the current progress to the new progress using easing function.
 				progress = easings.sqrt((now - _smoothScrolling.startTime) / _smoothScrollingDuration);
 
-				renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
+				if(_scrollDirection === 'vertical')
+					renderTop = (_smoothScrolling.startTop + progress * _smoothScrolling.topDiff) | 0;
+				else
+					renderLeft = (_smoothScrolling.startLeft + progress * _smoothScrolling.leftDiff) | 0;
 			}
 		}
 
@@ -1048,39 +1187,76 @@
 		}
 
 		//Did the scroll position even change?
-		if(_forceRender || _lastTop !== renderTop) {
-			//Remember in which direction are we scrolling?
-			_direction = (renderTop > _lastTop) ? 'down' : (renderTop < _lastTop ? 'up' : _direction);
+		if(_scrollDirection === 'vertical') {
+			if(_forceRender || _lastTop !== renderTop) {
+				//Remember in which direction are we scrolling?
+				_direction = (renderTop > _lastTop) ? 'down' : (renderTop < _lastTop ? 'up' : _direction);
 
-			_forceRender = false;
+				_forceRender = false;
 
-			var listenerParams = {
-				curTop: renderTop,
-				lastTop: _lastTop,
-				maxTop: _maxKeyFrame,
-				direction: _direction
-			};
+				var listenerParams = {
+					curTop: renderTop,
+					lastTop: _lastTop,
+					maxTop: _maxKeyFrame,
+					direction: _direction
+				};
 
-			//Tell the listener we are about to render.
-			var continueRendering = _listeners.beforerender && _listeners.beforerender.call(_instance, listenerParams);
+				//Tell the listener we are about to render.
+				var continueRendering = _listeners.beforerender && _listeners.beforerender.call(_instance, listenerParams);
 
-			//The beforerender listener function is able the cancel rendering.
-			if(continueRendering !== false) {
-				//Now actually interpolate all the styles.
-				_calcSteps(renderTop, _instance.getScrollTop());
+				//The beforerender listener function is able the cancel rendering.
+				if(continueRendering !== false) {
+					//Now actually interpolate all the styles.
+					_calcSteps(renderTop, _instance.getScrollTop());
 
-				//Remember when we last rendered.
-				_lastTop = renderTop;
+					//Remember when we last rendered.
+					_lastTop = renderTop;
 
-				if(_listeners.render) {
-					_listeners.render.call(_instance, listenerParams);
+					if(_listeners.render) {
+						_listeners.render.call(_instance, listenerParams);
+					}
+				}
+
+				if(afterAnimationCallback) {
+					afterAnimationCallback.call(_instance, false);
 				}
 			}
+		} else {
+			if(_forceRender || _lastLeft !== renderLeft) {
+				//Remember in which direction are we scrolling?
+				_direction = (renderLeft > _lastLeft) ? 'down' : (renderLeft < _lastLeft ? 'up' : _direction);
 
-			if(afterAnimationCallback) {
-				afterAnimationCallback.call(_instance, false);
+				_forceRender = false;
+
+				var listenerParams = {
+					curLeft: renderLeft,
+					lastLeft: _lastLeft,
+					maxLeft: _maxKeyFrame,
+					direction: _direction
+				};
+
+				//Tell the listener we are about to render.
+				var continueRendering = _listeners.beforerender && _listeners.beforerender.call(_instance, listenerParams);
+
+				//The beforerender listener function is able the cancel rendering.
+				if(continueRendering !== false) {
+					//Now actually interpolate all the styles.
+					_calcSteps(renderLeft, _instance.getScrollLeft());
+
+					//Remember when we last rendered.
+					_lastLeft = renderLeft;
+
+					if(_listeners.render) {
+						_listeners.render.call(_instance, listenerParams);
+					}
+				}
+
+				if(afterAnimationCallback) {
+					afterAnimationCallback.call(_instance, false);
+				}
 			}
 		}
+
 
 		_lastRenderCall = now;
 	};
@@ -1338,7 +1514,7 @@
 				style[prop] = '' + (val | 0);
 			}
 		}
-		//#64: "float" can't be set across browsers. Needs to use "cssFloat" for all except IE.
+			//#64: "float" can't be set across browsers. Needs to use "cssFloat" for all except IE.
 		else if(prop === 'float') {
 			style.styleFloat = style.cssFloat = val;
 		}
@@ -1347,12 +1523,12 @@
 			try {
 				//Set prefixed property if there's a prefix.
 				if(theCSSPrefix) {
-					style[theCSSPrefix + prop.slice(0,1).toUpperCase() + prop.slice(1)] = val;
+					style[theCSSPrefix + prop.slice(0, 1).toUpperCase() + prop.slice(1)] = val;
 				}
 
 				//Set unprefixed.
 				style[prop] = val;
-			} catch(ignore) {}
+			} catch (ignore) { }
 		}
 	};
 
@@ -1436,24 +1612,45 @@
 		//Will be recalculated by _updateDependentKeyFrames.
 		_maxKeyFrame = 0;
 
-		if(_forceHeight && !_isMobile) {
-			//un-"force" the height to not mess with the calculations in _updateDependentKeyFrames (#216).
-			body.style.height = 'auto';
+		if(_scrollDirection === 'vertical') {
+			if(_forceHeight && !_isMobile) {
+				//un-"force" the height to not mess with the calculations in _updateDependentKeyFrames (#216).
+				body.style.height = 'auto';
+			}
+
+			_updateDependentKeyFrames();
+
+			if(_forceHeight && !_isMobile) {
+				//"force" the height.
+				body.style.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
+			}
+		} else {
+			if(_forceWidth && !_isMobile) {
+				//un-"force" the height to not mess with the calculations in _updateDependentKeyFrames (#216).
+				body.style.width = 'auto';
+			}
+
+			_updateDependentKeyFrames();
+
+			if(_forceHeight && !_isMobile) {
+				//"force" the height.
+				body.style.width = (_maxKeyFrame + documentElement.clientWidth) + 'px';
+			}
 		}
 
-		_updateDependentKeyFrames();
-
-		if(_forceHeight && !_isMobile) {
-			//"force" the height.
-			body.style.height = (_maxKeyFrame + documentElement.clientHeight) + 'px';
-		}
 
 		//The scroll offset may now be larger than needed (on desktop the browser/os prevents scrolling farther than the bottom).
 		if(_isMobile) {
-			_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
+			if(_scrollDirection === 'vertical')
+				_instance.setScrollTop(Math.min(_instance.getScrollTop(), _maxKeyFrame));
+			else
+				_instance.setScrollLeft(Math.min(_instance.getScrollLeft(), _maxKeyFrame));
 		} else {
 			//Remember and reset the scroll pos (#217).
-			_instance.setScrollTop(pos, true);
+			if(_scrollDirection === 'vertical')
+				_instance.setScrollTop(pos, true);
+			else
+				_instance.setScrollLeft(pos, true);
 		}
 
 		_forceRender = true;
@@ -1464,6 +1661,7 @@
 	 */
 	var _processConstants = function() {
 		var viewportHeight = documentElement.clientHeight;
+		var viewportWidth = documentElement.clientWidth;
 		var copy = {};
 		var prop;
 		var value;
@@ -1474,9 +1672,9 @@
 			if(typeof value === 'function') {
 				value = value.call(_instance);
 			}
-			//Percentage offset.
+				//Percentage offset.
 			else if((/p$/).test(value)) {
-				value = (value.substr(0, -1) / 100) * viewportHeight;
+				value = (value.substr(0, -1) / 100) * (_scrollDirection === 'vertical') ? viewportHeight : viewportWidth;
 			}
 
 			copy[prop] = value;
@@ -1494,6 +1692,13 @@
 
 		return bodyHeight - documentElement.clientHeight;
 	};
+
+	var _getDocumentWidth = function() {
+		var skrollrBodyWidth = (_skrollrBody && _skrollrBody.offsetWidth || 0);
+		var bodyWidth = Math.max(skrollrBodyWidth, body.scrollWidth, body.offsetWidth, documentElement.scrollWidth, documentElement.offsetWidth, documentElement.clientWidth);
+
+		return bodyWidth - documentElement.clientWidth;
+	}
 
 	/**
 	 * Returns a string of space separated classnames for the current element.
@@ -1623,6 +1828,7 @@
 
 	var _listeners;
 	var _forceHeight;
+	var _forceWidth;
 	var _maxKeyFrame = 0;
 
 	var _scale = 1;
@@ -1635,6 +1841,7 @@
 
 	//The last top offset value. Needed to determine direction.
 	var _lastTop = -1;
+	var _lastLeft = -1;
 
 	//The last time we called the render method (doesn't mean we rendered!).
 	var _lastRenderCall = _now();
@@ -1664,6 +1871,7 @@
 
 	var _edgeStrategy;
 
+	var _scrollDirection;
 
 	//Mobile specific vars. Will be stripped by UglifyJS when not in use.
 	var _isMobile = false;
