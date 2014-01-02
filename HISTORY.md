@@ -1,3 +1,7 @@
+0.6.19 (2014-01-02)
+-------------------
+
+* Constants can now be defined as functions or percentage offsets (#148, #404).
 0.6.18 (2013-12-18)
 -------------------
 
