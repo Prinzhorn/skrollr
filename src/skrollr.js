@@ -401,18 +401,20 @@
 
 				var constant = match[1];
 
-				//If there is a constant, get it's value or fall back to 0.
-				constant = constant && _constants[constant.substr(1)] || 0;
+				if(constant) {
+					//Strip the underscore prefix.
+					kf.constant = constant.substr(1);
+				}
 
-				//Parse key frame offset. If undefined will be casted to 0.
+				//Get the key frame offset.
 				var offset = match[2];
 
 				//Is it a percentage offset?
 				if(/p$/.test(offset)) {
 					kf.isPercentage = true;
-					kf.offset = ((offset.slice(0, -1) | 0) + constant) / 100;
+					kf.offset = (offset.slice(0, -1) | 0) / 100;
 				} else {
-					kf.offset = (offset | 0) + constant;
+					kf.offset = (offset | 0);
 				}
 
 				var anchor1 = match[3];
@@ -430,9 +432,7 @@
 					} else if(!kf.isPercentage) {
 						//For data-start we can already set the key frame w/o calculations.
 						//#59: "scale" options should only affect absolute mode.
-						kf.frame = kf.offset * _scale;
-
-						delete kf.offset;
+						kf.offset = kf.offset * _scale;
 					}
 				}
 				//"relative" mode, where numbers are relative to anchors.
@@ -790,10 +790,13 @@
 	};
 
 	/**
-	 * Updates key frames which depend on others.
+	 * Updates key frames which depend on others / need to be updated on resize.
 	 * That is "end" in "absolute" mode and all key frames in "relative" mode.
+	 * Also handles constants, because they may change on resize.
 	 */
 	var _updateDependentKeyFrames = function() {
+		var viewportHeight = documentElement.clientHeight;
+		var processedConstants = _processConstants();
 		var skrollable;
 		var element;
 		var anchorTarget;
@@ -803,6 +806,8 @@
 		var kf;
 		var skrollableIndex;
 		var skrollablesLength;
+		var offset;
+		var constantValue;
 
 		//First process all relative-mode elements and find the max key frame.
 		skrollableIndex = 0;
@@ -820,11 +825,14 @@
 			for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
-				var offset = kf.offset;
+				offset = kf.offset;
+				constantValue = processedConstants[kf.constant] || 0;
+
+				kf.frame = offset;
 
 				if(kf.isPercentage) {
 					//Convert the offset to percentage of the viewport height.
-					offset = offset * documentElement.clientHeight;
+					offset = offset * viewportHeight;
 
 					//Absolute + percentage mode.
 					kf.frame = offset;
@@ -837,6 +845,8 @@
 
 					_reset(element, true);
 				}
+
+				kf.frame += constantValue;
 
 				//Only search for max key frame when forceHeight is enabled.
 				if(_forceHeight) {
@@ -865,8 +875,10 @@
 			for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 				kf = keyFrames[keyFrameIndex];
 
+				constantValue = processedConstants[kf.constant] || 0;
+
 				if(kf.isEnd) {
-					kf.frame = _maxKeyFrame - kf.offset;
+					kf.frame = _maxKeyFrame - kf.offset + constantValue;
 				}
 			}
 
@@ -1445,6 +1457,32 @@
 		}
 
 		_forceRender = true;
+	};
+
+	/*
+	 * Returns a copy of the constants object where all functions and strings have been evaluated.
+	 */
+	var _processConstants = function() {
+		var viewportHeight = documentElement.clientHeight;
+		var copy = {};
+		var prop;
+		var value;
+
+		for(prop in _constants) {
+			value = _constants[prop];
+
+			if(typeof value === 'function') {
+				value = value.call(_instance);
+			}
+			//Percentage offset.
+			else if((/p$/).test(value)) {
+				value = (value.substr(0, -1) / 100) * viewportHeight;
+			}
+
+			copy[prop] = value;
+		}
+
+		return copy;
 	};
 
 	/*

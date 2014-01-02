@@ -5,7 +5,9 @@ var s = skrollr.init({
 	edgeStrategy: 'set',
 	constants: {
 		myconst: 300,
-		my500: 500
+		my500: function() {
+			return 500;
+		}
 	},
 	easing: {
 		half1: function() {
