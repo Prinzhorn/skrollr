@@ -439,7 +439,7 @@
 						kf.offset = kf.offset * _scale;
 					}
 				}
-					//"relative" mode, where numbers are relative to anchors.
+				//"relative" mode, where numbers are relative to anchors.
 				else {
 					kf.mode = 'relative';
 					kf.anchors = [anchor1, anchor2];
@@ -772,7 +772,7 @@
 			currentElement = e.target;
 
 			//We don't want text nodes.
-			while (currentElement.nodeType === 3) {
+			while(currentElement.nodeType === 3) {
 				currentElement = currentElement.parentNode;
 			}
 
@@ -784,7 +784,7 @@
 				e.preventDefault();
 			}
 
-			switch (e.type) {
+			switch(e.type) {
 				case EVENT_TOUCHSTART:
 					//The last element we tapped on.
 					if(initialElement) {
@@ -1040,7 +1040,7 @@
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.edge = beforeFirst ? -1 : 1;
 
-				switch (skrollable.edgeStrategy) {
+				switch(skrollable.edgeStrategy) {
 					case 'reset':
 						_reset(element);
 						continue;
@@ -1278,7 +1278,7 @@
 
 			var match;
 
-			while ((match = rxPropValue.exec(frame.props)) !== null) {
+			while((match = rxPropValue.exec(frame.props)) !== null) {
 				prop = match[1];
 				value = match[2];
 
