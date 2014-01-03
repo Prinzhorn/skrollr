@@ -1476,7 +1476,7 @@
 			}
 			//Percentage offset.
 			else if((/p$/).test(value)) {
-				value = (value.substr(0, -1) / 100) * viewportHeight;
+				value = (value.slice(0, -1) / 100) * viewportHeight;
 			}
 
 			copy[prop] = value;
