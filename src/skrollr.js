@@ -333,7 +333,7 @@
 			elements = document.getElementsByTagName('*');
 		} else {
 			//We accept a single element or an array of elements.
-			elements = [].concat(elements);
+			elements = [].slice.apply(elements);
 		}
 
 		elementIndex = 0;
