@@ -331,9 +331,12 @@
 			_skrollableIdCounter = 0;
 
 			elements = document.getElementsByTagName('*');
+		} else if (elements.length) {
+			//accept an array or array-like object, like jQuery('.new') or document.querySelectorAll('.new')
+			elements = [].slice.apply(elements);
 		} else {
-			//We accept a single element or an array of elements.
-			elements = [].concat(elements);
+			//accept a single element
+			elements = [elements];
 		}
 
 		elementIndex = 0;
