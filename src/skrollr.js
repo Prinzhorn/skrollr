@@ -697,7 +697,7 @@
 			currentTouchX = touch.clientX;
 			currentTouchTime = e.timeStamp;
 
-			if(!rxTouchIgnoreTags.test(currentElement.tagName)) {
+			if(!rxTouchIgnoreTags.test(currentElement.tagName) && e.type !== EVENT_TOUCHSTART) {
 				e.preventDefault();
 			}
 
