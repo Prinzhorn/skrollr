@@ -506,7 +506,7 @@
 	 * That is, calculate anchor position and offset of element.
 	 */
 	Skrollr.prototype.relativeToAbsolute = function(element, viewportAnchor, elementAnchor) {
-		var viewportHeight = documentElement.clientHeight;
+		var viewportHeight = window.innerHeight;
 		var box = element.getBoundingClientRect();
 		var absolute = box.top;
 
