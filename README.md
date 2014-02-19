@@ -426,16 +426,17 @@ skrollr.init({
 ### classchange
 
 A listener function called when any element has it's class updated by skrollr.
+
 Arguments:
-  element - the element being changed
-  add     - Array - the classes being added
-  remove  - Array - the classes being removed
+* `element` the element being changed
+* `add` Array - the classes being added
+* `remove` Array - the classes being removed
 
 Example
 
 ```js
 skrollr.init({
-	classchange: function(element) {
+	classchange: function(element, add, remove) {
 		//Log the element which had a class update.
 		console.log(element);
 	}
