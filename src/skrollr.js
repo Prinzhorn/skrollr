@@ -572,6 +572,10 @@
 			_scrollAnimation.done.call(_instance, true);
 		}
 
+		if(_smoothScrolling) {
+			_smoothScrolling.targetTop = _instance.getScrollTop(); //Update smooth scroll data so we don't scroll in next _render loop
+		}
+
 		_scrollAnimation = undefined;
 	};
 
@@ -1006,6 +1010,9 @@
 			//It's over
 			if(now >= _scrollAnimation.endTime) {
 				renderTop = _scrollAnimation.targetTop;
+				if(_smoothScrolling) {
+					_smoothScrolling.targetTop = _instance.getScrollTop(); //Update smooth scroll data so we don't scroll in next _render loop
+				}
 				afterAnimationCallback = _scrollAnimation.done;
 				_scrollAnimation = undefined;
 			} else {
