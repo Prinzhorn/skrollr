@@ -1562,7 +1562,7 @@
 		element[prop] = _trim(val);
 		
 		if(_listeners.classchange){
-		  _listeners.classchange(element);
+		  _listeners.classchange(element, add, remove);
 		}
 	};
 
