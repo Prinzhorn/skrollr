@@ -77,6 +77,14 @@ First of all you want to include the `skrollr.min.js` file at the bottom of your
 </body>
 ```
 
+If you are using require.js to structure your project, you can use skrollr as a module as well.
+
+```javascript
+require(['skrollr'], function(skrollr){
+	var s = skrollr.init();
+});
+```
+
 If you're familiar with CSS, you already know the `style` attribute. In order to create an animation you would need several, at least two, of them. That's what skrollr does. You use the HTML5 `data-` attributes to define multiple sets of styles (we call each of them **keyframe**) and skrollr interpolates between them.
 
 #### Let's change the background-color of a `div` starting at `#00f` when the scrollbar is at the top and ending with `#f00` when the user scrolled 500 pixels down
