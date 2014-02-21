@@ -331,9 +331,9 @@
 			_skrollableIdCounter = 0;
 
 			elements = document.getElementsByTagName('*');
-		} else {
-			//We accept a single element or an array of elements.
-			elements = [].concat(elements);
+		} else if(elements.length === undefined) {
+			//We also accept a single element as parameter.
+			elements = [elements];
 		}
 
 		elementIndex = 0;

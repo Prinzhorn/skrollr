@@ -487,7 +487,7 @@ Calling `init()` returns an instance of skrollr which exposes a public api.
 
 ### refresh([elements])
 
-Reparses all given `elements`. You can pass a single element or an array-like element (Array, NodeList, jQuery object)
+Reparses all given `elements`. You can pass a single element or an array-like element (Array, NodeList or jQuery object)
 
 Useful when
 
