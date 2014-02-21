@@ -1,3 +1,8 @@
+0.6.22 (2014-02-21)
+-------------------
+
+* Experimental AMD support (#409). Please read the documentation about it.
+
 0.6.21 (2014-01-06)
 -------------------
 
