@@ -154,6 +154,17 @@ You just told me it doesn't work on mobile, but why does it? The answer is simpl
 
 Starting with skrollr 0.6.0 there's just one thing you need to do: Include an element on your page with the id `skrollr-body`. That's the element we move in order to fake scrolling. The only case were you don't need a `#skrollr-body` is when using `position:fixed` exlusively. In fact the skrollr website doesn't include a `#skrollr-body` element. If you need both fixed and non-fixed (i.e. static) elements, put the static ones inside the `#skrollr-body` element.
 
+AMD
+---
+
+Starting with `0.6.22` there's experimental AMD support. Please note that only skrollr core has AMD support so far. We will update the plugins in the future.
+
+```js
+require(['skrollr'], function(skrollr){
+	skrollr.init();
+});
+```
+
 Absolute vs relative mode
 -----
 
