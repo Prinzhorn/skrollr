@@ -1371,6 +1371,7 @@
 			if(!e.preventDefault) {
 				e.preventDefault = function() {
 					e.returnValue = false;
+					e.defaultPrevented = true;
 				};
 			}
 
