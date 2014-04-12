@@ -72,7 +72,7 @@
 	//Easing function names follow the property in square brackets.
 	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
 
-	var rxCamelCase = /-([a-z])/g;
+	var rxCamelCase = /-([a-z0-9_])/g;
 	var rxCamelCaseFn = function(str, letter) {
 		return letter.toUpperCase();
 	};
@@ -350,6 +350,9 @@
 			//The edge strategy for this particular element.
 			var edgeStrategy = _edgeStrategy;
 
+			//If this particular element should emit keyframe events.
+			var emitEvents = false;
+
 			if(!el.attributes) {
 				continue;
 			}
@@ -385,6 +388,13 @@
 					continue;
 				}
 
+				//Is this element tagged with the `data-emit-events` attribute?
+				if(attr.name === 'data-emit-events') {
+					emitEvents = true;
+
+					continue;
+				}
+
 				var match = attr.name.match(rxKeyframeAttribute);
 
 				if(match === null) {
@@ -394,7 +404,9 @@
 				var kf = {
 					props: attr.value,
 					//Point back to the element as well.
-					element: el
+					element: el,
+					//The name of the event which this keyframe will fire, if emitEvents is
+					eventType: 'skrollr.' + attr.name.replace(rxCamelCase, rxCamelCaseFn)
 				};
 
 				keyFrames.push(kf);
@@ -471,7 +483,9 @@
 				anchorTarget: anchorTarget,
 				keyFrames: keyFrames,
 				smoothScrolling: smoothScrollThis,
-				edgeStrategy: edgeStrategy
+				edgeStrategy: edgeStrategy,
+				emitEvents: emitEvents,
+				lastFrameIndex: -1
 			};
 
 			_updateClass(el, [SKROLLABLE_CLASS], []);
@@ -901,11 +915,14 @@
 			var element = skrollable.element;
 			var frame = skrollable.smoothScrolling ? fakeFrame : actualFrame;
 			var frames = skrollable.keyFrames;
-			var firstFrame = frames[0].frame;
-			var lastFrame = frames[frames.length - 1].frame;
-			var beforeFirst = frame < firstFrame;
-			var afterLast = frame > lastFrame;
-			var firstOrLastFrame = frames[beforeFirst ? 0 : frames.length - 1];
+			var framesLength = frames.length;
+			var firstFrame = frames[0];
+			var lastFrame = frames[frames.length - 1];
+			var beforeFirst = frame < firstFrame.frame;
+			var afterLast = frame > lastFrame.frame;
+			var firstOrLastFrame = beforeFirst ? firstFrame : lastFrame;
+			var emitEvents = skrollable.emitEvents;
+			var lastFrameIndex = skrollable.lastFrameIndex;
 			var key;
 			var value;
 
@@ -918,7 +935,23 @@
 				}
 
 				//Add the skrollr-before or -after class.
-				_updateClass(element, [beforeFirst ? SKROLLABLE_BEFORE_CLASS : SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_BETWEEN_CLASS, SKROLLABLE_AFTER_CLASS]);
+				if(beforeFirst) {
+					_updateClass(element, [SKROLLABLE_BEFORE_CLASS], [SKROLLABLE_AFTER_CLASS, SKROLLABLE_BETWEEN_CLASS]);
+
+					//This handles the special case where we exit the first keyframe.
+					if(emitEvents && lastFrameIndex > -1) {
+						_emitEvent(element, firstFrame.eventType + '.' + _direction);
+						skrollable.lastFrameIndex = -1;
+					}
+				} else {
+					_updateClass(element, [SKROLLABLE_AFTER_CLASS], [SKROLLABLE_BEFORE_CLASS, SKROLLABLE_BETWEEN_CLASS]);
+
+					//This handles the special case where we exit the last keyframe.
+					if(emitEvents && lastFrameIndex < framesLength) {
+						_emitEvent(element, lastFrame.eventType + '.' + _direction);
+						skrollable.lastFrameIndex = framesLength;
+					}
+				}
 
 				//Remember that we handled the edge case (before/after the first/last keyframe).
 				skrollable.edge = beforeFirst ? -1 : 1;
@@ -955,9 +988,8 @@
 
 			//Find out between which two key frames we are right now.
 			var keyFrameIndex = 0;
-			var framesLength = frames.length - 1;
 
-			for(; keyFrameIndex < framesLength; keyFrameIndex++) {
+			for(; keyFrameIndex < framesLength - 1; keyFrameIndex++) {
 				if(frame >= frames[keyFrameIndex].frame && frame <= frames[keyFrameIndex + 1].frame) {
 					var left = frames[keyFrameIndex];
 					var right = frames[keyFrameIndex + 1];
@@ -975,6 +1007,22 @@
 							value = _interpolateString(value);
 
 							skrollr.setStyle(element, key, value);
+						}
+					}
+
+					//Are events enabled on this element?
+					//This code handles the usual cases of scrolling through different keyframes.
+					//The special cases of before first and after last keyframe are handled above.
+					if(emitEvents) {
+						//Did we pass a new keyframe?
+						if(lastFrameIndex !== keyFrameIndex) {
+							if(_direction === 'down') {
+								_emitEvent(element, left.eventType + '.' + _direction);
+							} else {
+								_emitEvent(element, right.eventType + '.' + _direction);
+							}
+
+							skrollable.lastFrameIndex = keyFrameIndex;
 						}
 					}
 
@@ -1428,6 +1476,10 @@
 		}
 
 		_registeredEvents = [];
+	};
+
+	var _emitEvent = function(element, name) {
+		window.console.log(name);
 	};
 
 	var _reflow = function() {
