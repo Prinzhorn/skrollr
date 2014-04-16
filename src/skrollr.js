@@ -350,6 +350,11 @@
 			//The edge strategy for this particular element.
 			var edgeStrategy = _edgeStrategy;
 
+			// If we're reseting the counter, remove any old element ids that may be hanging around.
+			if(ignoreID) {
+				delete el[SKROLLABLE_ID_DOM_PROPERTY]
+			}
+
 			if(!el.attributes) {
 				continue;
 			}
