@@ -352,7 +352,7 @@
 
 			// If we're reseting the counter, remove any old element ids that may be hanging around.
 			if(ignoreID) {
-				delete el[SKROLLABLE_ID_DOM_PROPERTY]
+				delete el[SKROLLABLE_ID_DOM_PROPERTY];
 			}
 
 			if(!el.attributes) {
