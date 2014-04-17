@@ -581,7 +581,7 @@
 	Skrollr.prototype.isAnimatingTo = function() {
 		return !!_scrollAnimation;
 	};
-	
+
 	Skrollr.prototype.isMobile = function() {
 		return _isMobile;
 	};
