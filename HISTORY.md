@@ -1,6 +1,7 @@
 0.6.23 (2014-02-21)
 -------------------
 
+* Experimental support for emitting events when the scrolling passes a keyframe.
 * Fixed `refresh` not accepting `NodeList`s (#435).
 
 0.6.22 (2014-02-21)
