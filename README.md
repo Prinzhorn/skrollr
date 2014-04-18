@@ -444,6 +444,26 @@ skrollr.init({
 });
 ```
 
+### classchange
+
+A listener function called when any element has it's class updated by skrollr.
+
+Arguments:
+* `element` the element being changed
+* `add` Array - the classes being added
+* `remove` Array - the classes being removed
+
+Example
+
+```js
+skrollr.init({
+	classchange: function(element, add, remove) {
+		//Log the element which had a class update.
+		console.log(element);
+	}
+});
+```
+
 ### easing
 
 An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1 (the percentage of how much of the animation is done). The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 is just fine.

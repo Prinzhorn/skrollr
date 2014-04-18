@@ -248,7 +248,10 @@
 			beforerender: options.beforerender,
 
 			//Function to be called right after finishing rendering.
-			render: options.render
+			render: options.render,
+			
+			//function to be called when a class name changes
+			classchange: options.classchange
 		};
 
 		//forceHeight is true by default
@@ -1567,6 +1570,10 @@
 		}
 
 		element[prop] = _trim(val);
+		
+		if(_listeners.classchange){
+		  _listeners.classchange(element, add, remove);
+		}
 	};
 
 	var _trim = function(a) {
