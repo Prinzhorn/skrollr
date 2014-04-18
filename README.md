@@ -28,16 +28,7 @@ Plugins
 In the wild
 -----
 
-* http://www.fontwalk.de/
-* http://kitkat.com/
-* http://www.kia.co.uk/new-cars/range/mid-sized-cars/proceed-gt/intro.aspx
-* http://www.cabletv.com/the-walking-dead
-* http://hypervenom.nike.com/
-* http://www.guardian.co.uk/world/interactive/2012/nov/06/america-elect-graphic-novel
-* http://www.evanshalshaw.com/bondcars/
-
-This list only contains some of the latest and most notable websites that use skrollr, hand picked by [@Prinzhorn](http://twitter.com/Prinzhorn).
-For a much longer and unopinionated list, take a look at the [wiki page](https://github.com/Prinzhorn/skrollr/wiki/In-the-wild).
+Check out the [wiki page](https://github.com/Prinzhorn/skrollr/wiki/In-the-wild) for websites using skrollr and feel free to add your own website :). You can also shamelessly add yourself to the list [here](https://github.com/Prinzhorn/skrollr/wiki/Agencies-and-freelancers) if you are offering paid skrollr support.
 
 Further resources (tutorials etc.)
 -----
@@ -272,6 +263,21 @@ CSS classes
 skrollr will add a `skrollr` class to the `HTML` element when calling `init` and will remove a `no-skrollr` class if present. Additionally it will add a `skrollr-desktop` or `skrollr-mobile` class depending on which it detects. This allows fallback CSS rules to create a good user experience on unsupported devices or when JavaScript or skrollr are disabled.
 
 All elements under skrollr's control (elements with appropriate data-attributes) will get the `skrollable` class. In addition we add either the `skrollable-before`, `skrollable-between` **or** `skrollable-after` class, depending on whether the current scroll position is before, between or after the first/last (smallest/largest) keyframe of an element.
+
+Animating attributes
+--------------------
+
+Starting with skrollr 0.6.24 you can also animate attribute and not just style properties. This is especially a big thing because in the SVG world many properties are implemented as attributes and not in CSS. Animating an attribute couldn't be simplier, just prefix the property with an `@` symbol!
+
+```html
+<polygon
+	points='426,720   -200,720   -200,0   955,0'
+	data-0="@points:426,720   -200,720   -200,0   955,0"
+	data-500="@points:380,720   -200,720   -200,0   1302,0">
+</polygon>
+```
+
+Note: as always, skrollr doesn't do any magic. It doesn't understand what a polygon or points are. It's only interpolating numbers, that's it. So make sure you have the same number of number in your keyframes (8 in this case).
 
 Filling missing values
 -----
