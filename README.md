@@ -444,6 +444,48 @@ skrollr.init({
 });
 ```
 
+### keyframe
+
+**Experimental**
+
+In order to receive `keyframe` events from an element, add the `data-emit-events` attribute to the element. The keyframe function will be called with three arguments
+
+1. The `element` that passed the keyframe.
+2. The `name` of the keyframe, camel-cased (see example).
+3. The `direction` the user is scrolling.
+
+Example:
+
+```html
+<div
+	data-500="..."
+	data-top-bottom="..."
+	data-_offset-center="..."
+	data-emit-events
+>
+	Some content
+</div>
+```
+
+```js
+skrollr.init({
+	keyframe: function(element, name, direction) {
+		//name will be one of data500, dataTopBottom, data_offsetCenter
+	}
+});
+```
+
+Note: this is experimental, expect the API to change! Originally I wanted to emit the events right on the element, so you could do this
+
+```js
+//Wouldn't this be nice?
+document.querySelector('#foo').addEventListener('skrollr.dataTopBottom.up', function() {
+	//#foo just passed the data-top-bottom keyframe while scrolling up
+}, false)
+```
+
+but IE.
+
 ### easing
 
 An object defining new easing functions or overwriting existing ones. Easing functions get just one argument, which is a value between 0 and 1 (the percentage of how much of the animation is done). The function should return a value between 0 and 1 as well, but for some easings a value less than 0 or greater than 1 is just fine.
@@ -562,7 +604,7 @@ Returns if an animation caused by animateTo is running.
 
 ### on(name, fn)
 
-Set a listener function for one of the events described in the options section (beforerender, render). Only one listener can be attached at a given time. This method overwrites the current listener, if any.
+Set a listener function for one of the events described in the options section (beforerender, render, keyframe). Only one listener can be attached at a given time. This method overwrites the current listener, if any.
 
 ### off(name)
 
