@@ -248,7 +248,10 @@
 			beforerender: options.beforerender,
 
 			//Function to be called right after finishing rendering.
-			render: options.render
+			render: options.render,
+
+			//Function to be called whenever an element with the `data-emit-events` attribute passes a keyframe.
+			keyframe: options.keyframe
 		};
 
 		//forceHeight is true by default
@@ -406,7 +409,7 @@
 					//Point back to the element as well.
 					element: el,
 					//The name of the event which this keyframe will fire, if emitEvents is
-					eventType: 'skrollr.' + attr.name.replace(rxCamelCase, rxCamelCaseFn)
+					eventType: attr.name.replace(rxCamelCase, rxCamelCaseFn)
 				};
 
 				keyFrames.push(kf);
@@ -940,7 +943,7 @@
 
 					//This handles the special case where we exit the first keyframe.
 					if(emitEvents && lastFrameIndex > -1) {
-						_emitEvent(element, firstFrame.eventType + '.' + _direction);
+						_emitEvent(element, firstFrame.eventType, _direction);
 						skrollable.lastFrameIndex = -1;
 					}
 				} else {
@@ -948,7 +951,7 @@
 
 					//This handles the special case where we exit the last keyframe.
 					if(emitEvents && lastFrameIndex < framesLength) {
-						_emitEvent(element, lastFrame.eventType + '.' + _direction);
+						_emitEvent(element, lastFrame.eventType, _direction);
 						skrollable.lastFrameIndex = framesLength;
 					}
 				}
@@ -1017,9 +1020,9 @@
 						//Did we pass a new keyframe?
 						if(lastFrameIndex !== keyFrameIndex) {
 							if(_direction === 'down') {
-								_emitEvent(element, left.eventType + '.' + _direction);
+								_emitEvent(element, left.eventType, _direction);
 							} else {
-								_emitEvent(element, right.eventType + '.' + _direction);
+								_emitEvent(element, right.eventType, _direction);
 							}
 
 							skrollable.lastFrameIndex = keyFrameIndex;
@@ -1478,8 +1481,10 @@
 		_registeredEvents = [];
 	};
 
-	var _emitEvent = function(element, name) {
-		window.console.log(name);
+	var _emitEvent = function(element, name, direction) {
+		if(_listeners.keyframe) {
+			_listeners.keyframe.call(_instance, element, name, direction);
+		}
 	};
 
 	var _reflow = function() {
