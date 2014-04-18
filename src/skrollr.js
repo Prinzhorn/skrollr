@@ -658,8 +658,8 @@
 			_reset(_skrollables[skrollableIndex].element);
 		}
 
-		documentElement.style.overflow = body.style.overflow = 'auto';
-		documentElement.style.height = body.style.height = 'auto';
+		documentElement.style.overflow = body.style.overflow = '';
+		documentElement.style.height = body.style.height = '';
 
 		if(_skrollrBody) {
 			skrollr.setStyle(_skrollrBody, 'transform', 'none');
@@ -1515,7 +1515,7 @@
 
 		if(_forceHeight && !_isMobile) {
 			//un-"force" the height to not mess with the calculations in _updateDependentKeyFrames (#216).
-			body.style.height = 'auto';
+			body.style.height = '';
 		}
 
 		_updateDependentKeyFrames();
