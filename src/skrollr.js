@@ -587,6 +587,10 @@
 		return !!_scrollAnimation;
 	};
 
+	Skrollr.prototype.isMobile = function() {
+		return _isMobile;
+	};
+
 	Skrollr.prototype.setScrollTop = function(top, force) {
 		_forceRender = (force === true);
 
