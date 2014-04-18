@@ -1,8 +1,10 @@
-0.6.23 (2014-02-21)
+0.6.23 (2014-04-18)
 -------------------
 
 * Experimental support for emitting events when the scrolling passes a keyframe.
+* When using `refresh`, make sure elements which do not longer have keyframes get properly cleaned up (#486).
 * Fixed `refresh` not accepting `NodeList`s (#435).
+* Expose the status of mobile mode as `isMobile()` function (#488).
 
 0.6.22 (2014-02-21)
 -------------------

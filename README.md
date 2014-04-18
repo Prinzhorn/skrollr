@@ -532,6 +532,10 @@ Sets the top offset using `window.scrollTo(0, top)` on dektop or updating the in
 
 When `force` is set to `true`, skrollr will jump to the new position without any kind of transition. By default the global `smoothScrolling` setting applies.
 
+### isMobile()
+
+Returns if skrollr runs in mobile mode (see also `mobileCheck` option).
+
 ### animateTo(top[, options])
 
 Animates the scroll position from current position to `top`. Possible `options` are
