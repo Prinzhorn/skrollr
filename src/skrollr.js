@@ -357,7 +357,7 @@
 			var emitEvents = false;
 
 			//If we're reseting the counter, remove any old element ids that may be hanging around.
-			if(ignoreID) {
+			if(ignoreID && el[SKROLLABLE_ID_DOM_PROPERTY]) {
 				delete el[SKROLLABLE_ID_DOM_PROPERTY];
 			}
 
