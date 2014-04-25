@@ -1,6 +1,7 @@
 0.6.24 (2014-04-18)
 
 * Added support for animating attributes (#204).
+* Fixed some issue with forceHeight (#347).
 
 0.6.23 (2014-04-18)
 -------------------
