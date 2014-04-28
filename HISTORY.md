@@ -1,4 +1,5 @@
-0.6.24 (2014-04-18)
+0.6.24 (2014-04-25)
+-------------------
 
 * Fixed some issue with forceHeight (#347).
 * Fixed a regression caused by #486 breaking IE 8 (#494).
@@ -6,6 +7,8 @@
 
 0.6.23 (2014-04-18)
 -------------------
+
+**note**: This particular version is broken in IE!
 
 * Experimental support for emitting events when the scrolling passes a keyframe (check out the docs for `keyframe` option/event).
 * When using `refresh`, make sure elements which do not longer have keyframes get properly cleaned up (#486).
