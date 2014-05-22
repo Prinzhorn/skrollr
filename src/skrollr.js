@@ -1762,6 +1762,8 @@
 		define('skrollr', function () {
 			return skrollr;
 		});
+	} else if (typeof module !== 'undefined' && module.exports) {
+		module.exports = skrollr;
 	} else {
 		window.skrollr = skrollr;
 	}
