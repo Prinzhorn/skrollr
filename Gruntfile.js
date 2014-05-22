@@ -18,7 +18,8 @@ module.exports = function(grunt) {
 					window: true,
 					document: true,
 					navigator: true,
-					define: true
+					define: true,
+					module: true
 				}
 			},
 			all: ['src/**/*.js']
