@@ -633,7 +633,10 @@
 		}
 
 		documentElement.style.overflow = body.style.overflow = 'auto';
-		documentElement.style.height = body.style.height = 'auto';
+
+        if(_forceHeight) {
+            documentElement.style.height = body.style.height = 'auto';
+        }
 
 		if(_skrollrBody) {
 			skrollr.setStyle(_skrollrBody, 'transform', 'none');
