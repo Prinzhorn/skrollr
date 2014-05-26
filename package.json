@@ -24,7 +24,7 @@
   ],
   "main": "dist/skrollr.min.js",
   "engines": {
-    "node": ">=0.8"
+    "node": "0.10.x"
   },
   "scripts": {
     "test": "grunt travis --verbose"
