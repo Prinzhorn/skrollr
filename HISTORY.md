@@ -1,3 +1,8 @@
+0.6.26 (2014-06-08)
+-------------------
+
+* Fixed easing functions not working when animating attributes (#533)
+
 0.6.25 (2014-05-22)
 -------------------
 
