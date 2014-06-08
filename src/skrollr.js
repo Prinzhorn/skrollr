@@ -70,7 +70,7 @@
 	var rxPropValue = /\s*(@?[\w\-\[\]]+)\s*:\s*(.+?)\s*(?:;|$)/gi;
 
 	//Easing function names follow the property in square brackets.
-	var rxPropEasing = /^([a-z\-]+)\[(\w+)\]$/;
+	var rxPropEasing = /^(@?[a-z\-]+)\[(\w+)\]$/;
 
 	var rxCamelCase = /-([a-z0-9_])/g;
 	var rxCamelCaseFn = function(str, letter) {
