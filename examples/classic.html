@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+	<title>Classic parallax page</title>
+
+	<style type="text/css">
+	* {
+		padding:0;
+		margin:0;
+	}
+
+	html, body {
+		height:100%;
+	}
+
+	.skrollr-desktop body {
+		height:100% !important;
+	}
+
+	body {
+		font-family:sans-serif;
+		background:green;
+	}
+
+	.parallax-image-wrapper {
+		position:fixed;
+		top:-50%;
+		left:0;
+		width:100%;
+		height:50%;
+		overflow:hidden;
+	}
+
+	.parallax-image {
+		display:none;
+		position:absolute;
+		bottom:0;
+		left:0;
+		width:100%;
+		height:300%;
+		background-repeat:no-repeat;
+		background-position:center;
+		background-size:cover;
+	}
+
+	.parallax-image.skrollable-between {
+		display:block;
+	}
+
+	#skrollr-body {
+		height:100%;
+		overflow:visible;
+		position:relative;
+	}
+
+	.gap {
+		height:50%;
+	}
+
+	.content {
+		background:#fff;
+		padding:1em;
+		height:50%;
+	}
+
+	#done {
+		height:100%;
+	}
+	</style>
+</head>
+
+<body>
+	<!--
+		We position the images fixed and therefore need to place them outside of #skrollr-body.
+		We will then use data-anchor-target to display the correct image matching the current section.
+	-->
+
+	<div
+		class="parallax-image-wrapper"
+		data-anchor-target="#dragons + .gap"
+		data-bottom-top="transform:translate3d(0px, 300%, 0px)"
+		data-top-bottom="transform:translate3d(0px, 0%, 0px)">
+
+		<div
+			class="parallax-image"
+			style="background-image:url(images/kitteh1.jpg)"
+			data-anchor-target="#dragons + .gap"
+			data-bottom-top="transform: translate3d(0px, 0%, 0px);"
+			data-top-bottom="transform: translate3d(0px, 66.66%, 0px);"
+		></div>
+	</div>
+
+	<div
+		class="parallax-image-wrapper"
+		data-anchor-target="#bacons + .gap"
+		data-bottom-top="transform:translate3d(0px, 300%, 0px)"
+		data-top-bottom="transform:translate3d(0px, 0%, 0px)">
+
+		<div
+			class="parallax-image"
+			style="background-image:url(images/kitteh2.jpg)"
+			data-anchor-target="#bacons + .gap"
+			data-bottom-top="transform: translate3d(0px, 0%, 0px);"
+			data-top-bottom="transform: translate3d(0px, 66.66%, 0px);"
+		></div>
+	</div>
+
+	<div
+		class="parallax-image-wrapper"
+		data-anchor-target="#kittens + .gap"
+		data-bottom-top="transform:translate3d(0px, 300%, 0px)"
+		data-top-bottom="transform:translate3d(0px, 0%, 0px)">
+
+		<div
+			class="parallax-image"
+			style="background-image:url(images/kitteh3.jpg)"
+			data-anchor-target="#kittens + .gap"
+			data-bottom-top="transform: translate3d(0px, 0%, 0px);"
+			data-top-bottom="transform: translate3d(0px, 66.66%, 0px);"
+		></div>
+	</div>
+
+	<div id="skrollr-body">
+		<div class="content" id="dragons">
+			Here be dragons
+		</div>
+		<div class="gap"></div>
+		<div class="content" id="bacons">
+			Here be bacons
+		</div>
+		<div class="gap"></div>
+		<div class="content" id="kittens">
+			Here be kittens
+		</div>
+		<div class="gap"></div>
+		<div class="content" id="done">
+			Here be done
+		</div>
+	</div>
+
+	<script type="text/javascript" src="../dist/skrollr.min.js"></script>
+	<script type="text/javascript">
+	skrollr.init({
+		//forceHeight: false,
+		smoothScrolling: false
+	});
+	</script>
+</body>
+
+</html>
