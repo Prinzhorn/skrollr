@@ -422,7 +422,7 @@ and imagine the scrollbar is at `237`, which is below the first keyframe which i
 
 ### beforerender
 
-A listener function that gets called each time right before we render everything. The function will be passed as an object with the following properties:
+A listener function that gets called each time right before we render everything. The function will be passed an object with the following properties:
 
 ```js
 {
