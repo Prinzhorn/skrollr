@@ -1185,6 +1185,7 @@
 		var keyFrameIndex = 0;
 		var keyFramesLength = skrollable.keyFrames.length;
 		var classes = {};
+        var j = 0;
 
 		for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
@@ -1192,7 +1193,6 @@
 			var value;
 			var prop;
 			var props = {};
-            var j = 0;
 
 			var match;
 
@@ -1249,7 +1249,8 @@
 				points.sort(sortFunctionForClasses);
 				var start = -1,
 					act = 1 - points[0].a;
-				for (j = 0; j < points.length; j++ ) {
+
+				for ( j = 0; j < points.length; j++ ) {
 					if (start === points[j].frame) {
 						act = points[j].a;
 						continue;
