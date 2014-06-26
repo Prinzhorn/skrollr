@@ -89,6 +89,10 @@
 	//Finds all gradients.
 	var rxGradient = /[a-z\-]+-gradient/g;
 
+    //Find and parse expressions for handling classes
+    var _propAddRemoveClass = /^(@?(Add|Remove)Class)$/i;
+    var _propAddRemoveClassValue = /\|/;
+
 	//Vendor prefix. Will be set once skrollr gets initialized.
 	var theCSSPrefix = '';
 	var theDashedCSSPrefix = '';
@@ -938,6 +942,8 @@
 			var key;
 			var value;
 
+            _checkClassesAttrs(frame, skrollable.classRanges, element);
+
 			//If we are before/after the first/last frame, set the styles according to the given edge strategy.
 			if(beforeFirst || afterLast) {
 				//Check if we already handled this edge case last time.
@@ -1054,6 +1060,22 @@
 		}
 	};
 
+    var _checkClassesAttrs = function(top, ranges, el) {
+
+        for(var i = 0; i < ranges.length; i++) {
+            var range = ranges[i];
+            if(range.range[0] < top && range.range[1] > top ) {
+                if (range.action) {
+                    _updateClass(el, [range.cl], [] )
+                } else {
+                    _updateClass(el, [], [range.cl] )
+                }
+            }
+        }
+
+    }
+
+
 	/**
 	 * Renders all elements.
 	 */
@@ -1162,6 +1184,7 @@
 		//Iterate over all key frames
 		var keyFrameIndex = 0;
 		var keyFramesLength = skrollable.keyFrames.length;
+        var classes = {};
 
 		for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
@@ -1177,6 +1200,22 @@
 				value = match[2];
 
 				easing = prop.match(rxPropEasing);
+
+                //Check Classes
+                if (_propAddRemoveClass.test(prop)) {
+                    var classAction = _propAddRemoveClass.exec(prop)[2].toLowerCase(),
+                        classArray = value.split(_propAddRemoveClassValue);
+                    for (var j = 0; j < classArray.length; j++) {
+                        if (!classes[classArray[j]]) {
+                            classes[classArray[j]] = []
+                        }
+                        classes[classArray[j]].push({
+                            frame: frame.frame,
+                            a: (classAction == "add") ? 1 : 0
+                        })
+                    }
+                    continue;
+                }
 
 				//Is there an easing specified for this prop?
 				if(easing !== null) {
@@ -1198,6 +1237,42 @@
 
 			frame.props = props;
 		}
+
+        var classRanges = [];
+        for (var c in classes) {
+            if (classes.hasOwnProperty(c)) {
+                var points = classes[c];
+                points.sort(function(a,b){ return a.frame - b.frame })
+                var start = -1,
+                    act = 1 - points[0].a;
+                for (var j = 0; j < points.length; j++ ) {
+                    if (start == points[j].frame) {
+                        act = points[j].a;
+                        continue;
+                    }
+                    classRanges.push({
+                        range:[start,points[j].frame],
+                        action: act,
+                        cl:c
+                    })
+                    start = points[j].frame;
+                    act = points[j].a;
+                }
+                classRanges.push({
+                    range:[start,Infinity],
+                    action: act,
+                    cl:c
+                })
+            }
+        }
+
+        classRanges.sort(function(a,b){
+            return a.range[0] - b.range[0]
+        })
+
+        skrollable.classRanges = classRanges;
+
+
 	};
 
 	/**
