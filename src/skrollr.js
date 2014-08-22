@@ -50,6 +50,8 @@
 	var DEFAULT_DURATION = 1000;//ms
 	var DEFAULT_MOBILE_DECELERATION = 0.004;//pixel/ms²
 
+	var DEFAULT_SKROLLRBODY = 'skrollr-body';
+
 	var DEFAULT_SMOOTH_SCROLLING_DURATION = 200;//ms
 
 	var ANCHOR_START = 'start';
@@ -277,7 +279,7 @@
 		})());
 
 		if(_isMobile) {
-			_skrollrBody = document.getElementById('skrollr-body');
+			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(_skrollrBody) {
