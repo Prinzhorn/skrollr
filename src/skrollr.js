@@ -240,6 +240,8 @@
 				easings[e] = options.easing[e];
 			}
 		}
+		
+		_precision = parseInt(options.precision, 10) || 10;
 
 		_edgeStrategy = options.edgeStrategy || 'set';
 
@@ -684,6 +686,7 @@
 		_smoothScrolling = undefined;
 		_forceRender = undefined;
 		_skrollableIdCounter = 0;
+		_precision = undefined;
 		_edgeStrategy = undefined;
 		_isMobile = false;
 		_mobileOffset = 0;
@@ -1313,7 +1316,7 @@
 
 		for(; valueIndex < val1Length; valueIndex++) {
 			//That's the line where the two numbers are actually interpolated.
-			interpolated[valueIndex] = val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress);
+			interpolated[valueIndex] = (val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress)).toFixed(_precision);
 		}
 
 		return interpolated;
@@ -1738,6 +1741,8 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
+
+	var _precision;
 
 	var _edgeStrategy;
 
