@@ -240,7 +240,7 @@
 				easings[e] = options.easing[e];
 			}
 		}
-		
+
 		_precision = parseInt(options.precision, 10) || 10;
 
 		_edgeStrategy = options.edgeStrategy || 'set';
