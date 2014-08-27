@@ -17,13 +17,15 @@ module.exports = function(grunt) {
 				globals: {
 					window: true,
 					document: true,
-					navigator: true
+					navigator: true,
+					define: true,
+					module: true
 				}
 			},
 			all: ['src/**/*.js']
 		},
 		qunit: {
-			all: ['test/index.html']
+			all: ['test/index.html', 'test/loading.html']
 		},
 		uglify: {
 			options: {
