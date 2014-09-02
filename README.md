@@ -55,6 +55,8 @@ With skrollr, you put the definition of your key frames right where they belong 
 
 If you would rather have the keyframes inside a separate file, take a look at [skrollr-stylesheets](https://github.com/Prinzhorn/skrollr-stylesheets).
 
+If you prefer to use JavaScript to define your animations make sure to take a look at [ScrollMagic](https://github.com/janpaepke/ScrollMagic). It depends on both jQuery and the Greensock Animation Platform (GSAP) and gives you full control over every detail of your animations.
+
 Let's get serious
 ------
 
