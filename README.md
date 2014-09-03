@@ -24,6 +24,7 @@ Plugins
 ### Third party
 
 * [skrollr-colors](https://github.com/FezVrasta/skrollr-colors) - Mix and match hex, rgb and hsl colors.
+* [skrollr-decks](https://github.com/TrySound/skrollr-decks) - Fullpage presentation decks.
 
 In the wild
 -----
