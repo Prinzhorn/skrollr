@@ -1759,7 +1759,7 @@
 
 	//Expose skrollr as either a global variable or a require.js module.
 	if(typeof define === 'function' && define.amd) {
-		define('skrollr', function () {
+		define([], function () {
 			return skrollr;
 		});
 	} else if (typeof module !== 'undefined' && module.exports) {
