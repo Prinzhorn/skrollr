@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<title>Snapping</title>
+
+	<style>
+	html, body {
+		padding:0;
+		margin:0;
+		width:100%;
+		height:100%;
+	}
+
+	body {
+		overflow:auto;
+	}
+
+
+	h1 {
+		margin:0;
+		padding:0;
+		padding-top:2em;
+		font-family:sans-serif;
+		color:#fff;
+	}
+#skrollr-body {
+		height:100%;
+	}
+
+	#skrollr-body > div {
+		width:100%;
+		height:400px;
+		background:#09f;
+		text-align:center;
+	}
+	.even {
+		height: 500px;
+	}
+
+	.odd {
+		background:#f90 !important;
+		height: 300px;
+	}
+	</style>
+</head>
+
+<body style="text-align:center;">
+	<div id="skrollr-body" class= "snap">
+		<div id="start" class="even snap">
+			<h1>The different parts of this webpage will snap after you scroll</h1>
+		</div>
+		<div class="odd snap" id="a">
+			<h1>A</h1>
+		</div>
+		<div id="b" class="even snap">
+			<h1>B</h1>
+		</div>
+		<div class="odd snap" id="c">
+			<h1>C</h1>
+		</div>
+		<div id="d" class="even snap">
+			<h1>D</h1>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="dist/skrollrmin.js"></script>
+	<script type="text/javascript">
+   layers = document.getElementsByClassName("snap");
+var activeLayer = 0;
+var animateUpSettings = {
+duration: 200,
+done: function() {
+document.body.style.overflow = 'auto';
+}
+};
+var animateDownSettings = {
+duration: 400,
+easing: 'sqrt',
+done: animateUpSettings.done
+};
+
+var s = skrollr.init({
+forceHeight: false,
+render: function(info) {
+if(this.isAnimatingTo()) {
+return;
+}
+
+if (activeLayer === (layers.length - 1)) {
+	var testLayer = activeLayer-1;
+	var offset = this.relativeToAbsolute(layers[testLayer], 'top', 'top');
+	if (offset - this.getScrollTop() > 200 ) {
+		info.direction = 'up';
+		activeLayer--;
+	}
+	else {
+	console.log ("check", this.getScrollTop(), offset );
+	return;
+	}
+}
+if (info.direction === 'up' && this.lastOffset !== undefined) {
+	if (this.getScrollTop() === this.lastOffset) {
+	console.log ("true");
+	return;
+	}
+} 
+document.body.style.overflow = 'hidden';
+//Make sure to start animating at the last snap pos
+			//this.setScrollTop(this.lastOffset);
+
+			if(info.direction === 'down') {
+			    if (this.getScrollTop() === this.lastOffset) {
+					return;
+				}
+				if(activeLayer + 1 < layers.length) {
+					activeLayer++;
+
+					var offset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+
+					//Move down slow with nice easing
+					this.animateTo(offset, animateDownSettings);
+				}
+			} else if(activeLayer > 0) {
+				
+				activeLayer--;
+				var offset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+				
+				//Move up very fast
+				this.animateTo(offset, animateUpSettings);
+			}
+			
+this.lastOffset = this.relativeToAbsolute(layers[activeLayer], 'top', 'top');
+console.log(this.lastOffset);
+console.log(this.getScrollTop());
+
+
+
+
+
+			
+		}
+	});
+	</script>	 
+</body>
+
+</html>
