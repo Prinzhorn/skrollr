@@ -147,6 +147,8 @@ Starting with skrollr 0.6.0 there's just one thing you need to do: Include an el
 
 Or to put it differently: On mobile the `skrollr-body` element is moved using CSS transforms. You can't have `position:fixed` or `background-attachment:fixed` inside elements which use CSS transforms as per CSS spec (http://meyerweb.com/eric/thoughts/2011/09/12/un-fixing-fixed-elements-with-css-transforms/). That's why those elements need to be **outside** of the `skrollr-body` element.
 
+The `skrollr-body` element might be configured within the [init-options](#skrollrinitoptions).
+
 AMD
 ---
 
@@ -386,6 +388,10 @@ function() {
 The amount of deceleration for momentum scrolling on mobile devices. This options tells skrollr how fast or slow you want the scrolling to stop after the user lifted his finger.
 
 Set it to `1` to disable momentum scrolling.
+
+### skrollrBody='skrollr-body'
+
+This option allows you to override the default id-selector used for supporting mobile browsers. It might come in handy when the element in question already has a assigned id or if you would like to define more then one skrollrBody depending on preceding JavaScript-logic.
 
 ### edgeStrategy='set'
 
