@@ -810,7 +810,7 @@
 
 					duration = duration * (1 - targetRatio);
 
-					var direction = (distanceY)>0?"down":"up";
+					var direction = (distanceY)>0?'down':'up';
 					_instance.animateTo((targetTop + 0.5) | 0, {easing: 'outCubic', duration: duration, done: _listeners.afterfling(direction)});
 					break;
 			}
