@@ -31,6 +31,7 @@
 	var documentElement;
 	var body;
 
+	var IS_ENABLED = true;
 	var EVENT_TOUCHSTART = 'touchstart';
 	var EVENT_TOUCHMOVE = 'touchmove';
 	var EVENT_TOUCHCANCEL = 'touchcancel';
@@ -525,6 +526,18 @@
 		return _instance;
 	};
 
+	Skrollr.prototype.enable = function(){
+
+		IS_ENABLED = true;
+
+	};
+
+	Skrollr.prototype.disable = function(){
+
+		IS_ENABLED = false;
+
+	};
+
 	/**
 	 * Transform "relative" mode to "absolute" mode.
 	 * That is, calculate anchor position and offset of element.
@@ -712,6 +725,13 @@
 		var deltaTime;
 
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
+			
+			if( IS_ENABLED == false ){
+
+				return;
+
+			};
+
 			var touch = e.changedTouches[0];
 
 			currentElement = e.target;
