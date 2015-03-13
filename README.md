@@ -534,6 +534,20 @@ skrollr ships with some built in functions:
 * outCubic
 * bounce: Bounces like a ball. See https://www.desmos.com/calculator/tbr20s8vd2 for a graphical representation.
 
+**Custom easing** 
+
+* Use [this](http://www.timotheegroleau.com/Flash/experiments/easing_function_generator.htm) generator
+* Insert the given polynomial coeficients instead of t, t2, t3, t4 and t5
+```
+t5*(p*p*p*p*p) + t4*(p*p*p*p) + t3*(p*p*p) + t2*(p*p) + t*p
+```
+Example shown with the values for easeOutElasticBig
+```
+easeOutElasticBig: function(p) {
+  return 56*(p*p*p*p*p) - 175*(p*p*p*p) + 200*(p*p*p) - 100*(p*p) + 20*p;
+}
+```
+
 skrollr.get()
 -----
 
