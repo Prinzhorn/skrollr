@@ -7,7 +7,6 @@
  */
 (function(window, document) {
 	'use strict';
-	var undefined;
 
 	/**
 	 * Global api.
@@ -669,7 +668,7 @@
 		}
 
 		_instance = undefined;
-		_skrollrBody = undefined;
+		_skrollrBody = null;
 		_listeners = undefined;
 		_forceHeight = undefined;
 		_maxKeyFrame = 0;
@@ -760,9 +759,9 @@
 					lastTouchY = currentTouchY;
 					lastTouchTime = currentTouchTime;
 					break;
-				default:
 				case EVENT_TOUCHCANCEL:
 				case EVENT_TOUCHEND:
+				default:
 					var distanceY = initialTouchY - currentTouchY;
 					var distanceX = initialTouchX - currentTouchX;
 					var distance2 = distanceX * distanceX + distanceY * distanceY;
@@ -979,8 +978,8 @@
 						//Handle this case like it would be exactly at first/last keyframe and just pass it on.
 						frame = firstOrLastFrame.frame;
 						break;
-					default:
 					case 'set':
+					default:
 						var props = firstOrLastFrame.props;
 
 						for(key in props) {
@@ -995,8 +994,7 @@
 								}
 							}
 						}
-
-						continue;
+						break;
 				}
 			} else {
 				//Did we handle an edge last time?
