@@ -279,6 +279,8 @@
 		})());
 
 		if(_isMobile) {
+
+            _mobileOffset = options.mobileStartScroll || 0;
 			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
@@ -789,7 +791,7 @@
 
 					var duration = Math.abs(speed / _mobileDeceleration);
 					var targetOffset = speed * duration + 0.5 * _mobileDeceleration * duration * duration;
-					var targetTop = _instance.getScrollTop() - targetOffset;
+                    var targetTop = isNaN(targetOffset) ? _instance.getScrollTop() : _instance.getScrollTop() - targetOffset;
 
 					//Relative duration change for when scrolling above bounds.
 					var targetRatio = 0;
