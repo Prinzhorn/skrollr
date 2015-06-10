@@ -279,7 +279,13 @@
 		})());
 
 		if(_isMobile) {
-			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
+
+			// Allow to set the container object directly from init options.
+			if (typeof options.skrollrBody == "object") {
+				_skrollrBody = options.skrollrBody;
+			} else {
+				_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
+			}
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(_skrollrBody) {
