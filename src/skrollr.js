@@ -59,8 +59,8 @@
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
 
-    // Make it compatible with jQuery Mobile
-    var JQM_COMPATIBLE = false;
+	// Make it compatible with jQuery Mobile
+	var JQM_COMPATIBLE = false;
 
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
@@ -246,7 +246,7 @@
 			}
 		}
 
-        _jqmCompatible = options.jqmCompatible || JQM_COMPATIBLE;
+		_jqmCompatible = options.jqmCompatible || JQM_COMPATIBLE;
 
 		_edgeStrategy = options.edgeStrategy || 'set';
 
@@ -682,7 +682,7 @@
 		_skrollrBody = undefined;
 		_listeners = undefined;
 		_forceHeight = undefined;
-        _jqmCompatible = false;
+		_jqmCompatible = false;
 		_maxKeyFrame = 0;
 		_scale = 1;
 		_constants = undefined;
@@ -784,21 +784,21 @@
 							initialElement.focus();
 
 							// It was a tap, click the element.
-                            // Note: If jqmCompatible is TRUE, a little delay is added
-                            // to properly render for some JQM elements.
-                            setTimeout(function () {
+							// Note: If jqmCompatible is TRUE, a little delay is added
+							// to properly render for some JQM elements.
+							setTimeout(function () {
 
-                                    var clickEvent = document.createEvent('MouseEvents');
+									var clickEvent = document.createEvent('MouseEvents');
 
-                                    clickEvent.initMouseEvent('click', true, true, e.view, 1, touch.screenX,
-                                        touch.screenY, touch.clientX, touch.clientY, e.ctrlKey, e.altKey,
-                                        e.shiftKey, e.metaKey, 0, null);
-                                    initialElement.dispatchEvent(clickEvent);
+									clickEvent.initMouseEvent('click', true, true, e.view, 1, touch.screenX,
+										touch.screenY, touch.clientX, touch.clientY, e.ctrlKey, e.altKey,
+										e.shiftKey, e.metaKey, 0, null);
+									initialElement.dispatchEvent(clickEvent);
 
-                                    // Needed to recalculate scrolling for objects that might have changed
-                                    // the size of the page after clicking them.
-                                    _instance.refresh();
-                                }, (_jqmCompatible ? 50 : 0));
+									// Needed to recalculate scrolling for objects that might have changed
+									// the size of the page after clicking them.
+									_instance.refresh();
+								}, (_jqmCompatible ? 50 : 0));
 						}
 
 						return;
@@ -1732,7 +1732,7 @@
 
 	var _listeners;
 	var _forceHeight;
-    var _jqmCompatible;
+	var _jqmCompatible;
 	var _maxKeyFrame = 0;
 
 	var _scale = 1;
