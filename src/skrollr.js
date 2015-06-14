@@ -780,13 +780,17 @@
 
 					//Check if it was more like a tap (moved less than 7px).
 					if(distance2 < 49) {
-						if(!rxTouchIgnoreTags.test(initialElement.tagName)) {
+
+						// initialElement is undefined for double tap
+						if(initialElement && !rxTouchIgnoreTags.test(initialElement.tagName)) {
 							initialElement.focus();
 
 							// It was a tap, click the element.
 							// Note: If jqmCompatible is TRUE, a little delay is added
 							// to properly render for some JQM elements.
-							setTimeout(function () {
+							// Note 2: Need to pass initialElement to setTimeout() because it won't be
+							// in context any longer after being executed
+							setTimeout(function (initialElement) {
 
 									var clickEvent = document.createEvent('MouseEvents');
 
@@ -798,7 +802,9 @@
 									// Needed to recalculate scrolling for objects that might have changed
 									// the size of the page after clicking them.
 									_instance.refresh();
-								}, (_jqmCompatible ? 50 : 0));
+								},
+								(_jqmCompatible ? 50 : 0),
+								initialElement);
 						}
 
 						return;
