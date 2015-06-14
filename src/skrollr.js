@@ -801,7 +801,9 @@
 
 									// Needed to recalculate scrolling for objects that might have changed
 									// the size of the page after clicking them.
-									_instance.refresh();
+									if (_instance) {
+										_instance.refresh();
+									}
 								},
 								(_jqmCompatible ? 50 : 0),
 								initialElement);
