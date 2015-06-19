@@ -563,15 +563,16 @@
 
 		var now = _now();
 		var scrollTop = _instance.getScrollTop();
+		var duration = options.duration === undefined ? DEFAULT_DURATION : options.duration;
 
 		//Setting this to a new value will automatically cause the current animation to stop, if any.
 		_scrollAnimation = {
 			startTop: scrollTop,
 			topDiff: top - scrollTop,
 			targetTop: top,
-			duration: options.duration || DEFAULT_DURATION,
+			duration: duration,
 			startTime: now,
-			endTime: now + (options.duration || DEFAULT_DURATION),
+			endTime: now + duration,
 			easing: easings[options.easing || DEFAULT_EASING],
 			done: options.done
 		};
