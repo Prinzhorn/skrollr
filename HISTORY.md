@@ -1,3 +1,9 @@
+0.6.30 (2015-06-19)
+-------------------
+
+* Respect result of beforerender callback on mobile (#717)
+* Allow for a duration of 0 when scrolling (#720)
+
 0.6.29 (2014-11-17)
 -------------------
 
