@@ -82,6 +82,9 @@
 	//Numeric values with optional sign.
 	var rxNumericValue = /[\-+]?[\d]*\.?[\d]+/g;
 
+	//Used to find constants inside attributes.
+	var rxConstants = /val\(--([^\)]+?)\)\s?(em|px|\%|pt|rem|vh|ex|vmin|vmax)/g;
+
 	//Used to replace occurences of {?} with a number.
 	var rxInterpolateString = /\{\?\}/g;
 
@@ -1165,6 +1168,7 @@
 		//Iterate over all key frames
 		var keyFrameIndex = 0;
 		var keyFramesLength = skrollable.keyFrames.length;
+		var processedConstants = _processConstants();
 
 		for(; keyFrameIndex < keyFramesLength; keyFrameIndex++) {
 			var frame = skrollable.keyFrames[keyFrameIndex];
@@ -1172,13 +1176,27 @@
 			var value;
 			var prop;
 			var props = {};
-
+			var foundConstants;
+			
 			var match;
 
 			while((match = rxPropValue.exec(frame.props)) !== null) {
 				prop = match[1];
 				value = match[2];
 
+				foundConstants = value.match(rxConstants);
+				if(foundConstants !== null) {
+
+					value = value.replace( rxConstants, function( everything, constant_name, unit_str ){
+						
+						if(  !processedConstants[constant_name] ) {
+							throw 'Constant "' + constant_name + ' not defined';
+						}
+						
+						return processedConstants[constant_name] + '' + unit_str;
+					});
+				}
+				
 				easing = prop.match(rxPropEasing);
 
 				//Is there an easing specified for this prop?
