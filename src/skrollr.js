@@ -59,6 +59,9 @@
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
 
+	// Make it compatible with jQuery Mobile
+	var JQM_COMPATIBLE = false;
+
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
 
@@ -243,6 +246,8 @@
 			}
 		}
 
+		_jqmCompatible = options.jqmCompatible || JQM_COMPATIBLE;
+
 		_edgeStrategy = options.edgeStrategy || 'set';
 
 		_listeners = {
@@ -279,7 +284,13 @@
 		})());
 
 		if(_isMobile) {
-			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
+
+			// Allow to set the container object directly from init options.
+			if (typeof options.skrollrBody == "object") {
+				_skrollrBody = options.skrollrBody;
+			} else {
+				_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
+			}
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(_skrollrBody) {
@@ -672,6 +683,7 @@
 		_skrollrBody = undefined;
 		_listeners = undefined;
 		_forceHeight = undefined;
+		_jqmCompatible = false;
 		_maxKeyFrame = 0;
 		_scale = 1;
 		_constants = undefined;
@@ -769,13 +781,33 @@
 
 					//Check if it was more like a tap (moved less than 7px).
 					if(distance2 < 49) {
-						if(!rxTouchIgnoreTags.test(initialElement.tagName)) {
+
+						// initialElement is undefined for double tap
+						if(initialElement && !rxTouchIgnoreTags.test(initialElement.tagName)) {
 							initialElement.focus();
 
-							//It was a tap, click the element.
-							var clickEvent = document.createEvent('MouseEvents');
-							clickEvent.initMouseEvent('click', true, true, e.view, 1, touch.screenX, touch.screenY, touch.clientX, touch.clientY, e.ctrlKey, e.altKey, e.shiftKey, e.metaKey, 0, null);
-							initialElement.dispatchEvent(clickEvent);
+							// It was a tap, click the element.
+							// Note: If jqmCompatible is TRUE, a little delay is added
+							// to properly render for some JQM elements.
+							// Note 2: Need to pass initialElement to setTimeout() because it won't be
+							// in context any longer after being executed
+							setTimeout(function (initialElement) {
+
+									var clickEvent = document.createEvent('MouseEvents');
+
+									clickEvent.initMouseEvent('click', true, true, e.view, 1, touch.screenX,
+										touch.screenY, touch.clientX, touch.clientY, e.ctrlKey, e.altKey,
+										e.shiftKey, e.metaKey, 0, null);
+									initialElement.dispatchEvent(clickEvent);
+
+									// Needed to recalculate scrolling for objects that might have changed
+									// the size of the page after clicking them.
+									if (_instance) {
+										_instance.refresh();
+									}
+								},
+								(_jqmCompatible ? 50 : 0),
+								initialElement);
 						}
 
 						return;
@@ -1709,6 +1741,7 @@
 
 	var _listeners;
 	var _forceHeight;
+	var _jqmCompatible;
 	var _maxKeyFrame = 0;
 
 	var _scale = 1;
