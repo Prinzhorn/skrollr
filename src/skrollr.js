@@ -253,7 +253,10 @@
 			render: options.render,
 
 			//Function to be called whenever an element with the `data-emit-events` attribute passes a keyframe.
-			keyframe: options.keyframe
+			keyframe: options.keyframe,
+
+			//Function to be called after a fling animation has ended
+			afterfling: options.afterfling
 		};
 
 		//forceHeight is true by default
@@ -808,7 +811,8 @@
 
 					duration = duration * (1 - targetRatio);
 
-					_instance.animateTo((targetTop + 0.5) | 0, {easing: 'outCubic', duration: duration});
+					var direction = (distanceY)>0?'down':'up';
+					_instance.animateTo((targetTop + 0.5) | 0, {easing: 'outCubic', duration: duration, done: _listeners.afterfling(direction)});
 					break;
 			}
 		});
