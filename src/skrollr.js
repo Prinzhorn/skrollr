@@ -1,14 +1,14 @@
-/*!
+/**
  * skrollr core
  *
  * Alexander Prinzhorn - https://github.com/Prinzhorn/skrollr
  *
  * Free to use under terms of MIT license
  */
-(function(window, document, undefined) {
+(function(window, document) {
 	'use strict';
 
-	/*
+	/**
 	 * Global api.
 	 */
 	var skrollr = {
@@ -25,7 +25,6 @@
 	//Minify optimization.
 	var hasProp = Object.prototype.hasOwnProperty;
 	var Math = window.Math;
-	var getStyle = window.getComputedStyle;
 
 	//They will be filled when skrollr gets initialized.
 	var documentElement;
@@ -102,11 +101,11 @@
 		var rxPrefixes = /^(?:O|Moz|webkit|ms)|(?:-(?:o|moz|webkit|ms)-)/;
 
 		//Detect prefix for current browser by finding the first property using a prefix.
-		if(!getStyle) {
+		if(!window.getComputedStyle) {
 			return;
 		}
 
-		var style = getStyle(body, null);
+		var style = window.getComputedStyle(body);
 
 		for(var k in style) {
 			//We check the key and if the key is a number, we check the value as well, because safari's getComputedStyle returns some weird array-like thingy.
@@ -223,6 +222,7 @@
 
 	/**
 	 * Constructor.
+	 * @constructor
 	 */
 	function Skrollr(options) {
 		documentElement = document.documentElement;
@@ -293,7 +293,7 @@
 		}
 
 		//Triggers parsing of elements and a first reflow.
-		_instance.refresh();
+		_instance.refresh(undefined);
 
 		_addEvent(window, 'resize orientationchange', function() {
 			var width = documentElement.clientWidth;
@@ -658,7 +658,7 @@
 		var skrollablesLength = _skrollables.length;
 
 		for(; skrollableIndex < skrollablesLength; skrollableIndex++) {
-			_reset(_skrollables[skrollableIndex].element);
+			_reset(_skrollables[skrollableIndex].element, false);
 		}
 
 		documentElement.style.overflow = body.style.overflow = '';
@@ -669,7 +669,7 @@
 		}
 
 		_instance = undefined;
-		_skrollrBody = undefined;
+		_skrollrBody = null;
 		_listeners = undefined;
 		_forceHeight = undefined;
 		_maxKeyFrame = 0;
@@ -760,9 +760,9 @@
 					lastTouchY = currentTouchY;
 					lastTouchTime = currentTouchTime;
 					break;
-				default:
 				case EVENT_TOUCHCANCEL:
 				case EVENT_TOUCHEND:
+				default:
 					var distanceY = initialTouchY - currentTouchY;
 					var distanceX = initialTouchX - currentTouchX;
 					var distance2 = distanceX * distanceX + distanceY * distanceY;
@@ -868,7 +868,7 @@
 				}
 
 				if(kf.mode === 'relative') {
-					_reset(element);
+					_reset(element, false);
 
 					kf.frame = _instance.relativeToAbsolute(anchorTarget, kf.anchors[0], kf.anchors[1]) - offset;
 
@@ -973,14 +973,14 @@
 
 				switch(skrollable.edgeStrategy) {
 					case 'reset':
-						_reset(element);
+						_reset(element, false);
 						continue;
 					case 'ease':
 						//Handle this case like it would be exactly at first/last keyframe and just pass it on.
 						frame = firstOrLastFrame.frame;
 						break;
-					default:
 					case 'set':
+					default:
 						var props = firstOrLastFrame.props;
 
 						for(key in props) {
@@ -995,8 +995,7 @@
 								}
 							}
 						}
-
-						continue;
+						break;
 				}
 			} else {
 				//Did we handle an edge last time?
@@ -1360,7 +1359,7 @@
 			if(undo) {
 				//Reset class and style to the "dirty" (set by skrollr) values.
 				element.style.cssText = skrollable.dirtyStyleAttr;
-				_updateClass(element, skrollable.dirtyClassAttr);
+				_updateClass(element, skrollable.dirtyClassAttr, undefined);
 			} else {
 				//Remember the "dirty" (set by skrollr) class and style.
 				skrollable.dirtyStyleAttr = element.style.cssText;
@@ -1368,7 +1367,7 @@
 
 				//Reset class and style to what it originally was.
 				element.style.cssText = skrollable.styleAttr;
-				_updateClass(element, skrollable.classAttr);
+				_updateClass(element, skrollable.classAttr, undefined);
 			}
 		}
 	};
@@ -1380,7 +1379,7 @@
 		_translateZ = 'translateZ(0)';
 		skrollr.setStyle(_skrollrBody, 'transform', _translateZ);
 
-		var computedStyle = getStyle(_skrollrBody);
+		var computedStyle = window.getComputedStyle(_skrollrBody);
 		var computedTransform = computedStyle.getPropertyValue('transform');
 		var computedTransformWithPrefix = computedStyle.getPropertyValue(theDashedCSSPrefix + 'transform');
 		var has3D = (computedTransform && computedTransform !== 'none') || (computedTransformWithPrefix && computedTransformWithPrefix !== 'none');
