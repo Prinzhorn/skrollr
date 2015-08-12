@@ -295,20 +295,22 @@
 		//Triggers parsing of elements and a first reflow.
 		_instance.refresh();
 
-		_addEvent(window, 'resize orientationchange', function() {
-			var width = documentElement.clientWidth;
-			var height = documentElement.clientHeight;
-
-			//Only reflow if the size actually changed (#271).
-			if(height !== _lastViewportHeight || width !== _lastViewportWidth) {
-				_lastViewportHeight = height;
-				_lastViewportWidth = width;
-
-				_requestReflow = true;
-			}
-		});
-
 		var requestAnimFrame = polyfillRAF();
+
+		_addEvent(window, 'resize orientationchange', function() {
+			requestAnimFrame(function() {
+				var width = documentElement.clientWidth;
+				var height = documentElement.clientHeight;
+
+				//Only reflow if the size actually changed (#271).
+				if(height !== _lastViewportHeight || width !== _lastViewportWidth) {
+					_lastViewportHeight = height;
+					_lastViewportWidth = width;
+
+					_requestReflow = true;
+				}
+			});
+		});
 
 		//Let's go.
 		(function animloop(){
