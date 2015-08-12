@@ -58,6 +58,8 @@
 	var ANCHOR_END = 'end';
 	var ANCHOR_CENTER = 'center';
 	var ANCHOR_BOTTOM = 'bottom';
+	
+	var MODIFIER_ROUND = 1;
 
 	//The property which will be added to the DOM element to hold the ID of the skrollable.
 	var SKROLLABLE_ID_DOM_PROPERTY = '___skrollable_id';
@@ -940,7 +942,7 @@
 			var lastFrameIndex = skrollable.lastFrameIndex;
 			var key;
 			var value;
-
+			
 			//If we are before/after the first/last frame, set the styles according to the given edge strategy.
 			if(beforeFirst || afterLast) {
 				//Check if we already handled this edge case last time.
@@ -1008,7 +1010,7 @@
 
 			//Find out between which two key frames we are right now.
 			var keyFrameIndex = 0;
-
+			
 			for(; keyFrameIndex < framesLength - 1; keyFrameIndex++) {
 				if(frame >= frames[keyFrameIndex].frame && frame <= frames[keyFrameIndex + 1].frame) {
 					var left = frames[keyFrameIndex];
@@ -1022,7 +1024,7 @@
 							progress = left.props[key].easing(progress);
 
 							//Interpolate between the two values
-							value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
+							value = _calcInterpolation(left.props[key].value, right.props[key].value, right.props[key].modifier, progress);
 
 							value = _interpolateString(value);
 
@@ -1170,6 +1172,7 @@
 			var frame = skrollable.keyFrames[keyFrameIndex];
 			var easing;
 			var value;
+			var modifier;
 			var prop;
 			var props = {};
 
@@ -1178,6 +1181,7 @@
 			while((match = rxPropValue.exec(frame.props)) !== null) {
 				prop = match[1];
 				value = match[2];
+				modifier = 0;
 
 				easing = prop.match(rxPropEasing);
 
@@ -1190,12 +1194,17 @@
 				}
 
 				//Exclamation point at first position forces the value to be taken literal.
-				value = value.indexOf('!') ? _parseProp(value) : [value.slice(1)];
+				switch (value[0]) {
+					case '!': value = [value.slice(1)]; break;
+					case '°': modifier |= MODIFIER_ROUND; value = value.slice(1);
+					default: value = _parseProp(value);
+				}
 
 				//Save the prop for this key frame with his value and easing function
 				props[prop] = {
 					value: value,
-					easing: easings[easing]
+					easing: easings[easing],
+					modifier: modifier
 				};
 			}
 
@@ -1300,7 +1309,7 @@
 	/**
 	 * Calculates the new values for two given values array.
 	 */
-	var _calcInterpolation = function(val1, val2, progress) {
+	var _calcInterpolation = function(val1, val2, modifier, progress) {
 		var valueIndex;
 		var val1Length = val1.length;
 
@@ -1317,10 +1326,21 @@
 		for(; valueIndex < val1Length; valueIndex++) {
 			//That's the line where the two numbers are actually interpolated.
 			interpolated[valueIndex] = val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress);
+			modifier && (interpolated[valueIndex] = _modifyCalc(interpolated[valueIndex], modifier));
 		}
 
 		return interpolated;
 	};
+
+	/**
+	 * Modify the calculated interpolation value
+	 */
+	var _modifyCalc = function(val, modifier) {
+		switch(modifier) {
+			case MODIFIER_ROUND: val = Math.round(val); break;
+		}
+		return val;
+	}
 
 	/**
 	 * Interpolates the numeric values into the format string.
