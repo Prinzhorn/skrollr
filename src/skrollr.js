@@ -243,6 +243,8 @@
 			}
 		}
 
+		_precision = parseInt(options.precision, 10) || 10;
+
 		_edgeStrategy = options.edgeStrategy || 'set';
 
 		_listeners = {
@@ -358,6 +360,9 @@
 			//If this particular element should emit keyframe events.
 			var emitEvents = false;
 
+			//The interpolation precision for this particular element.
+			var precision = _precision;
+
 			//If we're reseting the counter, remove any old element ids that may be hanging around.
 			if(ignoreID && SKROLLABLE_ID_DOM_PROPERTY in el) {
 				delete el[SKROLLABLE_ID_DOM_PROPERTY];
@@ -401,6 +406,13 @@
 				//Is this element tagged with the `data-emit-events` attribute?
 				if(attr.name === 'data-emit-events') {
 					emitEvents = true;
+
+					continue;
+				}
+
+				//Global precision can be overwritten by the element attribute.
+				if(attr.name === 'data-precision') {
+					precision = parseInt(attr.value, 10);
 
 					continue;
 				}
@@ -495,6 +507,7 @@
 				smoothScrolling: smoothScrollThis,
 				edgeStrategy: edgeStrategy,
 				emitEvents: emitEvents,
+				precision: precision,
 				lastFrameIndex: -1
 			};
 
@@ -687,6 +700,7 @@
 		_smoothScrolling = undefined;
 		_forceRender = undefined;
 		_skrollableIdCounter = 0;
+		_precision = undefined;
 		_edgeStrategy = undefined;
 		_isMobile = false;
 		_mobileOffset = 0;
@@ -1022,7 +1036,7 @@
 							progress = left.props[key].easing(progress);
 
 							//Interpolate between the two values
-							value = _calcInterpolation(left.props[key].value, right.props[key].value, progress);
+							value = _calcInterpolation(left.props[key].value, right.props[key].value, progress, skrollable.precision);
 
 							value = _interpolateString(value);
 
@@ -1300,7 +1314,7 @@
 	/**
 	 * Calculates the new values for two given values array.
 	 */
-	var _calcInterpolation = function(val1, val2, progress) {
+	var _calcInterpolation = function(val1, val2, progress, precision) {
 		var valueIndex;
 		var val1Length = val1.length;
 
@@ -1316,7 +1330,7 @@
 
 		for(; valueIndex < val1Length; valueIndex++) {
 			//That's the line where the two numbers are actually interpolated.
-			interpolated[valueIndex] = val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress);
+			interpolated[valueIndex] = (val1[valueIndex] + ((val2[valueIndex] - val1[valueIndex]) * progress)).toFixed(precision);
 		}
 
 		return interpolated;
@@ -1747,6 +1761,8 @@
 	//Each skrollable gets an unique ID incremented for each skrollable.
 	//The ID is the index in the _skrollables array.
 	var _skrollableIdCounter = 0;
+
+	var _precision;
 
 	var _edgeStrategy;
 
