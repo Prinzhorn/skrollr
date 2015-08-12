@@ -1,5 +1,10 @@
 [![Build Status](https://secure.travis-ci.org/Prinzhorn/skrollr.png)](http://travis-ci.org/Prinzhorn/skrollr)
 
+Please note:
+============
+
+**skrollr hasn't been under active development since about September 2014** (check out the contributions graphs on https://github.com/Prinzhorn/skrollr/graphs/contributors) and I don't have any plans for doing major changes to it. Please consider this before using skrollr in production as problems with new browser versions, especially on mobile, will most definitely surface. To be honest, mobile support always sucked (because mobile browsers are hard) and you shouldn't compromise UX for some fancy UI effects. Ever.
+
 skrollr 0.6.30
 ==============
 
