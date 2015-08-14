@@ -612,6 +612,14 @@ When `force` is set to `true`, skrollr will jump to the new position without any
 
 Returns if skrollr runs in mobile mode (see also `mobileCheck` option).
 
+### disableMobile()
+
+Disable mobile event catching, which means skrollr won't move but the click/tap/drag event will bubble up.
+
+### enableMobile()
+
+Re-enable mobile event catching.
+
 ### animateTo(top[, options])
 
 Animates the scroll position from current position to `top`. Possible `options` are

@@ -90,6 +90,9 @@
 
 	//Finds all gradients.
 	var rxGradient = /[a-z\-]+-gradient/g;
+	
+	//If mobile event catching is enabled
+	var mobileEnabled = true;
 
 	//Vendor prefix. Will be set once skrollr gets initialized.
 	var theCSSPrefix = '';
@@ -647,6 +650,14 @@
 		return _instance;
 	};
 
+	Skrollr.prototype.disableMobile = function() {
+		mobileEnabled = false;
+	};
+
+	Skrollr.prototype.enableMobile = function() {
+		mobileEnabled = true;
+	};
+
 	Skrollr.prototype.destroy = function() {
 		var cancelAnimFrame = polyfillCAF();
 		cancelAnimFrame(_animFrame);
@@ -713,6 +724,9 @@
 		var deltaTime;
 
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
+			if (!mobileEnabled)
+				return true;
+
 			var touch = e.changedTouches[0];
 
 			currentElement = e.target;
