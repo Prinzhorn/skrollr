@@ -19,7 +19,7 @@
 		init: function(options) {
 			return _instance || new Skrollr(options);
 		},
-		VERSION: '0.6.26'
+		VERSION: '0.6.30'
 	};
 
 	//Minify optimization.
@@ -49,6 +49,8 @@
 	var DEFAULT_EASING = 'linear';
 	var DEFAULT_DURATION = 1000;//ms
 	var DEFAULT_MOBILE_DECELERATION = 0.004;//pixel/ms²
+
+	var DEFAULT_SKROLLRBODY = 'skrollr-body';
 
 	var DEFAULT_SMOOTH_SCROLLING_DURATION = 200;//ms
 
@@ -277,7 +279,7 @@
 		})());
 
 		if(_isMobile) {
-			_skrollrBody = document.getElementById('skrollr-body');
+			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
 
 			//Detect 3d transform if there's a skrollr-body (only needed for #skrollr-body).
 			if(_skrollrBody) {
@@ -561,15 +563,16 @@
 
 		var now = _now();
 		var scrollTop = _instance.getScrollTop();
+		var duration = options.duration === undefined ? DEFAULT_DURATION : options.duration;
 
 		//Setting this to a new value will automatically cause the current animation to stop, if any.
 		_scrollAnimation = {
 			startTop: scrollTop,
 			topDiff: top - scrollTop,
 			targetTop: top,
-			duration: options.duration || DEFAULT_DURATION,
+			duration: duration,
 			startTime: now,
-			endTime: now + (options.duration || DEFAULT_DURATION),
+			endTime: now + duration,
 			easing: easings[options.easing || DEFAULT_EASING],
 			done: options.done
 		};
@@ -1111,12 +1114,6 @@
 			}
 		}
 
-		//That's were we actually "scroll" on mobile.
-		if(_isMobile && _skrollrBody) {
-			//Set the transform ("scroll it").
-			skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
-		}
-
 		//Did the scroll position even change?
 		if(_forceRender || _lastTop !== renderTop) {
 			//Remember in which direction are we scrolling?
@@ -1138,6 +1135,12 @@
 			if(continueRendering !== false) {
 				//Now actually interpolate all the styles.
 				_calcSteps(renderTop, _instance.getScrollTop());
+
+				//That's were we actually "scroll" on mobile.
+				if(_isMobile && _skrollrBody) {
+					//Set the transform ("scroll it").
+					skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
+				}
 
 				//Remember when we last rendered.
 				_lastTop = renderTop;
@@ -1566,8 +1569,14 @@
 	 * Returns the height of the document.
 	 */
 	var _getDocumentHeight = function() {
-		var skrollrBodyHeight = (_skrollrBody && _skrollrBody.offsetHeight || 0);
-		var bodyHeight = Math.max(skrollrBodyHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
+		var skrollrBodyHeight = 0;
+		var bodyHeight;
+
+		if(_skrollrBody) {
+			skrollrBodyHeight = Math.max(_skrollrBody.offsetHeight, _skrollrBody.scrollHeight);
+		}
+
+		bodyHeight = Math.max(skrollrBodyHeight, body.scrollHeight, body.offsetHeight, documentElement.scrollHeight, documentElement.offsetHeight, documentElement.clientHeight);
 
 		return bodyHeight - documentElement.clientHeight;
 	};
@@ -1757,9 +1766,9 @@
 	//Animation frame id returned by RequestAnimationFrame (or timeout when RAF is not supported).
 	var _animFrame;
 
-	//Expose skrollr as either a global variable or a require.js module
+	//Expose skrollr as either a global variable or a require.js module.
 	if(typeof define === 'function' && define.amd) {
-		define('skrollr', function () {
+		define([], function () {
 			return skrollr;
 		});
 	} else if (typeof module !== 'undefined' && module.exports) {
