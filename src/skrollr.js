@@ -243,6 +243,11 @@
 			}
 		}
 
+		if(options.elementId) {
+			documentElement = document.getElementById(options.elementId);
+			body = document.getElementById(options.elementId);
+		}
+
 		_edgeStrategy = options.edgeStrategy || 'set';
 
 		_listeners = {
