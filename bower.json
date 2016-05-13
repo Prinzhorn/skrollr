@@ -1,0 +1,28 @@
+{
+  "name": "skrollr",
+  "homepage": "http://prinzhorn.github.io/skrollr/",
+  "authors": [
+    "Alexander Prinzhorn"
+  ],
+  "description": "Stand-alone parallax scrolling library for mobile (Android + iOS) and desktop",
+  "main": "src/skrollr.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "parallax",
+    "scroll",
+    "animation",
+    "html5",
+    "css3",
+    "transition"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}

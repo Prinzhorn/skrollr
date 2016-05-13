@@ -7,8 +7,8 @@
 
 	<title>skrollr - parallax scrolling for the masses</title>
 
-	<link href="examples/fixed-positioning.css" rel="stylesheet" type="text/css" />
-	<link href="examples/main.css" rel="stylesheet" type="text/css" />
+	<link href="fixed-positioning.css" rel="stylesheet" type="text/css" />
+	<link href="main.css" rel="stylesheet" type="text/css" />
 </head>
 
 <body>
@@ -64,23 +64,11 @@
 
 	<div id="scrollbar" data-0="top:0%;margin-top:2px;" data-end="top:100%;margin-top:-52px;"></div>
 
-	<script type="text/javascript" src="dist/skrollr.min.js"></script>
+	<script data-main="scripts/main" src="scripts/require.js"></script>
 
 	<!--[if lt IE 9]>
-	<script type="text/javascript" src="../skrollr-ie/dist/skrollr.ie.min.js"></script>
+	<script type="text/javascript" src="dist/skrollr.ie.min.js"></script>
 	<![endif]-->
-
-	<script type="text/javascript">
-	var s = skrollr.init({
-		edgeStrategy: 'set',
-		easing: {
-			WTF: Math.random,
-			inverted: function(p) {
-				return 1-p;
-			}
-		}
-	});
-	</script>
 </body>
 
 </html>

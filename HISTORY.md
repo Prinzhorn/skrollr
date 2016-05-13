@@ -1,3 +1,80 @@
+0.6.30 (2015-06-19)
+-------------------
+
+* Respect result of beforerender callback on mobile (#717)
+* Allow for a duration of 0 when scrolling (#720)
+
+0.6.29 (2014-11-17)
+-------------------
+
+* Make the ID of `skrollr-body` configurable (#592)
+
+0.6.28 (2014-11-15)
+-------------------
+
+* In cases where skrollr-body has a height other than `auto` the height of its content is now correctly calculated. This should solve many issues on mobile where scrolling got stock before reaching the bottom (#633)
+
+0.6.27 (2014-09-28)
+-------------------
+
+* Fixed AMD module definition (#609)
+
+0.6.26 (2014-06-08)
+-------------------
+
+* Fixed easing functions not working when animating attributes (#533)
+
+0.6.25 (2014-05-22)
+-------------------
+
+* CommonJS (#519).
+
+0.6.24 (2014-04-25)
+-------------------
+
+* Fixed some issue with forceHeight (#347).
+* Fixed a regression caused by #486 breaking IE 8 (#494).
+* Added support for animating attributes (#204).
+
+0.6.23 (2014-04-18)
+-------------------
+
+**note**: This particular version is broken in IE!
+
+* Experimental support for emitting events when the scrolling passes a keyframe (check out the docs for `keyframe` option/event).
+* When using `refresh`, make sure elements which do not longer have keyframes get properly cleaned up (#486).
+* Fixed `refresh` not accepting `NodeList`s (#435).
+* Expose the status of mobile mode as `isMobile()` function (#488).
+
+0.6.22 (2014-02-21)
+-------------------
+
+* Experimental AMD support (#409). Please read the documentation about it.
+
+0.6.21 (2014-01-06)
+-------------------
+
+* Disabled mobile mode on Windows Phone, since it's not needed there (#408).
+
+0.6.20 (2014-01-03)
+-------------------
+
+* Fixed broken percentage constants.
+
+0.6.19 (2014-01-02)
+-------------------
+
+* Constants can now be defined as functions or percentage offsets (#148, #404).
+
+**breaking**: When using a constant of value `100` together with percentage offsets like `data-_foo-75p`,
+the value was implicitly handled as percentage value `100p`. Starting with this version you need to explcitly use `100p` if you want percentage constants.
+On the plus side, you can now mix an absolute constant with a percentage keyframe or a percentage constant with an absolute keyframe.
+
+0.6.18 (2013-12-18)
+-------------------
+
+* Fixed scrolling on input elements (#397).
+
 0.6.17 (2013-10-19)
 ------
 

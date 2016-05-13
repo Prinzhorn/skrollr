@@ -4,6 +4,7 @@ Examples
 Showcasing the awesomeness of skrollr.
 
 * [The "main" example](http://prinzhorn.github.io/skrollr/)
+* ["Classic" parallax with different sections and parallax images between the gaps](http://prinzhorn.github.io/skrollr/examples/classic.html)
 * [Demonstrating different anchors](http://prinzhorn.github.io/skrollr/examples/anchors.html)
 * [Demonstrating data-anchor-target](http://prinzhorn.github.io/skrollr/examples/anchor_target.html)
 * [Pausing the scrolling for a moment to do other animations](http://prinzhorn.github.io/skrollr/examples/pausing.html)
