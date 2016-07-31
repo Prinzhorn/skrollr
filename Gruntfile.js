@@ -37,15 +37,24 @@ module.exports = function(grunt) {
 					'dist/skrollr.min.js': 'src/skrollr.js'
 				}
 			}
+		},
+		symlink: {
+			all: {
+				expand: true,
+				cwd: 'src/',
+				src: 'skrollr.js',
+				dest: 'dist/'
+			}
 		}
 	});
 
 	//Dependencies.
+	grunt.loadNpmTasks('grunt-contrib-symlink');
 	grunt.loadNpmTasks('grunt-contrib-jshint');
 	grunt.loadNpmTasks('grunt-contrib-qunit');
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 
 	//Tasks.
-	grunt.registerTask('default', ['jshint', 'qunit', 'uglify']);
+	grunt.registerTask('default', ['jshint', 'qunit', 'uglify', 'symlink']);
 	grunt.registerTask('travis', ['jshint', 'qunit']);
 };
