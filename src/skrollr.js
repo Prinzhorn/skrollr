@@ -12,6 +12,9 @@
 	 * Global api.
 	 */
 	var skrollr = {
+		isMobile: function() {
+			return (/Android|iPhone|iPad|iPod|BlackBerry/i).test(navigator.userAgent || navigator.vendor || window.opera);
+		},
 		get: function() {
 			return _instance;
 		},
@@ -274,9 +277,7 @@
 		};
 
 		//A custom check function may be passed.
-		_isMobile = ((options.mobileCheck || function() {
-			return (/Android|iPhone|iPad|iPod|BlackBerry/i).test(navigator.userAgent || navigator.vendor || window.opera);
-		})());
+		_isMobile = (options.mobileCheck || skrollr.isMobile)();
 
 		if(_isMobile) {
 			_skrollrBody = document.getElementById(options.skrollrBody || DEFAULT_SKROLLRBODY);
