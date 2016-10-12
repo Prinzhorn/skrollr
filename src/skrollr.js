@@ -257,7 +257,7 @@
 		};
 
 		//forceHeight is true by default
-		_forceHeight = options.forceHeight !== false;
+		_forceHeight = typeof options.forceHeight !== 'undefined' ? options.forceHeight : true;
 
 		if(_forceHeight) {
 			_scale = options.scale || 1;
@@ -837,6 +837,9 @@
 		var skrollablesLength;
 		var offset;
 		var constantValue;
+		var child;
+		var maxChild;
+		var i;
 
 		//First process all relative-mode elements and find the max key frame.
 		skrollableIndex = 0;
@@ -878,7 +881,7 @@
 				kf.frame += constantValue;
 
 				//Only search for max key frame when forceHeight is enabled.
-				if(_forceHeight) {
+				if(_forceHeight === true) {
 					//Find the max key frame, but don't use one of the data-end ones for comparison.
 					if(!kf.isEnd && kf.frame > _maxKeyFrame) {
 						_maxKeyFrame = kf.frame;
@@ -886,6 +889,18 @@
 				}
 			}
 		}
+
+		// Sometimes ending keyframes occur beyond the default boundary of the page as
+		// defined by the elements within the skrollr-body on mobile browsers. This measures
+		// the content of skrollr-body and adjusts _maxKeyFrame accordingly.
+		if (_forceHeight === 'content' && _isMobile) {
+			for (i = 0; i < _skrollrBody.children.length; i++) {
+				child = _skrollrBody.children[i];
+				maxChild = Math.max(maxChild || 0, _skrollrBody.offsetTop + child.offsetTop + child.clientHeight);
+			}
+			_maxKeyFrame = maxChild - documentElement.clientHeight;
+		}
+
 
 		//#133: The document can be larger than the maxKeyFrame we found.
 		_maxKeyFrame = Math.max(_maxKeyFrame, _getDocumentHeight());
