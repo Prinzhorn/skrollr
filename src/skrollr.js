@@ -31,6 +31,7 @@
 	var documentElement;
 	var body;
 
+	var IS_ENABLED = true;
 	var EVENT_TOUCHSTART = 'touchstart';
 	var EVENT_TOUCHMOVE = 'touchmove';
 	var EVENT_TOUCHCANCEL = 'touchcancel';
@@ -525,6 +526,18 @@
 		return _instance;
 	};
 
+	Skrollr.prototype.enable = function(){
+
+		IS_ENABLED = true;
+
+	};
+
+	Skrollr.prototype.disable = function(){
+
+		IS_ENABLED = false;
+
+	};
+
 	/**
 	 * Transform "relative" mode to "absolute" mode.
 	 * That is, calculate anchor position and offset of element.
@@ -676,8 +689,8 @@
 		_scale = 1;
 		_constants = undefined;
 		_mobileDeceleration = undefined;
-		_direction = 'down';
-		_lastTop = -1;
+		_direction = 0;
+		_lastTop = 0;
 		_lastViewportWidth = 0;
 		_lastViewportHeight = 0;
 		_requestReflow = false;
@@ -713,6 +726,13 @@
 		var deltaTime;
 
 		_addEvent(documentElement, [EVENT_TOUCHSTART, EVENT_TOUCHMOVE, EVENT_TOUCHCANCEL, EVENT_TOUCHEND].join(' '), function(e) {
+			
+			if( IS_ENABLED == false ){
+
+				return;
+
+			};
+
 			var touch = e.changedTouches[0];
 
 			currentElement = e.target;
@@ -1041,7 +1061,7 @@
 					if(emitEvents) {
 						//Did we pass a new keyframe?
 						if(lastFrameIndex !== keyFrameIndex) {
-							if(_direction === 'down') {
+							if(_direction === 1) {
 								_emitEvent(element, left.eventType, _direction);
 							} else {
 								_emitEvent(element, right.eventType, _direction);
@@ -1117,7 +1137,7 @@
 		//Did the scroll position even change?
 		if(_forceRender || _lastTop !== renderTop) {
 			//Remember in which direction are we scrolling?
-			_direction = (renderTop > _lastTop) ? 'down' : (renderTop < _lastTop ? 'up' : _direction);
+			_direction = (renderTop > _lastTop) ? 1 : (renderTop < _lastTop ? 0 : _direction);
 
 			_forceRender = false;
 
@@ -1717,10 +1737,10 @@
 	var _mobileDeceleration;
 
 	//Current direction (up/down).
-	var _direction = 'down';
+	var _direction = 0;
 
 	//The last top offset value. Needed to determine direction.
-	var _lastTop = -1;
+	var _lastTop = 0;
 
 	//The last time we called the render method (doesn't mean we rendered!).
 	var _lastRenderCall = _now();
