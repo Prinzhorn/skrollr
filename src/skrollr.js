@@ -1135,6 +1135,12 @@
 			if(continueRendering !== false) {
 				//Now actually interpolate all the styles.
 				_calcSteps(renderTop, _instance.getScrollTop());
+				
+				//That's were we actually "scroll" on mobile.
+				if(_isMobile && _skrollrBody) {
+					//Set the transform ("scroll it").
+					skrollr.setStyle(_skrollrBody, 'transform', 'translate(0, ' + -(_mobileOffset) + 'px) ' + _translateZ);
+				}
 
 				//That's were we actually "scroll" on mobile.
 				if(_isMobile && _skrollrBody) {
